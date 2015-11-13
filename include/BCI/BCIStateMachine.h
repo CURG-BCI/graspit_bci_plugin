@@ -6,10 +6,10 @@
 #include <QSignalTransition>
 
 #include "state.h"
-#include "BCI/bciControlWindow.h"
+#include "ui/bciControlWindow.h"
 
 
-#include "ivmgr.h"
+#include "include/ivmgr.h"
 
 
 class BCIStateMachine

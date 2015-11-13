@@ -1,6 +1,6 @@
 
 #include "BCI/utils/worldElementTools.h"
-#include "debug.h"
+#include "include/debug.h"
 
 namespace bci_experiment{
 namespace world_element_tools{

@@ -2,11 +2,14 @@
 #define PLANNER_TOOLS_H_
 #include <vector>
 
-#include "DBPlanner/db_manager.h"
+#include "include/EGPlanner/onLinePlanner.h"
+#include "src/DBase/graspit_db_model.h"
+#include "src/DBase/graspit_db_grasp.h"
+
 class EGPlanner;
 class Body;
 class GraspPlanningState;
-class OnLinePlanner;
+class db_planner::DatabaseManager;
 
 namespace bci_experiment{
 

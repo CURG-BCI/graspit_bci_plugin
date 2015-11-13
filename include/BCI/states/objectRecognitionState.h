@@ -1,12 +1,13 @@
 #ifndef OBJECTRECOGNITIONSTATE_H
 #define OBJECTRECOGNITIONSTATE_H
 
-#include "BCI/state_views/objectRecognitionView.h"
-#include "BCI/bciControlWindow.h"
+#include "ui/state_views/objectRecognitionView.h"
+#include "ui/bciControlWindow.h"
 #include "BCI/state.h"
 
 class ObjectRecognitionState : public State
 {
+        Q_OBJECT
 public:
     ObjectRecognitionState(BCIControlWindow *_bciControlWindow,QState* parent=0);
 

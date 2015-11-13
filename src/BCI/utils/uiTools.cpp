@@ -1,12 +1,13 @@
-#include "BCI/utils/uiTools.h"
-#include "world.h"
-#include "body.h"
-#include "ivmgr.h"
-#include "graspitGUI.h"
+
+#include "include/world.h"
+#include "include/body.h"
+#include "include/ivmgr.h"
+#include "include/graspitGUI.h"
+#include "include/robot.h"
 #include <Inventor/nodes/SoMaterial.h>
-#include "robot.h"
 #include <Inventor/nodes/SoCamera.h>
 //#include "graspit/graspit_source/include/EGPlanner/searchState.h"
+#include "BCI/utils/uiTools.h"
 #include "BCI/utils/worldElementTools.h"
 #include "SoRing.h"
 
@@ -165,7 +166,7 @@ namespace bci_experiment
 
 
             SoSeparator * pointerRoot =
-                    GraspItGUI::getInstance()->getIVmgr()->getWorld()->getIVRoot();
+                    graspItGUI->getIVmgr()->getWorld()->getIVRoot();
             SoSeparator * guideSeparator = static_cast<SoSeparator *>
                     (pointerRoot->getByName("BCIGuideSeparator"));
             SoSeparator * xAxisSep = NULL;
@@ -208,7 +209,8 @@ namespace bci_experiment
         void destroyGuideSeparator()
         {
             SoSeparator * pointerRoot =
-                    GraspItGUI::getInstance()->getIVmgr()->getPointers();
+
+                    graspItGUI->getIVmgr()->getPointers();
             SoSeparator * guideSeparator = static_cast<SoSeparator *>
                     (pointerRoot->getByName("BCIGuideSeparator"));
             if(guideSeparator)

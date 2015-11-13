@@ -37,7 +37,7 @@ class BCIWidgetManager;
 #include <manipulation_msgs/Grasp.h>
 #include <manipulation_msgs/GraspPlanning.h>
 
-#include "graspit_ros_planning_msgs/LoadDatabaseModel.h"
+/*#include "graspit_ros_planning_msgs/LoadDatabaseModel.h"
 #include "graspit_ros_planning_msgs/LoadObstacle.h"
 #include "graspit_ros_planning_msgs/ClearBodies.h"
 #include "graspit_ros_planning_msgs/SimulateScan.h"
@@ -47,7 +47,7 @@ class BCIWidgetManager;
 
 #include "graspit_ros_planning_msgs/LoadLocalModel.h"
 #include "graspit_ros_planning_msgs/GenerateGrasps.h"
-
+*/
 
 namespace graspit_bci_plugin
 {

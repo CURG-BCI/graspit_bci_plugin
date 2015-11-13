@@ -3,12 +3,13 @@
 
 
 #include "BCI/state.h"
-#include "BCI/bciControlWindow.h"
-#include "BCI/state_views/stoppedExecutionView.h"
+#include "ui/bciControlWindow.h"
+#include "ui/state_views/stoppedExecutionView.h"
 
 
 class StoppedExecutionState:public State
 {
+        Q_OBJECT
 public:
     StoppedExecutionState(BCIControlWindow *_bciControlWindow, QState* parent = 0 );
      virtual void onEntry(QEvent *e);

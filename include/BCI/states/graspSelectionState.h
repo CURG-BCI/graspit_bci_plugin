@@ -5,9 +5,9 @@
 #include "BCI/state.h"
 
 #include <QSignalTransition>
-#include "debug.h"
-#include "BCI/bciControlWindow.h"
-#include "BCI/state_views/graspSelectionView.h"
+#include "include/debug.h"
+#include "ui/bciControlWindow.h"
+#include "ui/state_views/graspSelectionView.h"
 
 class GraspSelectionState:public State
 {

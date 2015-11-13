@@ -4,7 +4,7 @@
 #include "BCI/state.h"
 #include <QSignalTransition>
 #include "BCI/onlinePlannerController.h"
-#include "BCI/bciControlWindow.h"
+#include "ui/bciControlWindow.h"
 
 
 

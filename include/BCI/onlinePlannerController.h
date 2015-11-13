@@ -1,22 +1,24 @@
 #ifndef ONLINEPLANNERCONTROLLER_H
 #define ONLINEPLANNERCONTROLLER_H
 
+
 #include <QObject>
+
+#include "include/robot.h"
+//#include "searchState.h"
+#include "include/grasp.h"
+#include "include/graspitGUI.h"
+#include "include/ivmgr.h"
+//#include "onLinePlanner.h"
+#include "src/DBase/DBPlanner/sql_database_manager.h"
+#include "src/DBase/DBPlanner/db_manager.h"
+#include "src/DBase/DBPlanner/database.h"
+//#include "DBase/graspit_db_model.h"
+//#include "DBase/graspit_db_grasp.h"
+
 #include "BCI/utils/uiTools.h"
 #include "BCI/utils/plannerTools.h"
 #include "BCI/utils/worldElementTools.h"
-#include "robot.h"
-//#include "searchState.h"
-#include "grasp.h"
-#include "graspitGUI.h"
-#include "ivmgr.h"
-//#include "onLinePlanner.h"
-//#include "DBase/DBPlanner/sql_database_manager.h"
-
-#include "db_manager.h"
-#include "database.h"
-//#include "DBase/graspit_db_model.h"
-//#include "DBase/graspit_db_grasp.h"
 
 //class OnLinePlanner * op;
 class GraspableBody;

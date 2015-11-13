@@ -1,12 +1,12 @@
 #ifndef WORLD_ELEMENT_TOOLS_H_
 #define WORLD_ELEMENT_TOOLS_H_
 
-#include "world.h"
-#include "body.h"
-#include "ivmgr.h"
-#include "robot.h"
-#include "graspitGUI.h"
-#include "grasp.h"
+#include "include/world.h"
+#include "include/body.h"
+#include "include/ivmgr.h"
+#include "include/robot.h"
+#include "include/graspitGUI.h"
+#include "include/grasp.h"
 
 namespace bci_experiment{
 namespace world_element_tools{

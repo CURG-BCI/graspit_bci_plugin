@@ -7,6 +7,7 @@
 
 class ExecutionState: public State
 {
+        Q_OBJECT
 public:
     ExecutionState(BCIControlWindow *_bciControlWindow, QState* parent=0);
 

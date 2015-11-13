@@ -1,13 +1,14 @@
-#include "world.h"
-#include "robot.h"
-#include "EGPlanner/searchState.h"
+#include "include/world.h"
+#include "include/robot.h"
+#include "include/EGPlanner/searchState.h"
+#include "include/EGPlanner/egPlanner.h"
+#include "include/debug.h"
+
+#include "src/DBase/DBPlanner/db_manager.h"
+#include "src/DBase/graspit_db_grasp.h"
+
 #include "BCI/utils/worldElementTools.h"
 #include "BCI/utils/plannerTools.h"
-#include "DBPlanner/db_manager.h"
-#include "EGPlanner/egPlanner.h"
-#include "EGPlanner/onLinePlanner.h"
-#include "debug.h"
-#include "graspit_db_grasp.h"
 
 
 using bci_experiment::world_element_tools::getWorld;

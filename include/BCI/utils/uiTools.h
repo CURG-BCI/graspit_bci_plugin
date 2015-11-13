@@ -9,7 +9,6 @@ class Body;
 class Hand;
 class transf;
 class GraspableBody;
-class GraspPlanningState;
 class EGPlanner;
 
 namespace bci_experiment
@@ -43,17 +42,17 @@ namespace bci_experiment
         //! Change the point cloud transparency
         bool setPointcloudTransparency(double transparency);
 
-//! Change the view to focus on all of the bodies given
-void viewBodies(std::vector<Body *> & body_vec);
+        //! Change the view to focus on all of the bodies given
+        void viewBodies(std::vector<Body *> & body_vec);
 
 
-//! Change the view to focus on all of the graspable bodies in the scene
-void viewGraspableBodies();
+        //! Change the view to focus on all of the graspable bodies in the scene
+        void viewGraspableBodies();
 
-void updateCircularGuides(Hand * hand, Body * object);
+        void updateCircularGuides(Hand * hand, Body * object);
 
-void destroyGuideSeparator();
+        void destroyGuideSeparator();
 
-}
+    }
 }
 #endif // UITOOLS_H

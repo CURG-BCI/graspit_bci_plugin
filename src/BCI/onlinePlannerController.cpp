@@ -1,8 +1,11 @@
 #include "BCI/onlinePlannerController.h"
 
 #include "BCI/bciService.h"
-#include "debug.h"
-#include "EGPlanner/graspTesterThread.h"
+#include "include/debug.h"
+#include "include/EGPlanner/graspTesterThread.h"
+#include "include/EGPlanner/searchState.h"
+#include "src/DBase/graspit_db_model.h"
+#include "src/DBase/graspit_db_grasp.h"
 
 using bci_experiment::world_element_tools::getWorld;
 
@@ -11,13 +14,13 @@ namespace bci_experiment
 
     bool isMainThread(QObject * obj)
     {
-        if(obj->thread() != GraspItGUI::getInstance()->getIVmgr()->thread())
+        if(obj->thread() != graspItGUI->getIVmgr()->thread())
         {
             DBGA("Object not in main thread");
             return false;
         }
 
-        if(QThread::currentThread() != GraspItGUI::getInstance()->getIVmgr()->thread())
+        if(QThread::currentThread() != graspItGUI->getIVmgr()->thread())
         {
             DBGA("Current thread is not main thread");
             return false;

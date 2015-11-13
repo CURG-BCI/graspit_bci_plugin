@@ -5,12 +5,12 @@ project(graspit_bci_plugin)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED graspit graspit_ros_planning_msgs)
+find_package(catkin REQUIRED graspit )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(Qt4 REQUIRED)
-
+#find_package(Qt4 REQUIRED)
+find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
@@ -93,24 +93,58 @@ MESSAGE( STATUS "catkin include dirs: " ${catkin_INCLUDE_DIRS} )
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include include/BCI include/BCI/utils ${catkin_INCLUDE_DIRS} ${QT_INCLUDES} )
+include_directories(include include/BCI include/BCI/utils ui ${catkin_INCLUDE_DIRS} ${QT_INCLUDES} )
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
-## Declare a cpp library
- add_library(graspit_bci_plugin
-
-    include/graspit_bci_plugin/hand_view.h
-    include/graspit_bci_plugin/bci_widget.h
-    include/graspit_bci_plugin/graspit_bci_plugin.h
-    include/SoRing.h
-
+###
+# All the project files
+set(SOURCES
+    src/main.cpp
     src/hand_view.cpp
     src/bci_widget.cpp
     src/graspit_bci_plugin.cpp
     src/main.cpp
     src/SoRing.cpp
+    src/BCI/utils/uiTools.cpp
+    src/BCI/utils/worldElementTools.cpp
+    src/BCI/utils/plannerTools.cpp
+    src/BCI/onlinePlannerController.cpp
+    src/BCI/state.cpp
+    src/BCI/BCIStateMachine.cpp
+    src/BCI/states/objectSelectionState.cpp
+    src/BCI/states/graspSelectionState.cpp
+    src/BCI/states/confirmationState.cpp
+    src/BCI/states/onlinePlanningState.cpp
+    src/BCI/states/handRotationState.cpp
+    src/BCI/states/activateRefinementState.cpp
+    src/BCI/bciService.cpp
+    src/bci_planner.cpp
 
+    ui/state_views/activeRefinementView.cpp
+    ui/state_views/confirmationView.cpp
+    ui/state_views/executionView.cpp
+    ui/state_views/graspSelectionView.cpp
+    ui/state_views/graspView.cpp
+    ui/state_views/objectRecognitionView.cpp
+    ui/state_views/objectSelectionView.cpp
+    ui/state_views/placementLocationSelectionView.cpp
+    ui/state_views/stoppedExecutionView.cpp
+
+    ui/bciControlWindow.cpp
+    ui/bciPreviewView.cpp
+    ui/bciWorldView.cpp
+    ui/handView.cpp
+    ui/handViewWindow.cpp
+    ui/qtWaitingSpinner.cpp
+
+)
+
+set(HEADERS
+    include/graspit_bci_plugin/hand_view.h
+    include/graspit_bci_plugin/bci_widget.h
+    include/graspit_bci_plugin/graspit_bci_plugin.h
+    include/SoRing.h
     include/BCI/utils/uiTools.h
     include/BCI/utils/worldElementTools.h
     include/BCI/utils/plannerTools.h
@@ -128,29 +162,73 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
     include/BCI/states/executionState.h
     include/BCI/states/stoppedExecutionState.h
     include/BCI/bciService.h
+    include/bci_planner.h
+)
 
+set(MOCS
 
-    src/BCI/utils/uiTools.cpp
-    src/BCI/utils/worldElementTools.cpp
-    src/BCI/utils/plannerTools.cpp
-    src/BCI/onlinePlannerController.cpp
-    src/BCI/state.cpp
-    src/BCI/BCIStateMachine.cpp
-    src/BCI/states/objectSelectionState.cpp
-    src/BCI/states/graspSelectionState.cpp
-    src/BCI/states/confirmationState.cpp
-    src/BCI/states/onlinePlanningState.cpp
-    src/BCI/states/handRotationState.cpp
-    src/BCI/states/activateRefinementState.cpp
-    src/BCI/bciService.cpp
- )
+    ui/bciControlWindow.h
+    ui/bciPreviewView.h
+    ui/bciWorldView.h
+    ui/handView.h
+    ui/handViewWindow.h
+    ui/qtWaitingSpinner.h
+
+    ui/state_views/activeRefinementView.h
+    ui/state_views/confirmationView.h
+    ui/state_views/executionView.h
+    ui/state_views/graspSelectionView.h
+    ui/state_views/graspView.h
+    ui/state_views/objectRecognitionView.h
+    ui/state_views/objectSelectionView.h
+    ui/state_views/placementLocationSelectionView.h
+    ui/state_views/stoppedExecutionView.h
+     )
+
+set(UIS
+    ui/BCIControlWindowBase.ui
+    ui/bciWorldView.ui
+    ui/state_views/activeRefinementView.ui
+    ui/state_views/confirmationView.ui
+    ui/state_views/executionView.ui
+    ui/state_views/graspSelectionView.ui
+    ui/state_views/graspView.ui
+    ui/state_views/objectRecognitionView.ui
+    ui/state_views/objectSelectionView.ui
+    ui/state_views/placementLocationSelectionView.ui
+    ui/state_views/stoppedExecutionView.ui)
+
+set(RESOURCES )
+
+###
+# Build and link the project
+
+# Let QT pre-process the files and add the generated files to the source list
+qt4_wrap_ui(GENERATED_SOURCES ${UIS})
+qt4_add_resources(GENERATED_SOURCES ${RESOURCES})
+qt4_wrap_cpp(GENERATED_SOURCES ${MOCS})
+
+source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
+
+# Make sure the compiler can find the pre-processed files from qt4_wrap_ui
+include_directories("${CMAKE_BINARY_DIR}")
+
+## Declare a cpp library
+ add_library(graspit_bci_plugin
+    ${SOURCES}
+    ${GENERATED_SOURCES}
+    # items included so they show up in your IDE
+    ${HEADERS}
+    ${UIS}
+    ${MOCS}
+    ${RESOURCES})
 
 ## Declare a cpp executable
 # add_executable(test_node src/test_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
- add_dependencies(graspit_bci_plugin graspit graspit_ros_planning_msgs ${QT_DEFINITIONS})
+add_dependencies(graspit_bci_plugin graspit graspit_ros_planning_msgs ${QT_DEFINITIONS})
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(graspit_bci_plugin

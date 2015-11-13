@@ -2,11 +2,12 @@
 #define PLACEMENTLOCATIONSELECTIONSTATE_H
 
 #include "BCI/state.h"
-#include "BCI/bciControlWindow.h"
-#include "BCI/state_views/placementLocationSelectionView.h"
+#include "ui/bciControlWindow.h"
+#include "ui/state_views/placementLocationSelectionView.h"
 
 class PlacementLocationSelectionState:public State
 {
+        Q_OBJECT
 public:
     PlacementLocationSelectionState(BCIControlWindow *_bciControlWindow, QState* parent = 0 );
      virtual void onEntry(QEvent *e);

@@ -13,8 +13,8 @@
 #include <Inventor/nodes/SoDirectionalLight.h>
 #include<Inventor/nodes/SoLightModel.h>
 
-#include "graspitGUI.h"
-#include "ivmgr.h"
+#include "include/graspitGUI.h"
+#include "include/ivmgr.h"
 
 
 class BCIWidgetManager

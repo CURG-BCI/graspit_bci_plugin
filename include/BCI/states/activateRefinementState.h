@@ -4,13 +4,12 @@
 #include "BCI/states/handRotationState.h"
 
 #include <QSignalTransition>
-#include "debug.h"
-#include "BCI/bciControlWindow.h"
-#include "BCI/state_views/activeRefinementView.h"
+#include "include/debug.h"
+#include "ui/bciControlWindow.h"
+#include "ui/state_views/activeRefinementView.h"
 
 class ActivateRefinementState: public HandRotationState
 {
-    Q_OBJECT
 
 public:
     ActivateRefinementState(BCIControlWindow *_bciControlWindow, QState* parent = 0 );

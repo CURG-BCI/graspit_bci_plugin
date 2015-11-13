@@ -3,10 +3,10 @@
 
 #include <QObject>
 #include <QSignalTransition>
-#include "world.h"
+#include "include/world.h"
 #include "BCI/state.h"
 #include "BCI/onlinePlannerController.h"
-#include "BCI/bciControlWindow.h"
+#include "ui/bciControlWindow.h"
 
 class ObjectSelectionView;
 
