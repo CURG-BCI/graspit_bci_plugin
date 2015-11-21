@@ -335,7 +335,7 @@ namespace bci_experiment
             graspDemonstrationHand->cloneFrom(currentPlanner->getRefHand());
             getWorld()->removeElementFromSceneGraph(graspDemonstrationHand);
         }*/
-        graspDemonstrationHand = static_cast<OnLinePlanner *>(currentPlanner)->getSolutionClone();
+        graspDemonstrationHand = static_cast<BCIOnlinePlanner *>(currentPlanner)->getSolutionClone();
         return graspDemonstrationHand;
 
     }

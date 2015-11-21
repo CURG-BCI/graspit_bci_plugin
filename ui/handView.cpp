@@ -10,6 +10,7 @@
 #include <QThread>
 
 #include <Inventor/SbColor.h>
+#include "include/debug.h"
 
 
 HandView::HandView(SoQtExaminerViewer *mainViewer, Hand * h, QFrame &parentWindow, QString viewName)
@@ -178,7 +179,7 @@ void HandView::updateGeom(Hand & cloneHand)
   of the bodies in the scenegraph by updating the SoTransform node associated with
   each body. See CopyLinkTransforms for more details. 
 */
-#include "debug.h"
+
 
 void HandView::update(const GraspPlanningState & s, Hand & cloneHand)
 {

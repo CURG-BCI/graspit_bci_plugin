@@ -6,7 +6,7 @@
 #include "include/world.h"
 #include "BCI/state.h"
 #include "BCI/onlinePlannerController.h"
-#include "ui/bciControlWindow.h"
+#include "bciControlWindow.h"
 
 class ObjectSelectionView;
 

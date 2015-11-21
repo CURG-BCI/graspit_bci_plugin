@@ -1,6 +1,6 @@
 #include "graspView.h"
-#include "ui_graspView.h"
-#include "body.h"
+#include "graspit_bci_plugin/ui_graspView.h"
+#include "include/body.h"
 
 GraspView::GraspView( QWidget *parent) :
     QWidget(parent),

@@ -5,8 +5,8 @@
 
 #include <QSignalTransition>
 #include "include/debug.h"
-#include "ui/bciControlWindow.h"
-#include "ui/state_views/activeRefinementView.h"
+#include "bciControlWindow.h"
+#include "state_views/activeRefinementView.h"
 
 class ActivateRefinementState: public HandRotationState
 {

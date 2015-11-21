@@ -6,7 +6,7 @@
 #include <QSignalTransition>
 
 #include "state.h"
-#include "ui/bciControlWindow.h"
+#include "bciControlWindow.h"
 
 
 #include "include/ivmgr.h"

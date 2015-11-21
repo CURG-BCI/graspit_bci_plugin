@@ -5,9 +5,9 @@
 
 
 #include <QDialog>
-#include "ui_BCIControlWindowBase.h"
+#include "graspit_bci_plugin/ui_BCIControlWindowBase.h"
 #include "BCI/bciService.h"
-#include "debug.h"
+#include "include/debug.h"
 #include "BCI/onlinePlannerController.h"
 class BCIControlWindow: public QDialog, public Ui::BCIControlWindowBase
 {
@@ -28,7 +28,8 @@ public:
         setupUi(this);
         //this->setBackgroundColor(QColor("1F2A36"));
         //this->setBackgroundColor(QColor::fromRgb(97, 126, 158));
-        this->setBackgroundColor(QColor::fromRgb(112,128,144));
+
+        //this->setBackgroundColor(QColor::fromRgb(112,128,144));
 
 
     }

@@ -2,9 +2,9 @@
 #define CONFIRMATIONSTATE_H
 
 
-#include "ui/bciControlWindow.h"
+#include "bciControlWindow.h"
 #include "BCI/state.h"
-#include "ui/state_views/confirmationView.h"
+#include "state_views/confirmationView.h"
 class ConfirmationState:public State
 {
     Q_OBJECT

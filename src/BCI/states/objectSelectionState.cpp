@@ -1,6 +1,6 @@
 #include "BCI/states/objectSelectionState.h"
 #include "BCI/bciService.h"
-#include "BCI/state_views/objectSelectionView.h"
+#include "state_views/objectSelectionView.h"
 
 
 using bci_experiment::world_element_tools::getWorld;

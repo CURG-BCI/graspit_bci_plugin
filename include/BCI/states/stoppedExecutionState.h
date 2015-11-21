@@ -3,8 +3,8 @@
 
 
 #include "BCI/state.h"
-#include "ui/bciControlWindow.h"
-#include "ui/state_views/stoppedExecutionView.h"
+#include "bciControlWindow.h"
+#include "state_views/stoppedExecutionView.h"
 
 
 class StoppedExecutionState:public State

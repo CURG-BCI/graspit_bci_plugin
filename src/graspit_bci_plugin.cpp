@@ -7,6 +7,10 @@
 #include <include/body.h>
 #include <include/graspitGUI.h>
 #include <include/ivmgr.h>
+#include<bciService.h>
+#include<bciControlWindow.h>
+#include "ui/mainWindow.h"
+
 
 
 #include <QtGui>
@@ -51,7 +55,11 @@ namespace graspit_bci_plugin
           node_name = argv[i + 1];
         }
       }
+graspItGUI->getIVmgr()->getWorld()->load("/home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/worlds/allVision2fromjon.xml");
 
+BCIControlWindow *bciControlWindow= new BCIControlWindow(graspItGUI->getMainWindow()->mWindow);
+BCIService::getInstance()->init(bciControlWindow);
+bciControlWindow->exec();
 //      QDialog *d = new QDialog();
 
 

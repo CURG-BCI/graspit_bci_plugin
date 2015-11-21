@@ -1,5 +1,5 @@
 #include "executionView.h"
-#include "ui_executionView.h"
+#include "graspit_bci_plugin/ui_executionView.h"
 #include "BCI/bciService.h"
 
 ExecutionView::ExecutionView(QWidget *parent) :

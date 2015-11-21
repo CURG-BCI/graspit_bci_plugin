@@ -1,5 +1,5 @@
 #include "bciWorldView.h"
-#include "ui_bciWorldView.h"
+#include "graspit_bci_plugin/ui_bciWorldView.h"
 
 BCIWorldView::BCIWorldView(QWidget *parent) :
     QWidget(parent),

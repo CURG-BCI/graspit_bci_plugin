@@ -21,12 +21,12 @@
 #include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/engines/SoElapsedTime.h>
 
-#include "graspitGUI.h"
-#include "ivmgr.h"
-#include "body.h"
-#include "world.h"
-#include "robot.h"
-#include "grasp.h"
+#include "include/graspitGUI.h"
+#include "include/ivmgr.h"
+#include "include/body.h"
+#include "include/world.h"
+#include "include/robot.h"
+#include "include/grasp.h"
 #include "BCI/onlinePlannerController.h"
 #include "BCI/qtWaitingSpinner.h"
 #include "BCI/handView.h"

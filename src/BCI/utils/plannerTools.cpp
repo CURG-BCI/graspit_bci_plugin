@@ -9,6 +9,7 @@
 
 #include "BCI/utils/worldElementTools.h"
 #include "BCI/utils/plannerTools.h"
+#include "bciService.h"
 
 
 using bci_experiment::world_element_tools::getWorld;
@@ -92,27 +93,27 @@ namespace bci_experiment
 
 
 
-        void importGraspsFromDBMgr( OnLinePlanner * mPlanner, db_planner::DatabaseManager * mDbMgr)
+        void importGraspsFromDBMgr( BCIOnlinePlanner * mPlanner, db_planner::DatabaseManager * mDbMgr)
         {
             Hand*mHand = mPlanner->getRefHand();
 
-            // Get corresponding model from database
-            std::vector<db_planner::Model*> modelList;
+//            // Get corresponding model from database
+//            std::vector<db_planner::Model*> modelList;
             QString *objectFilename = new QString('/' + mHand->getGrasp()->getObject()->getFilename().split('/').back());
 
-            mDbMgr->ModelList(&modelList,db_planner::FilterList::USE_FILE_NAME, *objectFilename);
+//            mDbMgr->ModelList(&modelList,db_planner::FilterList::NONE, *objectFilename);
+            db_planner::Model *m=new db_planner::Model;
+            m->SetModelName(objectFilename->toStdString());
 
-
-            if(modelList.empty())
-            {
-              DBGA("No Models Found \n");
-              return;
-            }
+//            if(modelList.empty())
+//            {
+//              DBGA("No Models Found \n");
+//              return;
+//            }
 
             // Using the found model, retrieve the grasps
             std::vector<db_planner::Grasp*> grasps;
-            mDbMgr->GetGrasps(*modelList.back(), GraspitDBGrasp::getHandDBName(mHand).toStdString(), &grasps);
-
+            mDbMgr->GetGrasps(*m, getHandDBName(mHand).toStdString(), &grasps);
             mHand->saveState();
 
             // Load the grasps into the grasp planner list.
@@ -139,7 +140,7 @@ namespace bci_experiment
 
         }
 
-        OnLinePlanner * createDefaultPlanner(){
+        BCIOnlinePlanner * createDefaultPlanner(){
 
              World * w = getWorld();
              if(!w->getCurrentHand())
@@ -154,17 +155,55 @@ namespace bci_experiment
              mHandObjectState->setRefTran(w->getGB(0)->getTran());
              mHandObjectState->reset();
 
-             OnLinePlanner * op = new OnLinePlanner(w->getCurrentHand());
+             BCIOnlinePlanner * op = new BCIOnlinePlanner(w->getCurrentHand());
              op->setContactType(CONTACT_PRESET);
              op->setEnergyType(ENERGY_CONTACT_QUALITY);
              op->setMaxSteps(2000);
              op->setModelState(mHandObjectState);
 
-             w->setCurrentPlanner(op);
+             //w->setCurrentPlanner(op);
+             BCIService::getInstance()->setCurrentPlanner(op);
              op->showSolutionClone(true);
              op->resetPlanner();
 
             return op;
+        }
+
+        //! get the hand name that is in the CGDB
+        QString getHandDBName(Hand* h)
+        {
+            QString handName = h->getName();
+            int material = h->getFinger(0)->getLink(0)->getMaterial();
+            QString hand_db_name;
+            if(handName == QString("Barrett")){
+                if(material == h->getWorld()->getMaterialIdx("rubber")){
+                    hand_db_name = QString("BARRETT_RUBBER");
+                } else if(material == graspItGUI->getIVmgr()->getWorld()->getMaterialIdx("plastic")){
+                    hand_db_name = QString("BARRETT_PLASTIC");
+                } else if(material == h->getWorld()->getMaterialIdx("wood")){
+                    hand_db_name = QString("BARRETT_WOOD");
+                }
+            }else if(handName == QString("HumanHand20DOF")){
+                hand_db_name = QString("HUMAN");
+            }else if(handName == QString("pr2_gripper")){
+                hand_db_name = QString("WILLOW_GRIPPER");
+            }else if(handName == QString("McGrip")){
+                hand_db_name = QString("MC_GRIP");
+          }else if(handName.split(' ')[0] == QString("MicoGripper"))
+            {
+                hand_db_name = QString("MICO_GRIPPER");
+            }
+            else if(handName.split(' ')[0] == QString("NewBarrett")){
+            if(material == h->getWorld()->getMaterialIdx("rubber")){
+              hand_db_name = QString("NEW_BARRETT_RUBBER");
+            }
+
+            }else {
+                std::cout << "Wrong hand name detected: " << handName.toStdString().c_str() <<
+                    ".  Acceptable GRASPIT_hand_names are: Barrett, HumanHand20DOF, Pr2Gripper" << std::endl;
+                hand_db_name = QString::null;
+            }
+            return hand_db_name;
         }
 
     }

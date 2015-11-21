@@ -1,8 +1,8 @@
 #ifndef OBJECTRECOGNITIONSTATE_H
 #define OBJECTRECOGNITIONSTATE_H
 
-#include "ui/state_views/objectRecognitionView.h"
-#include "ui/bciControlWindow.h"
+#include "state_views/objectRecognitionView.h"
+#include "bciControlWindow.h"
 #include "BCI/state.h"
 
 class ObjectRecognitionState : public State

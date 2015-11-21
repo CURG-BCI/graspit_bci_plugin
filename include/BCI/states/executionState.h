@@ -2,8 +2,8 @@
 #define EXECUTIONSTATE_H
 
 #include "BCI/state.h"
-#include "BCI/bciControlWindow.h"
-#include "BCI/state_views/executionView.h"
+#include "bciControlWindow.h"
+#include "state_views/executionView.h"
 
 class ExecutionState: public State
 {

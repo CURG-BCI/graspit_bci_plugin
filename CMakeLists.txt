@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 2.8.3)
 project(graspit_bci_plugin)
-
+set(QT_QMAKE_EXECUTABLE /usr/bin/qmake-qt4)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -10,7 +10,7 @@ find_package(catkin REQUIRED graspit )
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 #find_package(Qt4 REQUIRED)
-find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
+find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL Qt3Support REQUIRED)
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
@@ -88,24 +88,29 @@ catkin_package(
 ###########
 
 include(${QT_USE_FILE})
-
-MESSAGE( STATUS "catkin include dirs: " ${catkin_INCLUDE_DIRS} )
+#set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")
+#set (catkin_INCLUDE_DIRS ${catkin_INCLUDE_DIRS} /home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/src)
+#set (catkin_INCLUDE_DIRS ${catkin_INCLUDE_DIRS} /home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/src/DBase)
+#set (catkin_INCLUDE_DIRS ${catkin_INCLUDE_DIRS} /home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/src/DBase/DBPlanner)
+MESSAGE("catkin_INCLUDE_DIRS: ${catkin_INCLUDE_DIRS}")
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(include include/BCI include/BCI/utils ui ${catkin_INCLUDE_DIRS} ${QT_INCLUDES} )
-
+#include_directories(/home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/src)
+#include_directories(/home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/src/DBase)
+#include_directories(/home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/src/DBase/DBPlanner)
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ###
 # All the project files
 set(SOURCES
     src/main.cpp
-    src/hand_view.cpp
     src/bci_widget.cpp
     src/graspit_bci_plugin.cpp
     src/main.cpp
     src/SoRing.cpp
+    src/BCIOnlinePlanner.cpp
     src/BCI/utils/uiTools.cpp
     src/BCI/utils/worldElementTools.cpp
     src/BCI/utils/plannerTools.cpp
@@ -118,8 +123,13 @@ set(SOURCES
     src/BCI/states/onlinePlanningState.cpp
     src/BCI/states/handRotationState.cpp
     src/BCI/states/activateRefinementState.cpp
+    src/BCI/states/placementLocationSelectionState.cpp
+    src/BCI/states/objectRecognitionState.cpp
+    src/BCI/states/executionState.cpp
+    src/BCI/states/stoppedExecutionState.cpp
     src/BCI/bciService.cpp
-    src/bci_planner.cpp
+    src/BCI/utils/worldElementTools.cpp
+    src/worldController.cpp
 
     ui/state_views/activeRefinementView.cpp
     ui/state_views/confirmationView.cpp
@@ -132,16 +142,13 @@ set(SOURCES
     ui/state_views/stoppedExecutionView.cpp
 
     ui/bciControlWindow.cpp
-    ui/bciPreviewView.cpp
     ui/bciWorldView.cpp
     ui/handView.cpp
-    ui/handViewWindow.cpp
     ui/qtWaitingSpinner.cpp
 
 )
 
 set(HEADERS
-    include/graspit_bci_plugin/hand_view.h
     include/graspit_bci_plugin/bci_widget.h
     include/graspit_bci_plugin/graspit_bci_plugin.h
     include/SoRing.h
@@ -150,6 +157,8 @@ set(HEADERS
     include/BCI/utils/plannerTools.h
     include/BCI/onlinePlannerController.h
     include/BCI/state.h
+    include/BCI/handView.h
+    include/BCI/qtWaitingSpinner.h
     include/BCI/BCIStateMachine.h
     include/BCI/states/objectSelectionState.h
     include/BCI/states/placementLocationSelectionState.h
@@ -162,18 +171,17 @@ set(HEADERS
     include/BCI/states/executionState.h
     include/BCI/states/stoppedExecutionState.h
     include/BCI/bciService.h
-    include/bci_planner.h
+    include/BCI/bciWorldView.h
+    include/BCIOnlinePlanner.h
+    include/pointers.dat
+    include/worldController.h
+    ui/bciControlWindow.h
+
 )
 
 set(MOCS
 
     ui/bciControlWindow.h
-    ui/bciPreviewView.h
-    ui/bciWorldView.h
-    ui/handView.h
-    ui/handViewWindow.h
-    ui/qtWaitingSpinner.h
-
     ui/state_views/activeRefinementView.h
     ui/state_views/confirmationView.h
     ui/state_views/executionView.h
@@ -183,7 +191,30 @@ set(MOCS
     ui/state_views/objectSelectionView.h
     ui/state_views/placementLocationSelectionView.h
     ui/state_views/stoppedExecutionView.h
-     )
+
+    include/graspit_bci_plugin/bci_widget.h
+    include/graspit_bci_plugin/graspit_bci_plugin.h
+    include/BCI/utils/uiTools.h
+    include/BCI/utils/worldElementTools.h
+    include/BCI/utils/plannerTools.h
+    include/BCI/onlinePlannerController.h
+    include/BCI/state.h
+    include/BCI/handView.h
+    include/BCI/qtWaitingSpinner.h
+    include/BCI/BCIStateMachine.h
+    include/BCI/states/objectSelectionState.h
+    include/BCI/states/placementLocationSelectionState.h
+    include/BCI/states/confirmationState.h
+    include/BCI/states/onlinePlanningState.h
+    include/BCI/states/handRotationState.h
+    include/BCI/states/graspSelectionState.h
+    include/BCI/states/objectRecognitionState.h
+    include/BCI/states/executionState.h
+    include/BCI/states/stoppedExecutionState.h
+    include/BCI/bciService.h
+    include/BCI/bciWorldView.h
+    include/BCIOnlinePlanner.h
+    include/worldController.h)
 
 set(UIS
     ui/BCIControlWindowBase.ui
@@ -212,6 +243,8 @@ source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
 
 # Make sure the compiler can find the pre-processed files from qt4_wrap_ui
 include_directories("${CMAKE_BINARY_DIR}")
+include_directories("${CMAKE_BINARY_DIR}/graspit-ros/graspit/ui")
+MESSAGE("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
 
 ## Declare a cpp library
  add_library(graspit_bci_plugin

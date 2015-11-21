@@ -90,7 +90,7 @@ namespace bci_experiment{
             db_planner::SqlDatabaseManager * mDbMgr;
             GraspableBody * currentTarget;
             unsigned int currentGraspIndex;
-            OnLinePlanner * currentPlanner;
+            BCIOnlinePlanner * currentPlanner;
             Hand * graspDemonstrationHand;
 
             bool setAllowedPlanningCollisions();

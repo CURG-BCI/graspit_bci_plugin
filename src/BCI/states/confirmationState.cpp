@@ -1,7 +1,7 @@
 
 #include "BCI/states/confirmationState.h"
 #include  <QSignalTransition>
-#include "world.h"
+#include "include/world.h"
 #include "BCI/onlinePlannerController.h"
 #include "BCI/bciService.h"
 

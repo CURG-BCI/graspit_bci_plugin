@@ -4,7 +4,7 @@
 #include <QObject>
 
 #include "BCI/worldController.h"
-//#include "Servers/rosRPCZClient.h"
+#include "BCIOnlinePlanner.h"
 
 class GraspableBody;
 class DrawableFrame;
@@ -19,12 +19,12 @@ class BCIService:public QObject
     Q_OBJECT
 
 public:
-
+    BCIOnlinePlanner * currentPlanner;
     void emitGoToNextState1(){emit goToNextState1();}
     void emitGoToNextState2(){emit goToNextState2();}
     void emitGoToPreviousState(){emit goToPreviousState();}
 
-
+    void emitProcessWorldPlanner(int i){emit processWorldPlanner(i);}
     void emitExec(){emit exec();}
     void emitNext(){emit next();}
     void emitTargetBodyChanged(GraspableBody * b){emit targetBodyChanged(b);}
@@ -65,6 +65,10 @@ public:
     static BCIService* getInstance();
 
     void init(BCIControlWindow *bciControlWindow);
+    //! Returns the currently active planner
+    BCIOnlinePlanner * getCurrentPlanner(){return currentPlanner;}
+    void setCurrentPlanner(BCIOnlinePlanner *p){currentPlanner = p;}
+
 signals:
 
     //tell state machine to go to next state
@@ -73,7 +77,7 @@ signals:
     void goToNextState2();
     //tell state machine to return to previous state;
     void goToPreviousState();
-
+    void processWorldPlanner(int solutionIndex);
     void plannerUpdated();
 
     void runObjectRecognitionSignal();

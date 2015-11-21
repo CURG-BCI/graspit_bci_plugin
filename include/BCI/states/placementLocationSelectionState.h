@@ -2,8 +2,8 @@
 #define PLACEMENTLOCATIONSELECTIONSTATE_H
 
 #include "BCI/state.h"
-#include "ui/bciControlWindow.h"
-#include "ui/state_views/placementLocationSelectionView.h"
+#include "bciControlWindow.h"
+#include "state_views/placementLocationSelectionView.h"
 
 class PlacementLocationSelectionState:public State
 {

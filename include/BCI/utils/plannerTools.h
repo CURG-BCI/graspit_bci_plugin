@@ -2,14 +2,15 @@
 #define PLANNER_TOOLS_H_
 #include <vector>
 
-#include "include/EGPlanner/onLinePlanner.h"
+#include "BCIOnlinePlanner.h"
 #include "src/DBase/graspit_db_model.h"
+
 #include "src/DBase/graspit_db_grasp.h"
 
 class EGPlanner;
 class Body;
 class GraspPlanningState;
-class db_planner::DatabaseManager;
+
 
 namespace bci_experiment{
 
@@ -36,10 +37,12 @@ namespace bci_experiment{
                                  std::vector<bool> & collisionStatus);
 
         //! Import grasps from a database to an egPlanner
-        void importGraspsFromDBMgr( OnLinePlanner * mPlanner,
+        void importGraspsFromDBMgr( BCIOnlinePlanner * mPlanner,
                                     db_planner::DatabaseManager * mDbMgr);
 
-        OnLinePlanner * createDefaultPlanner();
+        static QString getHandDBName(Hand* h);
+
+        BCIOnlinePlanner * createDefaultPlanner();
 
     }
 
