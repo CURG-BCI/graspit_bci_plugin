@@ -28,7 +28,7 @@ namespace bci_experiment{
 
 
 
-    class OnlinePlannerController : public QObject
+    class OnlinePlannerController : public QThread
     {
         Q_OBJECT
 
@@ -62,41 +62,73 @@ namespace bci_experiment{
             GraspableBody * incrementCurrentTarget();
             void setCurrentTarget(GraspableBody * gb);
             Hand * getHand();
-            Hand * getGraspDemoHand();
+            Hand *getSeedHand();
+            Hand * getSolutionHand();
             const GraspPlanningState * getGrasp(int index);
+            unsigned int getNumGrasps();
             const GraspPlanningState * getCurrentGrasp();
+            const GraspPlanningState * getNextGrasp();
+            bool timedUpdateRunning;
+            bool stopTimedUpdate();
+            bool startTimedUpdate();
+            bool toggleTimedUpdate();
+            void setSceneLocked(bool locked){sceneLocked = locked;}
+            bool getSceneLocked(){return sceneLocked;}
+            //void connectToPlannerUpdateSignal();
 
 
-            void connectToPlannerUpdateSignal();
-
-            // Perform any validation or processing that should update
-            // the planner or it's visualizations periodically
-            //void plannerTimedUpdate();
-            void initializeTarget(Hand * currentHand, GraspableBody * targetObject);
+            void initializeTarget();
 
             void incrementGraspIndex();
 
+            void showRobots(bool show);
 
 
-        private:
+            void sortGrasps();
+//            void connectPlannerUpdate(bool enableConnection);
+            void resetGraspIndex();
+
+            //! Block grasp analysis
+            void blockGraspAnalysis( bool block)
+            {
+                analysisBlocked = block;
+            }
+
+            bool analysisIsBlocked(){return analysisBlocked;}
+            BCIOnlinePlanner * currentPlanner;
+            bool renderPending;
+
+            unsigned int currentGraspIndex;
+
+    protected:
+        virtual void run();
+
+    private:
 
             static OnlinePlannerController * onlinePlannerController;
+            static QMutex createLock;
+
 
             OnlinePlannerController(QObject *parent = 0);
             void initializeDbInterface();
 
 
-
             db_planner::SqlDatabaseManager * mDbMgr;
             GraspableBody * currentTarget;
-            unsigned int currentGraspIndex;
-            BCIOnlinePlanner * currentPlanner;
-            Hand * graspDemonstrationHand;
 
+            Hand * graspDemonstrationHand;
             bool setAllowedPlanningCollisions();
+            bool setPlannerTargets();
+            bool sceneLocked;
+            bool analysisBlocked;
+    signals:
+            void render();
+
 
 
     private slots:
+            // Perform any validation or processing that should update
+            // the planner or it's visualizations periodically
             void plannerTimedUpdate();
 
     public slots:
@@ -109,8 +141,9 @@ namespace bci_experiment{
             void addToWorld(const QString model_filename, const QString object_name, const QString object_pose);
             void clearObjects();
             void targetRemoved();
-
+            void emitRender(){if(!renderPending){ emit render(); renderPending = true;}}
     };
 
 }
 #endif // ONLINEPLANNERCONTROLLER_H
+

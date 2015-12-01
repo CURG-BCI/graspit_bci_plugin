@@ -1,13 +1,10 @@
-
 #include "BCI/BCIStateMachine.h"
 
 #include "BCI/states/objectSelectionState.h"
 #include "BCI/states/graspSelectionState.h"
 #include "BCI/states/placementLocationSelectionState.h"
 #include "BCI/states/confirmationState.h"
-#include "BCI/states/onlinePlanningState.h"
 #include "BCI/states/activateRefinementState.h"
-#include "BCI/states/objectRecognitionState.h"
 #include "BCI/states/executionState.h"
 #include "BCI/states/stoppedExecutionState.h"
 
@@ -17,55 +14,82 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     bciControlWindow(_bciControlWindow),
     bciService(_bciService)
 {
-    ObjectRecognitionState *objectRecognitionState = new ObjectRecognitionState(bciControlWindow);
-    ObjectSelectionState *objectSelectionState = new ObjectSelectionState(bciControlWindow);
-    GraspSelectionState *initialGraspSelectionState = new GraspSelectionState(bciControlWindow);
-    OnlinePlanningState * onlinePlanningState = new OnlinePlanningState(bciControlWindow);
-    ActivateRefinementState *activateRefinementState = new ActivateRefinementState(bciControlWindow);
-    GraspSelectionState *finalGraspSelectionState = new GraspSelectionState(bciControlWindow);
-    ConfirmationState *confirmationState = new ConfirmationState(bciControlWindow);
-    ExecutionState *executionState = new ExecutionState(bciControlWindow);
-    StoppedExecutionState *stoppedExecutionState = new StoppedExecutionState(bciControlWindow);
 
-    //Add all state transistions that are not self transitions----------------------------
-    objectRecognitionState->addTransition(bciService,SIGNAL(goToNextState1()), objectSelectionState);
+    csm = bciService->csm;
 
-    objectSelectionState->addTransition(bciService,SIGNAL(goToNextState1()), initialGraspSelectionState);
+    ObjectSelectionState *objectSelectionState = new ObjectSelectionState(bciControlWindow, csm);
+    GraspSelectionState *initialGraspSelectionState = new GraspSelectionState(bciControlWindow, csm);
+    ActivateRefinementState *activateRefinementState = new ActivateRefinementState(bciControlWindow, csm);
+    GraspSelectionState *finalGraspSelectionState = new GraspSelectionState(bciControlWindow, csm);
+    ConfirmationState *confirmationState = new ConfirmationState(bciControlWindow, csm);
+    ExecutionState *executionState = new ExecutionState(bciControlWindow, csm);
+    StoppedExecutionState *stoppedExecutionState = new StoppedExecutionState(bciControlWindow, csm);
 
-    initialGraspSelectionState->addTransition(bciService, SIGNAL(goToNextState2()), activateRefinementState);
-    initialGraspSelectionState->addTransition(bciService, SIGNAL(goToPreviousState()), objectSelectionState);
-    initialGraspSelectionState->addTransition(bciService, SIGNAL(goToNextState1()), confirmationState);
+    objectSelectionState->addStateTransition(bciService,SIGNAL(goToNextState1()), initialGraspSelectionState);
+    objectSelectionState->addStateTransition(objectSelectionState,SIGNAL(goToNextState()), initialGraspSelectionState);
+    objectSelectionState->addSelfTransition(bciService, SIGNAL(exec()), objectSelectionState, SLOT(onSelect()));
+    objectSelectionState->addSelfTransition(bciService, SIGNAL(rotLat()), objectSelectionState, SLOT(onNext()));
 
-    activateRefinementState->addTransition(bciService, SIGNAL(goToNextState1()), confirmationState);
+    initialGraspSelectionState->addStateTransition(initialGraspSelectionState, SIGNAL(goToActivateRefinementState()), activateRefinementState);
+    initialGraspSelectionState->addStateTransition(initialGraspSelectionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
+    initialGraspSelectionState->addStateTransition(initialGraspSelectionState, SIGNAL(goToConfirmationState()), confirmationState);
 
-    finalGraspSelectionState->addTransition(bciService, SIGNAL(goToNextState1()),confirmationState);
+//    initialGraspSelectionState->addStateTransition(bciService, SIGNAL(goToNextState2()), activateRefinementState);
+//    initialGraspSelectionState->addStateTransition(bciService, SIGNAL(goToPreviousState()), objectSelectionState);
+//    initialGraspSelectionState->addStateTransition(bciService, SIGNAL(goToNextState1()), confirmationState);
+//    initialGraspSelectionState->addStateTransition(bciService, SIGNAL(exec()), confirmationState);
+//    initialGraspSelectionState->addStateTransition(bciService, SIGNAL(next()), activateRefinementState);
+//    initialGraspSelectionState->setRotationAllowed(false);
+//    initialGraspSelectionState->setButtonLabel( "buttonRotateLong", "Next Grasp");
+//    initialGraspSelectionState->setButtonLabel( "buttonRotateLat", "Change Target Object");
 
-    onlinePlanningState->addTransition(bciService, SIGNAL(goToNextState1()), finalGraspSelectionState);
+//    initialGraspSelectionState->addSelfTransition(bciService,SIGNAL(rotLong()), initialGraspSelectionState, SLOT(onNext()));
+//    initialGraspSelectionState->addStateTransition(bciService,SIGNAL(rotLat()), objectSelectionState);
 
-    confirmationState->addTransition(bciService, SIGNAL(goToNextState1()), executionState);
-    confirmationState->addTransition(bciService, SIGNAL(goToNextState2()), initialGraspSelectionState);
+    activateRefinementState->addStateTransition(bciService, SIGNAL(goToNextState1()), initialGraspSelectionState);
+    activateRefinementState->addStateTransition(bciService, SIGNAL(exec()), initialGraspSelectionState);
 
-    executionState->addTransition(bciService, SIGNAL(goToNextState1()), stoppedExecutionState);
+//    finalGraspSelectionState->addStateTransition(bciService, SIGNAL(goToNextState1()),confirmationState);
+//    finalGraspSelectionState->addStateTransition(bciService, SIGNAL(exec()),confirmationState);
+//    finalGraspSelectionState->addSelfTransition(bciService,SIGNAL(goToNextState2()), finalGraspSelectionState, SLOT(onNext()));
+//    finalGraspSelectionState->addSelfTransition(bciService,SIGNAL(next()), finalGraspSelectionState, SLOT(onNext()));
 
-    stoppedExecutionState->addTransition(bciService, SIGNAL(goToNextState1()), executionState);
-    stoppedExecutionState->addTransition(bciService, SIGNAL(goToNextState2()), objectRecognitionState);
+//    finalGraspSelectionState->setButtonLabel("buttonRefineGrasp", "Next Grasp");
+//    finalGraspSelectionState->stateName = "Final Selection";
 
-    stateMachine.addState(objectRecognitionState);
+//    confirmationState->addStateTransition(bciService, SIGNAL(goToNextState1()), executionState);
+//    confirmationState->addStateTransition(bciService, SIGNAL(goToNextState2()), initialGraspSelectionState);
+//    confirmationState->addStateTransition(bciService, SIGNAL(exec()), executionState);
+//    confirmationState->addStateTransition(bciService, SIGNAL(next()), initialGraspSelectionState);
+    confirmationState->addStateTransition(confirmationState, SIGNAL(goToExecutionState()), executionState);
+    confirmationState->addStateTransition(confirmationState, SIGNAL(goToPreviousState()), initialGraspSelectionState);
+
+//    executionState->addStateTransition(bciService, SIGNAL(goToNextState1()), stoppedExecutionState);
+//    executionState->addStateTransition(bciService, SIGNAL(exec()), stoppedExecutionState);
+    executionState->addStateTransition(executionState, SIGNAL(goToStoppedExecutionState()), stoppedExecutionState);
+
+//    stoppedExecutionState->addStateTransition(bciService, SIGNAL(goToNextState1()), executionState);
+//    stoppedExecutionState->addStateTransition(bciService, SIGNAL(goToNextState2()), objectSelectionState);
+//    stoppedExecutionState->addStateTransition(bciService, SIGNAL(exec()), executionState);
+//    stoppedExecutionState->addStateTransition(bciService, SIGNAL(next()), objectSelectionState);
+    stoppedExecutionState->addStateTransition(stoppedExecutionState, SIGNAL(goToExecutionState()), executionState);
+    stoppedExecutionState->addStateTransition(stoppedExecutionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
+
     stateMachine.addState(objectSelectionState);
     stateMachine.addState(initialGraspSelectionState);
     stateMachine.addState(activateRefinementState);
     stateMachine.addState(finalGraspSelectionState);
-    stateMachine.addState(onlinePlanningState);
     stateMachine.addState(confirmationState);
     stateMachine.addState(executionState);
     stateMachine.addState(stoppedExecutionState);
 
-    stateMachine.setInitialState(objectRecognitionState);
+    stateMachine.setInitialState(objectSelectionState);
 }
 
 void BCIStateMachine::start()
-{        
+{
     stateMachine.start();
     bciControlWindow->currentFrame->show();
 }
+
 

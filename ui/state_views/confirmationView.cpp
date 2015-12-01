@@ -18,7 +18,7 @@ ConfirmationView::ConfirmationView(QWidget *parent) :
     ui->setupUi(this);
 
     SoQtExaminerViewer *mainViewer = graspItGUI->getIVmgr()->getViewer();
-    Hand * h = OnlinePlannerController::getInstance()->getGraspDemoHand();
+    Hand * h = OnlinePlannerController::getInstance()->getSolutionHand();
     QFrame *parentWindow = this->ui->previewFrame;
     QString viewName = QString("current best grasp");
     handView = new HandView(mainViewer,h,*parentWindow,viewName);

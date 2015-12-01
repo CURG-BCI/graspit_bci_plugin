@@ -71,13 +71,10 @@ private:
 	/*! The on-line planner needs to know about a reference hand that is controlled by the user and which
 		gives us a reference point for the search. It is not ideal to store it like this, but so far
 		this is the working solution.*/
-	Hand *mRefHand;
+    Hand *mSeedHand;
 
 	//! This clone is used just to show the best solution currently available; mostly for debugging
 	Hand *mSolutionClone;
-
-    //! This clone hand is used to show the current hand progress
-    Hand *mProgressClone;
 
 	//! If this flag is set, the planner will show a visual indicator of each solution grasp it finds
 	bool mMarkSolutions;
@@ -125,7 +122,7 @@ public:
     QMutex mListAttributeMutex;
     ~BCIOnlinePlanner();
 	virtual PlannerType getType(){return PLANNER_ONLINE;}
-    virtual Hand * getRefHand(){return mRefHand;}
+    virtual Hand * getRefHand(){return mSeedHand;}
 
     virtual void startPlanner();
     virtual void pausePlanner();
@@ -154,7 +151,6 @@ public:
     GraspTester * getGraspTester(){return mGraspTester;}
     virtual void startThread();
     virtual void createAndUseClone();
-    void createProgressClone();
     void render(Hand * h);
 
 };

@@ -51,7 +51,6 @@
 BCIOnlinePlanner::BCIOnlinePlanner(Hand *h) : SimAnnPlanner(h)
 {
 	mSolutionClone = NULL;
-    mProgressClone = NULL;
     mMarkSolutions = false;
 	mCurrentBest = NULL;
 	mSimAnn->setParameters(ANNEAL_ONLINE);
@@ -61,12 +60,11 @@ BCIOnlinePlanner::BCIOnlinePlanner(Hand *h) : SimAnnPlanner(h)
 	mGraspTester = new GraspTester(h);
   //mGraspTester->getTargetState()->setObject(h->getGrasp()->getObject());
 	mGraspTester->startThread();
-	mGraspTester->showClone(false);
+    mGraspTester->showClone(false);
 
 	//the on-line planner ALWAYS uses a clone for the search but the original hand is saved as the reference hand
-	mRefHand = h;
+    mSeedHand = h;
     createSolutionClone();
-    createProgressClone();
     //createAndUseClone();//after this point mHand now points to a new clone
 	//in case that later we might want to see what the clone is doing
 	mHand->setRenderGeometry(true);
@@ -77,12 +75,12 @@ BCIOnlinePlanner::BCIOnlinePlanner(Hand *h) : SimAnnPlanner(h)
 	//some of the collisions are turned off by createAndUseClone(), but not this one
     //this class will actually be used to set the DOF's of the refHand if we are actually performing
 	//grasping tasks.
-	mInterface = new OnLineGraspInterface(mRefHand);
+    mInterface = new OnLineGraspInterface(mSeedHand);
 }
 
 BCIOnlinePlanner::~BCIOnlinePlanner()
 {
-	mRefHand->setTransparency(0);
+    mSeedHand->setTransparency(0);
 	mGraspTester->stopPlanner();
 	mGraspTester->wait();
 	delete mGraspTester;
@@ -110,14 +108,14 @@ BCIOnlinePlanner::createSolutionClone()
 	}
 
 	mSolutionClone = new Hand(mHand->getWorld(), "Solution clone");
-	mSolutionClone->cloneFrom(mRefHand);//CHANGED! was mHand - for some reason this makes setting transparency not tied to mHand??
+    mSolutionClone->cloneFrom(mSeedHand);//CHANGED! was mHand - for some reason this makes setting transparency not tied to mHand??
     mSolutionClone->setTransparency(0.03);//Make the clone that shows the solutions slightly transparent so we can still see the object below it.
 	mSolutionClone->showVirtualContacts(false);
 	mSolutionClone->setRenderGeometry(true);
 	//solution clone is always added to scene graph
 	mHand->getWorld()->addRobot(mSolutionClone, true);
 	mHand->getWorld()->toggleCollisions(false, mSolutionClone);
-	mSolutionClone->setTran( mRefHand->getTran() );//CHANGED!  was mHand
+    mSolutionClone->setTran( mSeedHand->getTran() );//CHANGED!  was mHand
 }
 
 void
@@ -166,38 +164,16 @@ BCIOnlinePlanner::resetPlanner()
 	while (!mCandidateList.empty()) {
 		delete mCandidateList.front(); mCandidateList.pop_front();
 	}
-	if (!SimAnnPlanner::resetPlanner()) return false;
-	if (mCurrentBest) delete mCurrentBest;
+    if (!SimAnnPlanner::resetPlanner())
+    {
+        return false;
+    }
+    if (mCurrentBest)
+    {
+        delete mCurrentBest;
+    }
 	mCurrentBest = new GraspPlanningState(mCurrentState);
 	return true;
-}
-
-void BCIOnlinePlanner::createProgressClone()
-{
-
-    if(mProgressClone) {
-        DBGA("Solution clone exists already!");
-        return;
-    }
-
-    mProgressClone = new Hand(mRefHand->getWorld(), "Progress clone");
-    mProgressClone->cloneFrom(mRefHand);//CHANGED! was mHand - for some reason this makes setting transparency not tied to mHand??
-    mProgressClone->setTransparency(0.95);//Make the clone that shows the solutions slightly transparent so we can still see the object below it.
-    mProgressClone->showVirtualContacts(false);
-    mProgressClone->setRenderGeometry(true);
-    //solution clone is always added to scene graph
-    World * w = mHand->getWorld();
-    w->addRobot(mProgressClone, true);
-    unsigned int numRob = w->getNumRobots();
-    for (int r = 0; r < numRob; ++ r)
-    {
-        if (mProgressClone == w->getRobot(r))
-            continue;
-        w->toggleCollisions(false, mProgressClone, w->getRobot(r));
-    }
-    mProgressClone->getWorld()->toggleCollisions(true, mProgressClone);
-
-    mProgressClone->setTran( mRefHand->getTran() );//CHANGED!  was mHand
 }
 
 void BCIOnlinePlanner::createAndUseClone()
@@ -208,7 +184,6 @@ void BCIOnlinePlanner::createAndUseClone()
     mGraspTester->getHand()->setName( mGraspTester->getHand()->getName() + QString(" th") );//this hand is never put in scene graph, for behind the scenes stuff?
     mHand->setName( mHand->getName() + QString(" pl") );
     mHand->setTransparency(0.8);//Make the planner hand barely visible just so the user can see something is going on.
-
 }
 
 void BCIOnlinePlanner::startThread()
@@ -218,13 +193,13 @@ void BCIOnlinePlanner::startThread()
         SimAnnPlanner::startThread();
     mGraspTester->startPlanner();
 
-    mRefHand->setTransparency(0.7);
+    //mSeedHand->setTransparency(0.7);
     //this->mHand->moveToThread(this);
     //mHand->getWorld()->toggleCollisions(true, mHand);
     showClone(false);
     showSolutionClone(true);
     SimAnnPlanner::startPlanner();
-    setRenderType(RENDER_ALWAYS);
+    setRenderType(RENDER_LEGAL);
     setState(RUNNING);
     DBGA("Started on-line planner");
 }
@@ -236,12 +211,15 @@ BCIOnlinePlanner::startPlanner()
     createAndUseClone();
     //mHand->getWorld()->toggleCollisions(true, mHand);
 	DBGP("Starting on-line planner");
-    mRefHand->setTransparency(0.7);
+    mSeedHand->setTransparency(0.7);
     SimAnnPlanner::startPlanner();
     mGraspTester->startPlanner();
-    mGraspTester->setRenderType(RENDER_NEVER);
+    //mGraspTester->setRenderType(RENDER_NEVER);
+    mGraspTester->setRenderType(RENDER_ALWAYS);
+
     showClone(true);
     showSolutionClone(true);
+    mGraspTester->showClone(true);
 
     DBGA("Started on-line planner");
 }
@@ -253,9 +231,9 @@ BCIOnlinePlanner::pausePlanner()
 {
 	mGraspTester->pausePlanner();
 	msleep(1000);
-	//if (mSolutionClone) mSolutionClone->breakContacts();
 	SimAnnPlanner::pausePlanner();
 	showClone(false);
+    mGraspTester->showClone(false);
 }
 
 double
@@ -315,9 +293,8 @@ BCIOnlinePlanner::distanceOutsideApproach(const transf &solTran, const transf &h
 	if (angle < -M_PI) angle += 2*M_PI;
 	angle = fabs(angle) / max_angle ;
 	dist = dist / max_dist;
-	//DBGP("Angle " << angle << "; dist " << dist << std::endl);
-  double alignment_score = 1/angleMod;
-  //if (useAlignment) alignment_score = .001+(axis.z() * angleMod);
+    double alignment_score = 1/angleMod;
+    //if (useAlignment) alignment_score = .001+(axis.z() * angleMod);
   
     return f * std::max(angle, dist)/alignment_score;
 }
@@ -337,7 +314,7 @@ BCIOnlinePlanner::updateSolutionList()
 {
   QMutexLocker lock(&mListAttributeMutex);
   
-	transf stateTran, currentHandTran = mRefHand->getTran();
+    transf stateTran, currentHandTran = mSeedHand->getTran();
 
 	std::list<GraspPlanningState*>::iterator it;
 	//re-compute distance between current hand position and solutions. 
@@ -391,95 +368,93 @@ BCIOnlinePlanner::mainLoop()
 	clock_t time = clock();
 	double secs = (float)(time - lastCheck) / CLOCKS_PER_SEC;
 
-	if (secs < 0.2) {
-    if (secs < 0.1) {
-		//perform grasp planning all the time
-		graspLoop();
-		return;
-	}
-	lastCheck = time;
-
-	//every 0.2 seconds, perform the management part:
-
-	//set as a reference transform for the search the transform of the reference hand (presumably controlled by
-	//the user via a flock of birds)
-	mCurrentState->setRefTran( mRefHand->getTran(), false );
-	//this is to ensure this (potentially) illegal state does not make it into the best list
-	mCurrentState->setLegal(false);
-	//re-set the legal search range along the approach direction, so we don't search pointlessly inside the object
-	if ( mCurrentState->getVariable("dist")) {
-		Body *obj = mCurrentState->getObject();
-		double maxDist = 200;
-		mObjectDistance = mRefHand->getApproachDistance(obj,maxDist);
-		if (mObjectDistance > maxDist) mObjectDistance = maxDist;
-		mCurrentState->getPosition()->getVariable("dist")->setRange(-30,mObjectDistance);
-		//make sure the current value is within range; otherwise simm ann can hang...
-		mCurrentState->getPosition()->getVariable("dist")->setValue(mObjectDistance/2);
-		mCurrentState->getPosition()->getVariable("dist")->setJump(0.33);
-	}
-	
-	//is the planning part has produced new candidates, send them to the grasp tester
-	std::list<GraspPlanningState*>::iterator it = mCandidateList.begin();
-	while (it!=mCandidateList.end()) {
-		//while there is space
-		if ( mGraspTester->postCandidate(*it) ) {
-			DBGP("Candidate posted");
-			it = mCandidateList.erase(it);
-		} else {
-			DBGP("Tester thread buffer is full");
-			break;
-		}
-	}
-
-	//retrieve solutions from the tester
-	GraspPlanningState *s;
+    if (secs < 0.2)
     {
-    QMutexLocker lock(&mListAttributeMutex);
-	while ( (s = mGraspTester->popSolution()) != NULL ) {
-		//hack - this is not ideal, but so far I don't have a better solution of how to keep track
-		//of what hand is being used at what time
-		s->changeHand( mRefHand, true );//CHANGED! to mSolutionClone from mRefHand
-		mBestList.push_back(s);
-    //graspItGUI->getIVmgr()->emitAnalyzeGrasp(s);
-		if (mMarkSolutions) {
-			mHand->getWorld()->getIVRoot()->addChild( s->getIVRoot() );
-		}
-	}
-    }
-	updateSolutionList();
+        if (secs < 0.1)
+        {
+            //perform grasp planning all the time
+            graspLoop();
+            return;
+        }
 
-	//now shape the real hand.
-	//s = mInterface->updateHand(&mBestList);//this used to update the current hand to solutions that are found, no longer does this
-//	if (mBestList.size() != 0) showGrasp(0);//CHANGED! this replaces line above
-	//CHANGED! stuff below was taken out
-//	if (s) {
-//		if (mSolutionClone) s->execute(mSolutionClone);
-//		if (mMarkSolutions) s->setIVMarkerColor(1,1,0);
-//	}
+        lastCheck = time;
+
+        //every 0.2 seconds, perform the management part:
+        //set as a reference transform for the search the transform of the reference hand
+        mCurrentState->setRefTran( mSeedHand->getTran(), false );
+        //this is to ensure this (potentially) illegal state does not make it into the best list
+        mCurrentState->setLegal(false);
+        //re-set the legal search range along the approach direction, so we don't search pointlessly inside the object
+        if ( mCurrentState->getVariable("dist"))
+        {
+            Body *obj = mCurrentState->getObject();
+            double maxDist = 200;
+            mObjectDistance = mSeedHand->getApproachDistance(obj,maxDist);
+            if (mObjectDistance > maxDist) mObjectDistance = maxDist;
+            mCurrentState->getPosition()->getVariable("dist")->setRange(-30, mObjectDistance);
+            //make sure the current value is within range; otherwise simm ann can hang...
+            mCurrentState->getPosition()->getVariable("dist")->setValue(mObjectDistance/2);
+            mCurrentState->getPosition()->getVariable("dist")->setJump(0.33);
+        }
+
+        //is the planning part has produced new candidates, send them to the grasp tester
+        std::list<GraspPlanningState*>::iterator it = mCandidateList.begin();
+        while(it!=mCandidateList.end()) {
+            //while there is space
+            if ( mGraspTester->postCandidate(*it) )
+            {
+                DBGP("Candidate posted");
+                it = mCandidateList.erase(it);
+            }
+            else
+            {
+                DBGP("Tester thread buffer is full");
+                break;
+            }
+        }
+
+        //retrieve solutions from the tester
+        GraspPlanningState *s;
+        QMutexLocker lock(&mListAttributeMutex);
+        while ( (s = mGraspTester->popSolution()) != NULL )
+        {
+            //hack - this is not ideal, but so far I don't have a better solution of how to keep track
+            //of what hand is being used at what time
+            s->changeHand( mSeedHand, true );//CHANGED! to mSolutionClone from mRefHand
+            mBestList.push_back(s);
+            if (mMarkSolutions)
+            {
+                mHand->getWorld()->getIVRoot()->addChild( s->getIVRoot() );
+            }
+        }
+
+        updateSolutionList();
+
     }
 	DBGP("On-line main loop done");
-   }
+}
 
 
 
 void
 BCIOnlinePlanner::graspLoop()
 {
-	//DBGP("Grasp loop started");
-	//prepare input
 	GraspPlanningState *input = NULL;
 	if ( processInput() ) {
 		input = mTargetState;
 	}
 
+    std::cout << "In graspLoop" << std::endl;
 	//call simulated annealing
 	SimAnn::Result r = mSimAnn->iterate(mCurrentState,mEnergyCalculator,input);
 	mCurrentStep = mSimAnn->getCurrentStep();
 
-	if ( r == SimAnn::JUMP ) {
+    if ( r == SimAnn::JUMP )
+    {
 		assert(mCurrentState->isLegal());
 		//we have a new state from the SimAnn
-		if (mCurrentState->getEnergy() < 0 || mCurrentState->getEnergy() < mCurrentBest->getEnergy()) {
+        if (mCurrentState->getEnergy() < 0 || mCurrentState->getEnergy() < mCurrentBest->getEnergy())
+        {
 			DBGP("New candidate");
 			GraspPlanningState *insertState = new GraspPlanningState(mCurrentState);
 			//make solution independent of reference hand position
@@ -489,13 +464,16 @@ BCIOnlinePlanner::graspLoop()
 			if (insertState->getEnergy() < mCurrentBest->getEnergy()) {
 				mCurrentBest->copyFrom( insertState );
 			}
-			if (!addToListOfUniqueSolutions(insertState, &mCandidateList,0.4)) {
+            if (!addToListOfUniqueSolutions(insertState, &mCandidateList,0.4))
+            {
 				DBGP("Similar to old candidate");
 				delete insertState;
-			} else {
-				//graspItGUI->getIVmgr()->emitAnalyzeGrasp(mCandidateList.back());
+            }
+            else
+            {
 				mCandidateList.sort(GraspPlanningState::compareStates);//CHANGED! was compareStates
-				while (mCandidateList.size() > CANDIDATE_BUFFER_SIZE) {
+                while (mCandidateList.size() > CANDIDATE_BUFFER_SIZE)
+                {
 					delete mCandidateList.back();
 					mCandidateList.pop_back();
 				}
@@ -504,16 +482,13 @@ BCIOnlinePlanner::graspLoop()
 		}
 	}
 
-    if (mCurrentStep % 500 == 0)
+    std::cout << "mCurrentStep: " << mCurrentStep << std::endl;
+    if (mCurrentStep % 50 == 0)
     {
+        std::cout << "BCI ONLINE PLANNER EMITTING UPDATE" << std::endl;
         emit update();
-        render(mProgressClone);
-        //emit signalRender(this);        
+        //render(mHand);
     }
-
-
-
-	//DBGP("Grasp loop done");
 }
 
 
@@ -546,8 +521,8 @@ BCIOnlinePlanner::executeGrasp(int i)
 //	mRefHand->getIVRoot()->removeChild(mRefHand->getIVRoot()->getByName("curveX"));
 //	mRefHand->getIVRoot()->removeChild(mRefHand->getIVRoot()->getByName("curveZ"));
 	const GraspPlanningState *s = getGrasp(i);
-	s->execute(mRefHand);
-	mRefHand->setTransparency(0);
+    s->execute(mSeedHand);
+    mSeedHand->setTransparency(0);
 	showSolutionClone(false);
     BCIService::getInstance()->emitProcessWorldPlanner(i);
 }

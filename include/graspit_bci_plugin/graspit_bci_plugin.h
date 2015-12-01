@@ -1,6 +1,6 @@
 
-#ifndef _ROS_GRASPIT_INTERFACE_H_
-#define _ROS_GRASPIT_INTERFACE_H_
+#ifndef _ROS_GRASPIT_GraspitBCIPlugin_INTERFACE_H_
+#define _ROS_GRASPIT_GraspitBCIPlugin_INTERFACE_H_
 
 #include <map>
 
@@ -26,28 +26,14 @@ namespace db_planner
 class DatabaseManager;
 }
 class GraspitDBModel;
-class Pr2Gripper2010;
 class Body;
 class transf;
 class GraspableBody;
-class BCIWidgetManager;
 
 #include <ros/ros.h>
 
 #include <manipulation_msgs/Grasp.h>
 #include <manipulation_msgs/GraspPlanning.h>
-
-/*#include "graspit_ros_planning_msgs/LoadDatabaseModel.h"
-#include "graspit_ros_planning_msgs/LoadObstacle.h"
-#include "graspit_ros_planning_msgs/ClearBodies.h"
-#include "graspit_ros_planning_msgs/SimulateScan.h"
-#include "graspit_ros_planning_msgs/TestGrasp.h"
-#include "graspit_ros_planning_msgs/GenerateGrasp.h"
-#include "graspit_ros_planning_msgs/VerifyGrasp.h"
-
-#include "graspit_ros_planning_msgs/LoadLocalModel.h"
-#include "graspit_ros_planning_msgs/GenerateGrasps.h"
-*/
 
 namespace graspit_bci_plugin
 {
@@ -68,8 +54,6 @@ public:
     //! Node handle in the root namespace
     ros::NodeHandle *root_nh_;
 
-    BCIWidgetManager *bciWidgetManager;
-
     //! Inits ROS, but (for now) without passing any arguments
     GraspitBCIPlugin();
     //! Deletes the node handle and the db manager
@@ -82,4 +66,4 @@ public:
 
 }
 
-#endif
+#endif //_ROS_GRASPIT_GraspitBCIPlugin_INTERFACE_H_

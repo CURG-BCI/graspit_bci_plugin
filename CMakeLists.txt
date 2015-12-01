@@ -2,10 +2,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(graspit_bci_plugin)
 set(QT_QMAKE_EXECUTABLE /usr/bin/qmake-qt4)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+set(CMAKE_BUILD_TYPE Debug)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED graspit )
+find_package(catkin REQUIRED graspit actionlib roscpp roslib )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -106,7 +108,6 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 # All the project files
 set(SOURCES
     src/main.cpp
-    src/bci_widget.cpp
     src/graspit_bci_plugin.cpp
     src/main.cpp
     src/SoRing.cpp
@@ -120,15 +121,16 @@ set(SOURCES
     src/BCI/states/objectSelectionState.cpp
     src/BCI/states/graspSelectionState.cpp
     src/BCI/states/confirmationState.cpp
-    src/BCI/states/onlinePlanningState.cpp
     src/BCI/states/handRotationState.cpp
     src/BCI/states/activateRefinementState.cpp
     src/BCI/states/placementLocationSelectionState.cpp
-    src/BCI/states/objectRecognitionState.cpp
     src/BCI/states/executionState.cpp
     src/BCI/states/stoppedExecutionState.cpp
     src/BCI/bciService.cpp
     src/BCI/utils/worldElementTools.cpp
+    src/BCI/controller_scene/controller_scene_mgr.cpp
+    src/BCI/controller_scene/sprites.cpp
+    src/BCI/rosclient.cpp
     src/worldController.cpp
 
     ui/state_views/activeRefinementView.cpp
@@ -149,7 +151,6 @@ set(SOURCES
 )
 
 set(HEADERS
-    include/graspit_bci_plugin/bci_widget.h
     include/graspit_bci_plugin/graspit_bci_plugin.h
     include/SoRing.h
     include/BCI/utils/uiTools.h
@@ -163,18 +164,22 @@ set(HEADERS
     include/BCI/states/objectSelectionState.h
     include/BCI/states/placementLocationSelectionState.h
     include/BCI/states/confirmationState.h
-    include/BCI/states/onlinePlanningState.h
+
     include/BCI/states/handRotationState.h
     include/BCI/states/graspSelectionState.h
     include/BCI/states/activateRefinementState.h
-    include/BCI/states/objectRecognitionState.h
+
     include/BCI/states/executionState.h
     include/BCI/states/stoppedExecutionState.h
     include/BCI/bciService.h
     include/BCI/bciWorldView.h
+    include/BCI/controller_scene/controller_scene_mgr.h
+    include/BCI/controller_scene/sprites.h
     include/BCIOnlinePlanner.h
     include/pointers.dat
     include/worldController.h
+    include/BCI/rosclient.h
+
     ui/bciControlWindow.h
 
 )
@@ -182,6 +187,7 @@ set(HEADERS
 set(MOCS
 
     ui/bciControlWindow.h
+    include/BCI/bciWorldView.h
     ui/state_views/activeRefinementView.h
     ui/state_views/confirmationView.h
     ui/state_views/executionView.h
@@ -192,29 +198,26 @@ set(MOCS
     ui/state_views/placementLocationSelectionView.h
     ui/state_views/stoppedExecutionView.h
 
-    include/graspit_bci_plugin/bci_widget.h
-    include/graspit_bci_plugin/graspit_bci_plugin.h
-    include/BCI/utils/uiTools.h
-    include/BCI/utils/worldElementTools.h
-    include/BCI/utils/plannerTools.h
-    include/BCI/onlinePlannerController.h
-    include/BCI/state.h
-    include/BCI/handView.h
     include/BCI/qtWaitingSpinner.h
-    include/BCI/BCIStateMachine.h
+
+    include/BCI/bciService.h
+    include/BCI/onlinePlannerController.h
+    include/worldController.h
+
+    include/BCI/state.h
     include/BCI/states/objectSelectionState.h
     include/BCI/states/placementLocationSelectionState.h
     include/BCI/states/confirmationState.h
-    include/BCI/states/onlinePlanningState.h
+    include/BCI/states/activateRefinementState.h
     include/BCI/states/handRotationState.h
     include/BCI/states/graspSelectionState.h
-    include/BCI/states/objectRecognitionState.h
     include/BCI/states/executionState.h
     include/BCI/states/stoppedExecutionState.h
-    include/BCI/bciService.h
-    include/BCI/bciWorldView.h
-    include/BCIOnlinePlanner.h
-    include/worldController.h)
+
+    include/BCI/controller_scene/sprites.h
+    include/BCI/controller_scene/controller_scene_mgr.h
+    include/BCI/rosclient.h
+    )
 
 set(UIS
     ui/BCIControlWindowBase.ui

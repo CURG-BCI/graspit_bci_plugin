@@ -15,7 +15,7 @@ GraspSelectionView::GraspSelectionView(QWidget *parent) :
     nextGraspSpinner = new QtWaitingSpinner(10,7,3,15,ui->nextRenderArea);
 
     SoQtExaminerViewer *mainViewer = graspItGUI->getIVmgr()->getViewer();
-    Hand * h = OnlinePlannerController::getInstance()->getGraspDemoHand();
+    Hand * h = OnlinePlannerController::getInstance()->getSolutionHand();
     QFrame *parentWindow = this->ui->renderArea;
     QString viewName = QString("current best grasp");
     selectedHandView = new HandView(mainViewer,h,*parentWindow, viewName);
@@ -35,8 +35,8 @@ GraspSelectionView::GraspSelectionView(QWidget *parent) :
 
 void GraspSelectionView::showEvent(QShowEvent *)
 {
-    Hand * h = OnlinePlannerController::getInstance()->getGraspDemoHand();
-    selectedHandView->updateGeom(*OnlinePlannerController::getInstance()->getGraspDemoHand());
+    Hand * h = OnlinePlannerController::getInstance()->getSolutionHand();
+    selectedHandView->updateGeom(*OnlinePlannerController::getInstance()->getSolutionHand());
     showSelectedGrasp(h,NULL);
     showNextGrasp(h, NULL);
 }

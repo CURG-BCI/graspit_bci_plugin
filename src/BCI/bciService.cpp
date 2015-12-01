@@ -1,6 +1,33 @@
 #include "BCI/bciService.h"
 #include "BCI/BCIStateMachine.h"
 
+#include <Inventor/nodes/SoSeparator.h>
+#include <Inventor/nodes/SoPerspectiveCamera.h>
+#include <Inventor/nodes/SoAnnotation.h>
+#include <Inventor/nodes/SoLight.h>
+#include <Inventor/nodes/SoLightModel.h>
+#include <Inventor/nodes/SoCallback.h>
+#include <Inventor/elements/SoCacheElement.h>
+#include <Inventor/nodes/SoCallback.h>
+#include <Inventor/nodes/SoRotation.h>
+#include <Inventor/nodes/SoRotationXYZ.h>
+
+#include <Inventor/actions/SoGLRenderAction.h>
+#include <QtOpenGL/QGLWidget>
+#include <QPushButton>
+#include <QDialog>
+#include <QtGui>
+
+void
+disableZCulling(void * userdata, SoAction * action)
+{
+    if (action->isOfType(SoGLRenderAction::getClassTypeId())) {
+      glDisable(GL_DEPTH_TEST);
+      glDisable(GL_CULL_FACE);
+      SoCacheElement::invalidate(action->getState());
+  }
+}
+
 BCIService * BCIService::bciServiceInstance = NULL;
 
 BCIService* BCIService::getInstance()
@@ -13,45 +40,138 @@ BCIService* BCIService::getInstance()
     return bciServiceInstance;
 }
 
-BCIService::BCIService()
+BCIService::BCIService():QObject()
 {
 
 }
 
 void BCIService::init(BCIControlWindow *bciControlWindow)
 {
-    //builds and starts a qtStateMachine
+    ROS_INFO("Initing BCI Service");
+    bciRenderArea = bciControlWindow->bciWorldView->renderArea;
+
+    QPushButton * spinButton = new QPushButton("Spin");
+    QPushButton * slowButton = new QPushButton("Move Slow");
+    QPushButton * fastButton = new QPushButton("Move Fast");
+
+    spinButton->setDefault(true);
+    slowButton->setDefault(true);
+    fastButton->setDefault(true);
+
+    QDialogButtonBox *cursorControlBox = new QDialogButtonBox(Qt::Vertical);
+    cursorControlBox->setCaption(QString("Cursor Control Box"));
+
+    cursorControlBox->addButton(spinButton, QDialogButtonBox::ActionRole);
+    cursorControlBox->addButton(slowButton, QDialogButtonBox::ActionRole);
+    cursorControlBox->addButton(fastButton, QDialogButtonBox::ActionRole);
+    cursorControlBox->resize(QSize(200,100));
+    cursorControlBox->show();
+
+    QObject::connect(spinButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState0()));
+    QObject::connect(slowButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState1()));
+    QObject::connect(fastButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState2()));
+
+    timer = new QTimer;
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(updateControlScene()));
+    timer->start(1000 / 30);
+
+    QObject::connect(this, SIGNAL(goToStateLow()), this, SLOT(updateControlSceneState0()));
+    QObject::connect(this, SIGNAL(goToStateMedium()), this, SLOT(updateControlSceneState1()));
+    QObject::connect(this, SIGNAL(goToStateHigh()), this, SLOT(updateControlSceneState2()));
+
+    rosClient = new RosClient;
+    SoRotationXYZ *imageRot = new SoRotationXYZ;
+    imageRot->angle = M_PI/2;
+    imageRot->axis = SoRotationXYZ::X;
+
+    SoAnnotation *hudSeparator = new SoAnnotation;
+    hudSeparator->renderCaching = SoSeparator::OFF;
+    hudSeparator->setName("hud");
+    graspItGUI->getIVmgr()->getWorld()->getIVRoot()->addChild(imageRot);// ;sceneRoot->addChild(imageRot);
+    graspItGUI->getIVmgr()->getWorld()->getIVRoot()->addChild(hudSeparator);//sceneRoot->addChild(hudSeparator);
+    pcam = new SoOrthographicCamera;
+    pcam->position = SbVec3f(0, 0, 10);
+    pcam->nearDistance = 0.1;
+    pcam->farDistance = 11;
+
+    hudSeparator->addChild(pcam);
+    SoLightModel * hudLightModel = new SoLightModel;
+    hudLightModel->model=SoLightModel::BASE_COLOR;
+    hudSeparator->addChild(hudLightModel);
+    SoCallback * disableZTestNode = new SoCallback();
+    disableZTestNode->setCallback(disableZCulling);
+    hudSeparator->addChild(disableZTestNode);
+    csm = new ControllerSceneManager(hudSeparator);
+
     BCIStateMachine *bciStateMachine = new BCIStateMachine(bciControlWindow,this);
+    connect(this, SIGNAL(plannerUpdated()), bciControlWindow, SLOT(redraw()));
+    connect(OnlinePlannerController::getInstance(), SIGNAL(render()), bciControlWindow, SLOT(redraw()));
     bciStateMachine->start();
+
+    ROS_INFO("Finished initing BCI Service");
+}
+
+void BCIService::updateControlSceneState0()
+{
+    std::cout << "csm->setState(0)" << std::endl;
+    csm->setState(0);
+}
+void BCIService::updateControlSceneState1()
+{
+    std::cout << "csm->setState(1)" << std::endl;
+    csm->setState(1);
+}
+void BCIService::updateControlSceneState2()
+{
+    std::cout << "csm->setState(2)" << std::endl;
+    csm->setState(2);
+}
+
+void BCIService::updateControlScene()
+{
+    csm->update();
+    bciRenderArea->setViewportRegion(pcam->getViewportBounds(bciRenderArea->getViewportRegion()));
 }
 
 
+bool BCIService::runObjectRetreival(QObject * callbackReceiver,
+                                    const char * slot)
+{
+    DBGA("BCIService::runObjectRetreival");
+    rosClient->sendObjectRecognitionRequest();
+    return true;
+}
 
-
-void BCIService::runObjectRecognition(QObject * callbackReceiver ,
+bool BCIService::runObjectRecognition(QObject * callbackReceiver ,
                                       const char * slot)
 {
-    //rosServer.runObjectRecognition(callbackReceiver, slot);
+    DBGA("BCIService::runObjectRecognition");
+    rosClient->sendObjectRecognitionRequest();
+    return true;
 }
 
-void BCIService::getCameraOrigin(QObject * callbackReceiver, const char * slot)
+
+bool BCIService::getCameraOrigin(QObject * callbackReceiver, const char * slot)
 {
-    //rosServer.getCameraOrigin(callbackReceiver, slot);
+    rosClient->sendGetCameraOriginRequest();
+    return true;
 }
 
 
-void BCIService::checkGraspReachability(const GraspPlanningState * state,
+bool BCIService::checkGraspReachability(const GraspPlanningState * state,
                                         QObject * callbackReceiver,
                                         const char * slot)
 {
-    //rosServer.checkGraspReachability(state, callbackReceiver, slot);
+    rosClient->sendCheckGraspReachabilityRequest(state);
+    return true;
 }
- 
-void BCIService::executeGrasp(const GraspPlanningState * gps, 
-			      QObject * callbackReceiver,
-			      const char * slot)
+
+bool BCIService::executeGrasp(const GraspPlanningState * gps,
+                  QObject * callbackReceiver,
+                  const char * slot)
 {
-    //rosServer.executeGrasp(gps);
+    rosClient->executeGrasp(gps);
+    return true;
 }
 
 

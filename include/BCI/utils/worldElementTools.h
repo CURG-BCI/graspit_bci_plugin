@@ -69,6 +69,7 @@ void resetHandCollisions(Hand * h, bool setting, std::vector<bool> & collisionSt
 //! Realigns the hand so that it is facing the object and at a reasonable distance
 void realignHand(Hand * h);
 
+transf getCenterOfRotation(DynamicBody *b);
 
 void setNonLinkCollisions(Hand * h, bool on);
 }
