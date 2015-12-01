@@ -21,7 +21,7 @@ public slots:
     virtual void onExit(QEvent *e);
     virtual void updateView();
 
-    void emit_goToConfirmationState();
+    void emit_returnToGraspSelectionState();
 
     void setTimerRunning();
 

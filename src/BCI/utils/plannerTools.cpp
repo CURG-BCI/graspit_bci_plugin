@@ -92,7 +92,7 @@ namespace bci_experiment
 
         void importGraspsFromDBMgr( BCIOnlinePlanner * mPlanner, db_planner::DatabaseManager * mDbMgr)
         {
-            Hand*mHand = mPlanner->getRefHand();
+            Hand*mHand = mPlanner->getSeedHand();
 
             db_planner::Model *m=new db_planner::Model;
             m->SetModelName(mHand->getGrasp()->getObject()->getName().toStdString());

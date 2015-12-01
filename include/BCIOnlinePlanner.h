@@ -126,7 +126,7 @@ public:
 
     ~BCIOnlinePlanner();
 	virtual PlannerType getType(){return PLANNER_ONLINE;}
-    virtual Hand * getRefHand(){return mSeedHand;}
+    virtual Hand * getSeedHand(){return mSeedHand;}
 
     virtual void startPlanner();
     virtual void pausePlanner();

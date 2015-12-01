@@ -40,8 +40,6 @@ void ObjectSelectionState::onEntry(QEvent *e)
     OnlinePlannerController::getInstance()->setSceneLocked(false);
     OnlinePlannerController::getInstance()->showRobots(false);
 
-    OnlinePlannerController::getInstance()->blockGraspAnalysis(false);
-
     csm->clearTargets();
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
@@ -69,11 +67,16 @@ void ObjectSelectionState::onExit(QEvent *e)
 {
     WorldController::getInstance()->unhighlightAllBodies();
     OnlinePlannerController::getInstance()->setSceneLocked(true);
+    OnlinePlannerController::getInstance()->setPlannerToReady();
+    OnlinePlannerController::getInstance()->startGraspReachabilityAnalysis();
+
     objectSelectionView->hide();
 
     OnlinePlannerController::getInstance()->showRobots(true);
     csm->clearTargets();
     std::cout << "Finished onExit of Object Selection State." << std::endl;
+
+
 }
 
 

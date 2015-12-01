@@ -26,7 +26,6 @@ void ActivateRefinementState::onEntry(QEvent *e)
     bciControlWindow->currentState->setText("Refinement State");
     OnlinePlannerController::getInstance()->setPlannerToRunning();
     OnlinePlannerController::getInstance()->startTimedUpdate();
-    OnlinePlannerController::getInstance()->blockGraspAnalysis(false);
 
     csm->clearTargets();
 
@@ -42,7 +41,7 @@ void ActivateRefinementState::onEntry(QEvent *e)
 
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onRotateHandLat()));
     QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(onRotateHandLong()));
-    QObject::connect(t4.get(), SIGNAL(hit()), this, SLOT(emit_goToConfirmationState()));
+    QObject::connect(t4.get(), SIGNAL(hit()), this, SLOT(emit_returnToGraspSelectionState()));
 
     csm->addTarget(t2);
     csm->addTarget(t3);
@@ -62,11 +61,11 @@ void ActivateRefinementState::onExit(QEvent *e)
     activeRefinementView->hide();
     OnlinePlannerController::getInstance()->setPlannerToPaused();
     OnlinePlannerController::getInstance()->stopTimedUpdate();
-    OnlinePlannerController::getInstance()->blockGraspAnalysis(true);
+    OnlinePlannerController::getInstance()->destroyGuides();
 }
 
 
-void ActivateRefinementState::emit_goToConfirmationState()
+void ActivateRefinementState::emit_returnToGraspSelectionState()
 {
     BCIService::getInstance()->emitGoToNextState1();
 }
@@ -76,14 +75,8 @@ void ActivateRefinementState::updateView()
 {
     OnlinePlannerController::getInstance()->sortGrasps();
     const GraspPlanningState *bestGrasp = OnlinePlannerController::getInstance()->getGrasp(0);
-    //const GraspPlanningState *bestGrasp = OnlinePlannerController::getInstance()->getCurrentGrasp();
     const GraspPlanningState *nextGrasp = OnlinePlannerController::getInstance()->getNextGrasp();
     Hand *hand = OnlinePlannerController::getInstance()->getSolutionHand();
-    //const GraspPlanningState *nextGrasp = bestGrasp;
-    if(OnlinePlannerController::getInstance()->getNumGrasps())
-    {
-        nextGrasp = OnlinePlannerController::getInstance()->getGrasp(1);
-    }
 
     if(nextGrasp)
     {

@@ -9,8 +9,11 @@
 #include <boost/thread.hpp>
 using bci_experiment::world_element_tools::getWorld;
 
+class GraspPlanningState;
+
 namespace bci_experiment
 {
+
 
 bool isMainThread(QObject * obj)
 {
@@ -61,44 +64,43 @@ OnlinePlannerController::OnlinePlannerController(QObject *parent) :
     graspDemonstrationHand(NULL),
     renderPending(false)
 {
-    currentPlanner = planner_tools::createDefaultPlanner();
-    //connect(currentPlanner, SIGNAL(update()), this, SLOT(emitRender()), Qt::QueuedConnection);
+    mPlanner = planner_tools::createDefaultPlanner();
+    mReachabilityAnalyzer = new ReachabilityAnalyzer();
 }
-
-//    void OnlinePlannerController::connectPlannerUpdate(bool enableConnection)
-//    {
-//        if(enableConnection)
-//        {
-//            connect(currentPlanner, SIGNAL(update()), this, SLOT(plannerTimedUpdate()), Qt::QueuedConnection);
-//        }
-//        else
-//        {
-//            if(!disconnect(currentPlanner, SIGNAL(update()), this, SLOT(plannerTimedUpdate())))
-//                DBGA("Failed to disconnect planner");
-//        }
-//    }
 
 bool OnlinePlannerController::analyzeApproachDir()
 {
-    Hand * refHand(currentPlanner->getRefHand());
+    Hand * refHand(mPlanner->getSeedHand());
     GraspPlanningState * graspPlanningState = new GraspPlanningState(refHand);
 
     graspPlanningState->setPostureType(POSE_DOF, false);
     graspPlanningState->saveCurrentHandState();
-    //graspItGUI->getIVmgr()->emitAnalyzeApproachDir(graspPlanningState);
     return true;
 }
 
 
 void OnlinePlannerController::showRobots(bool show)
 {
-    if(currentPlanner)
+    if(mPlanner)
     {
-        currentPlanner->getHand()->setRenderGeometry(show);
-        currentPlanner->showClone(show);
-        currentPlanner->showSolutionClone(show);
+        mPlanner->getHand()->setRenderGeometry(show);
+        mPlanner->showClone(show);
+        mPlanner->showSolutionClone(show);
         getSolutionHand()->setRenderGeometry(show);
     }
+}
+
+void OnlinePlannerController::showSeedHand(bool show)
+{
+    mPlanner->getSeedHand()->setRenderGeometry(show);
+}
+void OnlinePlannerController::showMHand(bool show)
+{
+    mPlanner->getHand()->setRenderGeometry(show);
+}
+void OnlinePlannerController::showSolutionHand(bool show)
+{
+    mPlanner->getSolutionClone()->setRenderGeometry(show);
 }
 
 void
@@ -107,17 +109,15 @@ OnlinePlannerController::plannerTimedUpdate()
     /* If there is a planner and the planner has found some solutions
         * do some tests.
         */
-    if(currentPlanner->getListSize())
+    if(mPlanner->getListSize())
     {
         // Notify someone to analyze the current approach direction
         //analyzeApproachDir();
         //analyzeNextGrasp();
         // If the planner is itself not updating the order of the solution list
-        if(!currentPlanner->isRunning())
+        if(!mPlanner->isRunning())
         {
-            currentPlanner->showGrasp(0);
-            // We should trigger a redraw here somehow of the grasp views
-            //updateResults(true, false);
+            mPlanner->showGrasp(0);
         }
     }
     BCIService::getInstance()->onPlannerUpdated();
@@ -135,15 +135,15 @@ void OnlinePlannerController::initializeDbInterface()
     if (!mDbMgr)
     {
         GraspitDBModelAllocator *graspitDBModelAllocator = new GraspitDBModelAllocator();
-        GraspitDBGraspAllocator *graspitDBGraspAllocator = new GraspitDBGraspAllocator(currentPlanner->getHand());
+        GraspitDBGraspAllocator *graspitDBGraspAllocator = new GraspitDBGraspAllocator(mPlanner->getHand());
         mDbMgr = new db_planner::SqlDatabaseManager("tonga.cs.columbia.edu", 5432,
                                                     "postgres","roboticslab","armdb",graspitDBModelAllocator,graspitDBGraspAllocator);
 
     }
 
-    if(currentPlanner->getHand())
+    if(mPlanner->getHand())
     {
-        planner_tools::importGraspsFromDBMgr(currentPlanner, mDbMgr);
+        planner_tools::importGraspsFromDBMgr(mPlanner, mDbMgr);
         std::cout << "Sucessfully imported grasps from dbmgr." << std::endl;
     }
 }
@@ -154,29 +154,29 @@ void OnlinePlannerController::initializeDbInterface()
 void OnlinePlannerController::initializeTarget()
 {
     setAllowedPlanningCollisions();
-    bool targetsOff = getWorld()->collisionsAreOff(currentPlanner->getHand(), currentPlanner->getHand()->getGrasp()->getObject());
+    bool targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
     disableShowContacts();
 
     //start planner
-    targetsOff = getWorld()->collisionsAreOff(currentPlanner->getHand(), currentPlanner->getHand()->getGrasp()->getObject());
+    targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
 
-    currentPlanner->resetPlanner();
-    targetsOff = getWorld()->collisionsAreOff(currentPlanner->getHand(), currentPlanner->getHand()->getGrasp()->getObject());
+    mPlanner->resetPlanner();
+    targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
 
     // Download grasps from database and load them in to the planner
     initializeDbInterface();
-    targetsOff = getWorld()->collisionsAreOff(currentPlanner->getHand(), currentPlanner->getHand()->getGrasp()->getObject());
-    currentPlanner->updateSolutionList();
-    targetsOff = getWorld()->collisionsAreOff(currentPlanner->getHand(), currentPlanner->getHand()->getGrasp()->getObject());
+    targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
+    mPlanner->updateSolutionList();
+    targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
     // Set the hand to it's highest ranked grasp
-    if(currentPlanner->getListSize())
+    if(mPlanner->getListSize())
     {
-        if(!currentPlanner->getGrasp(0)->execute(currentPlanner->getHand()))
-            currentPlanner->getGrasp(0)->execute(currentPlanner->getRefHand());
+        if(!mPlanner->getGrasp(0)->execute(mPlanner->getHand()))
+            mPlanner->getGrasp(0)->execute(mPlanner->getSeedHand());
         else
-            currentPlanner->getRefHand()->setTran(currentPlanner->getHand()->getTran());
+            mPlanner->getSeedHand()->setTran(mPlanner->getHand()->getTran());
     }
-    targetsOff = getWorld()->collisionsAreOff(currentPlanner->getHand(), currentPlanner->getHand()->getGrasp()->getObject());
+    targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
     // Realign the hand with respect to the object, moving the hand back to its
     // pregrasp pose. Use the real hand because it's collisions are set appropriately
 
@@ -219,13 +219,13 @@ void OnlinePlannerController::setCurrentTarget(GraspableBody *gb)
     {
         currentTarget = gb;
 
-        currentPlanner->getTargetState()->setObject(currentTarget);
-        currentPlanner->setModelState(currentPlanner->getTargetState());
+        mPlanner->getTargetState()->setObject(currentTarget);
+        mPlanner->setModelState(mPlanner->getTargetState());
 
-        currentPlanner->getRefHand()->getGrasp()->setObjectNoUpdate(currentTarget);
-        currentPlanner->getHand()->getGrasp()->setObjectNoUpdate(currentTarget);
+        mPlanner->getSeedHand()->getGrasp()->setObjectNoUpdate(currentTarget);
+        mPlanner->getHand()->getGrasp()->setObjectNoUpdate(currentTarget);
         OnlinePlannerController::getSolutionHand()->getGrasp()->setObjectNoUpdate(currentTarget);
-        currentPlanner->getGraspTester()->getHand()->getGrasp()->setObjectNoUpdate(currentTarget);
+        mPlanner->getGraspTester()->getHand()->getGrasp()->setObjectNoUpdate(currentTarget);
 
         connect(currentTarget, SIGNAL(destroyed()), this, SLOT(targetRemoved()), Qt::QueuedConnection);
     }
@@ -238,7 +238,7 @@ void OnlinePlannerController::drawGuides()
     if(!getHand() || !getCurrentTarget())
         DBGA("OnlinePlannerController::drawGuides::Error - Tried to draw guides with no hand or no target");
 
-    ui_tools::updateCircularGuides(currentPlanner->getRefHand(), getCurrentTarget());
+    ui_tools::updateCircularGuides(mPlanner->getSeedHand(), getCurrentTarget());
 }
 
 void OnlinePlannerController::destroyGuides()
@@ -248,133 +248,159 @@ void OnlinePlannerController::destroyGuides()
 
 void OnlinePlannerController::alignHand()
 {
-    if(!getHand() || !getCurrentTarget())
-    {
-        DBGA("OnlinePlannerController::alignHand::Error - Tried to align hand with no hand or no target");
-    }
+    Hand * alignedHand = mPlanner->getSeedHand();
+    OnlinePlannerController::getInstance()->getCurrentGrasp()->execute(alignedHand);
 
-    Hand * alignedHand = getHand();
-    if(currentPlanner)
-    {
-        alignedHand = currentPlanner->getRefHand();
-    }
     world_element_tools::realignHand(alignedHand);
-    drawGuides();
 }
 
 bool OnlinePlannerController::setPlannerToStopped()
 {
-    currentPlanner->stopPlanner();
+    DBGA("setPlannerToStopped");
+    mPlanner->stopPlanner();
     return true;
 }
 
 bool OnlinePlannerController::setPlannerToPaused()
 {
-    currentPlanner->pausePlanner();
+    DBGA("setPlannerToPaused");
+    mPlanner->pausePlanner();
     return true;
 }
 
 bool OnlinePlannerController::setPlannerTargets()
 {
     // Set the target for the planner state
-    currentPlanner->getTargetState()->setObject(currentTarget);
-    currentPlanner->setModelState(currentPlanner->getTargetState());
+    mPlanner->getTargetState()->setObject(currentTarget);
+    mPlanner->setModelState(mPlanner->getTargetState());
 
-    currentPlanner->getRefHand()->getGrasp()->setObjectNoUpdate(currentTarget);
-    currentPlanner->getHand()->getGrasp()->setObjectNoUpdate(currentTarget);
+    mPlanner->getSeedHand()->getGrasp()->setObjectNoUpdate(currentTarget);
+    mPlanner->getHand()->getGrasp()->setObjectNoUpdate(currentTarget);
     OnlinePlannerController::getSolutionHand()->getGrasp()->setObjectNoUpdate(currentTarget);
-    currentPlanner->getGraspTester()->getHand()->getGrasp()->setObjectNoUpdate(currentTarget);
+    mPlanner->getGraspTester()->getHand()->getGrasp()->setObjectNoUpdate(currentTarget);
 }
 
 bool OnlinePlannerController::setAllowedPlanningCollisions()
 {
 
     world_element_tools::disableTableObjectCollisions();
-    getWorld()->toggleCollisions(false, currentPlanner->getRefHand());
-    world_element_tools::setNonLinkCollisions(currentPlanner->getHand(), true);
-    world_element_tools::setNonLinkCollisions(currentPlanner->getGraspTester()->getHand(), true);
+    getWorld()->toggleCollisions(false, mPlanner->getSeedHand());
+    world_element_tools::setNonLinkCollisions(mPlanner->getHand(), true);
+    world_element_tools::setNonLinkCollisions(mPlanner->getGraspTester()->getHand(), true);
     return true;
 }
 
-
-bool OnlinePlannerController::setPlannerToRunning()
+bool OnlinePlannerController::plannerCanBeSetToRunning()
 {
-    if(currentTarget != currentPlanner->getTargetState()->getObject() ||
-            currentPlanner->getState() == INIT)
-        setPlannerToReady();
-
-    if(currentPlanner->getState()==READY)
+    if(mPlanner->getState()!=READY)
     {
-        currentPlanner->startThread();
-        //plannerTimedUpdate();
+        DBGA("OnlinePlannerController::setPlannerToReady: ERROR mPlanner->getState() != READY");
+        return false;
     }
     return true;
 }
 
-//puts planner in ready state
-bool OnlinePlannerController::setPlannerToReady()
+void OnlinePlannerController::setPlannerToRunning()
 {
-    if(currentTarget && (!mDbMgr ||
-                         currentPlanner->getState() != READY ||
-                         currentTarget != currentPlanner->getHand()->getGrasp()->getObject() ||
-                         currentPlanner->getTargetState()->getObject() != currentTarget))
+    if(plannerCanBeSetToRunning())
+    {
+        mPlanner->startThread();
+    }
+    drawGuides();
+}
+
+bool OnlinePlannerController::plannerCanBeSetToReady()
+{
+    if(!currentTarget)
+    {
+        DBGA("OnlinePlannerController::setPlannerToReady: ERROR !currentTarget");
+        return false;
+    }
+    if(mDbMgr)
+    {
+        DBGA("OnlinePlannerController::setPlannerToReady: ERROR mDbMgr");
+        return false;
+    }
+    if(mPlanner->getState() == READY)
+    {
+        DBGA("OnlinePlannerController::setPlannerToReady: ERROR mPlanner->getState() == READY");
+        return false;
+    }
+    if (currentTarget != mPlanner->getHand()->getGrasp()->getObject())
+    {
+        DBGA("OnlinePlannerController::setPlannerToReady: ERROR currentTarget != mPlanner->getHand()->getGrasp()->getObject()");
+        return false;
+    }
+    if(mPlanner->getTargetState()->getObject() != currentTarget)
+    {
+        DBGA("OnlinePlannerController::setPlannerToReady: ERROR mPlanner->getTargetState()->getObject() != currentTarget");
+        return false;
+    }
+    return true;
+}
+
+
+void OnlinePlannerController::setPlannerToReady()
+{
+    DBGA("OnlinePlannerController::setPlannerToReady");
+
+    if(plannerCanBeSetToReady())
     {
         initializeTarget();
-        getWorld()->collisionsAreOff(currentPlanner->getHand(), currentPlanner->getHand()->getGrasp()->getObject());
+        getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
     }
     else
     {
-        DBGA("OnlinePlannerController::setPlannerToReady: ERROR Attempted to set planner to ready without valid target");
+        DBGA("OnlinePlannerController::setPlannerToReady: ERROR Attempted to set planner to ready");
     }
-    return true;
 }
 
 void OnlinePlannerController::rotateHandLong()
 {
     float stepSize = M_PI/100.0;
     transf offsetTrans = translate_transf(vec3(0,0,-10));
-    transf robotTran = currentPlanner->getRefHand()->getTran(); //*offsetTrans;
+    transf robotTran = mPlanner->getSeedHand()->getTran(); //*offsetTrans;
     transf objectTran = world_element_tools::getCenterOfRotation(currentTarget);
 
 
     transf rotationTrans = (robotTran * objectTran.inverse()) * transf(Quaternion(stepSize, vec3::Z), vec3(0,0,0));
     transf newTran = rotationTrans *  objectTran;
-    currentPlanner->getRefHand()->moveTo(newTran, WorldElement::ONE_STEP, WorldElement::ONE_STEP);
+    mPlanner->getSeedHand()->moveTo(newTran, WorldElement::ONE_STEP, WorldElement::ONE_STEP);
     drawGuides();
 }
 
 void OnlinePlannerController::rotateHandLat()
 {
     float stepSize = M_PI/100.0;
-    transf offsetTrans = translate_transf(vec3(0,0,-10));
-    transf robotTran = currentPlanner->getRefHand()->getTran();//*offsetTrans;
+
+    transf robotTran = mPlanner->getSeedHand()->getTran();//*offsetTrans;
     transf objectTran = world_element_tools::getCenterOfRotation(currentTarget);
 
 
     transf rotationTrans = (robotTran * objectTran.inverse()) * transf(Quaternion(stepSize, vec3::X), vec3(0,0,0));
     transf newTran = rotationTrans *  objectTran;
-    currentPlanner->getRefHand()->moveTo(newTran, WorldElement::ONE_STEP, WorldElement::ONE_STEP);
+    mPlanner->getSeedHand()->moveTo(newTran, WorldElement::ONE_STEP, WorldElement::ONE_STEP);
     drawGuides();
 }
 
 void OnlinePlannerController::incrementGraspIndex()
 {
-    if (currentPlanner->getListSize()==0)
+    if (mPlanner->getListSize()==0)
     {
         return;
     }
-    currentGraspIndex = (currentGraspIndex + 1)%(currentPlanner->getListSize());
+    currentGraspIndex = (currentGraspIndex + 1)%(mPlanner->getListSize());
 }
 
 Hand * OnlinePlannerController::getSeedHand()
 {
-    return currentPlanner->getRefHand();
+    return mPlanner->getSeedHand();
 }
 
 
 Hand * OnlinePlannerController::getHand()
 {
-    return currentPlanner->getHand();
+    return mPlanner->getHand();
 }
 
 bool isCloneOf(Robot * r1, Robot * r2)
@@ -384,33 +410,33 @@ bool isCloneOf(Robot * r1, Robot * r2)
 
 Hand * OnlinePlannerController::getSolutionHand()
 {
-    if (!currentPlanner)
+    if (!mPlanner)
     {
         DBGA("OnlinePlannerController::getGraspDemoHand:Attempted to get demonstration hand with no planner set");
         return NULL;
     }
-    return currentPlanner->getSolutionClone();
+    return mPlanner->getSolutionClone();
 }
 
 const GraspPlanningState * OnlinePlannerController::getGrasp(int index)
 {
-    if(currentPlanner->getListSize() > 0 && index < currentPlanner->getListSize())
+    if(mPlanner->getListSize() > 0 && index < mPlanner->getListSize())
     {
-        return currentPlanner->getGrasp(index);
+        return mPlanner->getGrasp(index);
     }
     return NULL;
-
 }
 
 void OnlinePlannerController::resetGraspIndex()
 {
+    DBGA("OnlinePlannerController::resetGraspIndex");
     currentGraspIndex = 0;
 }
 
 unsigned int OnlinePlannerController::getNumGrasps()
 {
-    if (currentPlanner)
-        return currentPlanner->getListSize();
+    if (mPlanner)
+        return mPlanner->getListSize();
     return 0;
 }
 
@@ -422,7 +448,7 @@ const GraspPlanningState * OnlinePlannerController::getCurrentGrasp()
 const GraspPlanningState * OnlinePlannerController::getNextGrasp()
 {
     int index = currentGraspIndex + 1;
-    if (index >= currentPlanner->getListSize())
+    if (index >= mPlanner->getListSize())
     {
         index = 0;
     }
@@ -452,17 +478,31 @@ bool OnlinePlannerController::toggleTimedUpdate()
     return timedUpdateRunning;
 }
 
-void OnlinePlannerController::updateGraspReachability(int graspId, bool isReachable)
+bool OnlinePlannerController::startGraspReachabilityAnalysis()
 {
-    if(isAnalysisBlocked())
+    DBGA("OnlinePlannerController::startGraspReachabilityAnalysis");
+    mReachabilityAnalyzer->setIsRunning(true);
+    analyzeNextGraspReachability();
+}
+
+bool OnlinePlannerController::stopGraspReachabilityAnalysis()
+{
+    DBGA("OnlinePlannerController::stopGraspReachabilityAnalysis");
+    mReachabilityAnalyzer->setIsRunning(false);
+}
+
+void OnlinePlannerController::analyzeNextGraspReachabilityCallback(int graspId, bool isReachable)
+{
+    if(!mReachabilityAnalyzer->isRunning())
         return;
 
     QString attribute = QString("testResult");
 
-    boost::mutex::scoped_lock lock(currentPlanner->mListAttributeMutex);
-    for(int i = 0; i < currentPlanner->getListSize(); i++ )
+    boost::mutex::scoped_lock lock(mPlanner->mListAttributeMutex);
+
+    for(int i = 0; i < mPlanner->getListSize(); i++ )
     {
-        const GraspPlanningState * gps = currentPlanner->getGrasp(i);
+        const GraspPlanningState * gps = mPlanner->getGrasp(i);
         if (gps->getAttribute("graspId") == graspId)
         {
 
@@ -476,26 +516,26 @@ void OnlinePlannerController::updateGraspReachability(int graspId, bool isReacha
                 reachabilityScore = -1;
             }
 
-            currentPlanner->setGraspAttribute(i, attribute, reachabilityScore);
+            mPlanner->setGraspAttribute(i, attribute, reachabilityScore);
             std::cout << "SetGraspAttribute graspId " << graspId << " attributeString: " << reachabilityScore << "\n";
             break;
         }
     }
 
-    analyzeNextGrasp();
+    analyzeNextGraspReachability();
 }
 
-void OnlinePlannerController::analyzeNextGrasp()
+void OnlinePlannerController::analyzeNextGraspReachability()
 {
-    DBGA("Analyzing next grasp");
+    DBGA("OnlinePlannerController::analyzeNextGraspReachability");
 
-    if(isAnalysisBlocked())
+    if(!mReachabilityAnalyzer->isRunning())
     {
         DBGA("OnlinePlannerController:: Grasp analysis blocked");
         return;
     }
 
-    if(!currentPlanner)
+    if(!mPlanner)
     {
         DBGA("OnlinePlannerController::analyzeNextGrasp:: Attempted to analyze grasp with no planner set");
         return;
@@ -507,7 +547,7 @@ void OnlinePlannerController::analyzeNextGrasp()
     const GraspPlanningState * graspToEvaluate = NULL;
     // Lock planner's grasp list
     {
-        boost::mutex::scoped_lock lock(currentPlanner->mListAttributeMutex, boost::try_to_lock);
+        boost::mutex::scoped_lock lock(mPlanner->mListAttributeMutex, boost::try_to_lock);
         if(lock)
         {
             DBGA("Failed to take lock.");
@@ -520,10 +560,10 @@ void OnlinePlannerController::analyzeNextGrasp()
         //Ordering of grasps may have changed based on the demonstrated hand pose,
         //so we must examine all grasps to ensure that none of them are currently being evaluated.
 
-        for(int i = 0; i < currentPlanner->getListSize(); ++i)
+        for(int i = 0; i < mPlanner->getListSize(); ++i)
         {
             //If a grasp hasn't been evaluated
-            const GraspPlanningState * gs = currentPlanner->getGrasp(i);
+            const GraspPlanningState * gs = mPlanner->getGrasp(i);
             if(gs->getAttribute("testResult") == 0.0)
             {
                 if(firstUnevaluatedIndex < 0)
@@ -545,12 +585,12 @@ void OnlinePlannerController::analyzeNextGrasp()
             return;
         }
 
-        graspToEvaluate = currentPlanner->getGrasp(firstUnevaluatedIndex);
+        graspToEvaluate = mPlanner->getGrasp(firstUnevaluatedIndex);
         assert(graspToEvaluate->getAttribute("testResult") == 0.0);
         //Request analysis and ask to be called gain when analysis is completed.
-        currentPlanner->setGraspAttribute(firstUnevaluatedIndex, "testTime",  QDateTime::currentDateTime().toTime_t());
+        mPlanner->setGraspAttribute(firstUnevaluatedIndex, "testTime",  QDateTime::currentDateTime().toTime_t());
         DBGA("Emit grasp analysis");
-        RosClient::getInstance()->sendCheckGraspReachabilityRequest(graspToEvaluate);
+        mReachabilityAnalyzer->sendCheckGraspReachabilityRequest(graspToEvaluate);
     }
 
     DBGA("checkGraspReachability: " << currentTime -  QDateTime::currentDateTime().toTime_t());
@@ -587,11 +627,11 @@ void OnlinePlannerController::clearObjects()
         DBGA("OnlinePlannerController::clearObjects::Tried to remove objects from locked world");
         return;
     }
-    if(currentPlanner)
+    if(mPlanner)
     {
-        boost::mutex::scoped_lock lock(currentPlanner->mListAttributeMutex);
-        currentPlanner->pausePlanner();
-        currentPlanner->resetPlanner();
+        boost::mutex::scoped_lock lock(mPlanner->mListAttributeMutex);
+        mPlanner->pausePlanner();
+        mPlanner->resetPlanner();
     }
     while(getWorld()->getNumGB() > 0)
     {
@@ -609,7 +649,8 @@ void OnlinePlannerController::targetRemoved()
 
 void OnlinePlannerController::sortGrasps()
 {
-    currentPlanner->updateSolutionList();
+    DBGA("OnlinePlannerController::sortGrasps");
+    mPlanner->updateSolutionList();
 }
 
 void OnlinePlannerController::run()
@@ -617,4 +658,12 @@ void OnlinePlannerController::run()
     exec();
 }
 
+void OnlinePlannerController::emitRender()
+{
+    if(!renderPending)
+    {
+        emit render();
+        renderPending = true;
+    }
+}
 }

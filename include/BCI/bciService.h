@@ -9,7 +9,6 @@
 #include "BCI/worldController.h"
 #include "BCIOnlinePlanner.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
-#include "BCI/rosclient.h"
 
 #include <Inventor/nodes/SoOrthographicCamera.h>
 #include<Inventor/Qt/SoQtRenderArea.h>

@@ -8,7 +8,7 @@
 using bci_experiment::OnlinePlannerController;
 
 GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent):
-    State("ObjectSelectionState", parent),
+    State("GraspSelectionState", parent),
     bciControlWindow(_bciControlWindow),
     csm(_csm),
     stateName(QString("Grasp Selection"))
@@ -25,14 +25,7 @@ void GraspSelectionState::onEntry(QEvent *e)
     graspSelectionView->show();
     bciControlWindow->currentState->setText(stateName);
 
-    OnlinePlannerController::getInstance()->setPlannerToReady();
-    OnlinePlannerController::getInstance()->analyzeNextGrasp();
-
     onPlannerUpdated();
-
-    //hide seed hand and progress hand, we only need to show the solutions
-    //OnlinePlannerController::getInstance()->showRobots(false);
-    //OnlinePlannerController::getInstance()->getGraspDemoHand()->setRenderGeometry(true);
 
     csm->clearTargets();
 
@@ -106,7 +99,8 @@ void GraspSelectionState::showCurrentGrasp()
     const GraspPlanningState * currentGrasp = OnlinePlannerController::getInstance()->getCurrentGrasp();
     if (currentGrasp)
     {
-        currentGrasp->execute(OnlinePlannerController::getInstance()->getSeedHand());
+        currentGrasp->execute(OnlinePlannerController::getInstance()->getSolutionHand());
+        OnlinePlannerController::getInstance()->alignHand();
     }
 }
 
@@ -127,12 +121,12 @@ void GraspSelectionState::onPlannerUpdated()
     qint64 minElapsedMSecs = 300;
     if(!activeTimer.isValid() || activeTimer.elapsed() >= minElapsedMSecs)
     {
-        DBGA("GraspSelectionState::onPlannerUpdated: " << this->name().toStdString());
         OnlinePlannerController::getInstance()->sortGrasps();
         OnlinePlannerController::getInstance()->resetGraspIndex();
 
         _updateCurrentGraspView();
         _updateNextGraspView();
+        showCurrentGrasp();
     }
 
     OnlinePlannerController::getInstance()->renderPending = false;

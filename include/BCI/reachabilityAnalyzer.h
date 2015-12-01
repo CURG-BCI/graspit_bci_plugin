@@ -1,5 +1,5 @@
-#ifndef ROSCLIENT_H
-#define ROSCLIENT_H
+#ifndef REACHABILITYANALYZER_H
+#define REACHABILITYANALYZER_H
 
 #include <QObject>
 #include "graspit_msgs/GetObjectInfo.h"
@@ -10,31 +10,29 @@
 #include <actionlib/client/simple_action_client.h>
 #include "ros/ros.h"
 
+#include "include/EGPlanner/searchState.h"
+
 #include "include/matvec3D.h"
 
-class GraspPlanningState;
 
-class RosClient:public QObject
+class ReachabilityAnalyzer: public QObject
 {
-
     Q_OBJECT
 
 public:
-    static RosClient* getInstance();
 
+    ReachabilityAnalyzer();
     void sendCheckGraspReachabilityRequest(const GraspPlanningState * state);
+    void setIsRunning(bool _isRunning){is_running = _isRunning;}
+    bool isRunning(){return is_running;}
 
 signals:
     void updateGraspReachability(int graspId, bool isReachable);
 
 private:
-    //singleton pattern, single static instance of the class
-    static RosClient * rosClient;
-
-    //this is singleton, so constructor must be private.
-    RosClient();
 
     ros::NodeHandle *n;
+    bool is_running;
 
     actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction> analzeGraspReachabilityActionClient;
 
@@ -42,4 +40,4 @@ private:
     void checkGraspReachabilityCallback(const actionlib::SimpleClientGoalState& state,  const moveit_trajectory_planner::CheckGraspReachabilityResultConstPtr& result);
 };
 
-#endif // ROSCLIENT_H
+#endif //REACHABILITYANALYZER_H

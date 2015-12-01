@@ -1,7 +1,6 @@
 #ifndef BCI_ONLINEPLANNERCONTROLLER_H
 #define BCI_ONLINEPLANNERCONTROLLER_H
 
-
 #include <QObject>
 
 #include "include/robot.h"
@@ -16,6 +15,7 @@
 #include "BCI/utils/uiTools.h"
 #include "BCI/utils/plannerTools.h"
 #include "BCI/utils/worldElementTools.h"
+#include "BCI/reachabilityAnalyzer.h"
 
 class GraspableBody;
 class GraspPlanningState;
@@ -36,8 +36,6 @@ namespace bci_experiment{
             void rotateHandLat();
             void rotateHandLong();
 
-            void drawGuides();
-            void destroyGuides();
             void alignHand();
 
             GraspableBody* getCurrentTarget();
@@ -58,15 +56,20 @@ namespace bci_experiment{
             void setSceneLocked(bool locked){sceneLocked = locked;}
             bool isSceneLocked(){return sceneLocked;}
 
-            void blockGraspAnalysis( bool block){analysisBlocked = block;}
-            bool isAnalysisBlocked(){return analysisBlocked;}
-
             void incrementGraspIndex();
             void resetGraspIndex();
             void sortGrasps();
             unsigned int getNumGrasps();
 
+            void drawGuides();
+            void destroyGuides();
+
             void showRobots(bool show);
+
+            void showSeedHand(bool show);
+            void showMHand(bool show);
+            void showSolutionHand(bool show);
+
 
             bool timedUpdateRunning;
             bool renderPending;
@@ -78,21 +81,29 @@ namespace bci_experiment{
             static OnlinePlannerController * onlinePlannerController;
             static QMutex createLock;
 
-            BCIOnlinePlanner * currentPlanner;
+            BCIOnlinePlanner * mPlanner;
+            ReachabilityAnalyzer *mReachabilityAnalyzer;
+
             db_planner::SqlDatabaseManager * mDbMgr;
             GraspableBody * currentTarget;
             Hand * graspDemonstrationHand;
 
             unsigned int currentGraspIndex;
             bool sceneLocked;
-            bool analysisBlocked;
 
             OnlinePlannerController(QObject *parent = 0);
             void initializeDbInterface();
+            void initializeTarget();
+
             bool setAllowedPlanningCollisions();
             bool setPlannerTargets();
             void setCurrentTarget(GraspableBody * gb);
-            void initializeTarget();
+
+            void analyzeNextGraspReachability();
+            void analyzeNextGraspReachabilityCallback(int graspId, bool isReachable);
+
+            bool plannerCanBeSetToReady();
+            bool plannerCanBeSetToRunning();
 
     signals:
             void render();
@@ -103,18 +114,20 @@ namespace bci_experiment{
             void plannerTimedUpdate();
 
     public slots:
-            bool setPlannerToRunning();
+            void setPlannerToRunning();
             bool setPlannerToStopped();
             bool setPlannerToPaused();
-            bool setPlannerToReady();
+            void setPlannerToReady();
 
-            void analyzeNextGrasp();
-            void updateGraspReachability(int graspId, bool isReachable);
+            //! analyze reachability of grasps from database without planning new grasps
+            bool startGraspReachabilityAnalysis();
+            //! analyze reachability of grasps from database and plan new grasps
+            bool stopGraspReachabilityAnalysis();
 
             void addToWorld(const QString model_filename, const QString object_name, const transf object_pose);
             void clearObjects();
             void targetRemoved();
-            void emitRender(){if(!renderPending){ emit render(); renderPending = true;}}
+            void emitRender();
     };
 
 }

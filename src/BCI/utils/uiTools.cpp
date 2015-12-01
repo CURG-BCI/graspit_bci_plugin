@@ -211,7 +211,8 @@ namespace bci_experiment
 
         void destroyGuideSeparator()
         {
-            SoSeparator * pointerRoot = graspItGUI->getIVmgr()->getPointers();
+            //SoSeparator * pointerRoot = graspItGUI->getIVmgr()->getPointers();
+            SoSeparator * pointerRoot = graspItGUI->getIVmgr()->getWorld()->getIVRoot();
             SoSeparator * guideSeparator = static_cast<SoSeparator *>(pointerRoot->getByName("BCIGuideSeparator"));
             if(guideSeparator)
             {

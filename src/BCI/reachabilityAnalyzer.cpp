@@ -1,50 +1,23 @@
-﻿#include "BCI/rosclient.h"
+#include "BCI/reachabilityAnalyzer.h"
 
-#include <Inventor/nodes/SoCamera.h>
-
-#include "get_camera_origin/GetCameraOrigin.h"
-#include "std_msgs/Empty.h"
-#include "std_srvs/Empty.h"
-
-#include "graspit_msgs/AnalyzePose.h"
-#include "graspit_msgs/Grasp.h"
-
-#include "include/debug.h"
-#include "include/graspitGUI.h"
-#include "include/ivmgr.h"
 #include "include/grasp.h"
-#include "include/EGPlanner/searchState.h"
+#include "include/robot.h"
 
-#include "BCI/onlinePlannerController.h"
-#include "BCI/bciService.h"
-
-
-using bci_experiment::OnlinePlannerController;
 using namespace moveit_trajectory_planner;
 
-RosClient * RosClient::rosClient = NULL;
-
-RosClient* RosClient::getInstance()
-{
-    if(!rosClient)
-    {
-        rosClient = new RosClient();
-    }
-
-    return rosClient;
-}
-
-RosClient::RosClient():
-      analzeGraspReachabilityActionClient("analyze_grasp_action", true)
+ReachabilityAnalyzer::ReachabilityAnalyzer():
+      analzeGraspReachabilityActionClient("analyze_grasp_action", true),
+      is_running(false),
+      QObject()
 {
     ROS_INFO("Ros Client starting to come up...");
     n = new ros::NodeHandle("");
     ROS_INFO("Ros Client Initialized");
-
 }
 
 
-void RosClient::buildCheckReachabilityRequest(const GraspPlanningState * gps, moveit_trajectory_planner::CheckGraspReachabilityGoal &goal)
+void ReachabilityAnalyzer::buildCheckReachabilityRequest(const GraspPlanningState * gps,
+                                                         moveit_trajectory_planner::CheckGraspReachabilityGoal &goal)
 {
     goal.grasp.object_name = gps->getObject()->getName().toStdString().c_str();
     goal.grasp.epsilon_quality=gps->getEpsilonQuality();
@@ -97,21 +70,25 @@ void RosClient::buildCheckReachabilityRequest(const GraspPlanningState * gps, mo
 }
 
 
-void RosClient::sendCheckGraspReachabilityRequest(const GraspPlanningState * gps)
+void ReachabilityAnalyzer::sendCheckGraspReachabilityRequest(const GraspPlanningState * gps)
 {
 
-    CheckGraspReachabilityGoal goal;
-    buildCheckReachabilityRequest(gps, goal);
+    if(is_running)
+    {
+        CheckGraspReachabilityGoal goal;
+        buildCheckReachabilityRequest(gps, goal);
 
-    analzeGraspReachabilityActionClient.sendGoal(goal,  boost::bind(&RosClient::checkGraspReachabilityCallback, this, _1, _2),
-                actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction>::SimpleActiveCallback(),
-                actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction>::SimpleFeedbackCallback());
-
+        analzeGraspReachabilityActionClient.sendGoal(goal,  boost::bind(&ReachabilityAnalyzer::checkGraspReachabilityCallback, this, _1, _2),
+                    actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction>::SimpleActiveCallback(),
+                    actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction>::SimpleFeedbackCallback());
+    }
 }
 
-void RosClient::checkGraspReachabilityCallback(const actionlib::SimpleClientGoalState& state,
+void ReachabilityAnalyzer::checkGraspReachabilityCallback(const actionlib::SimpleClientGoalState& state,
                                                const moveit_trajectory_planner::CheckGraspReachabilityResultConstPtr& result)
 {
-    emit updateGraspReachability(result->grasp_id, result->isPossible);
+    if(is_running)
+    {
+        emit updateGraspReachability(result->grasp_id, result->isPossible);
+    }
 }
-

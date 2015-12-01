@@ -70,15 +70,10 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     QObject::connect(this, SIGNAL(goToStateMedium()), this, SLOT(updateControlSceneState1()));
     QObject::connect(this, SIGNAL(goToStateHigh()), this, SLOT(updateControlSceneState2()));
 
-    SoRotationXYZ *imageRot = new SoRotationXYZ;
-    imageRot->angle = M_PI/2;
-    imageRot->axis = SoRotationXYZ::X;
-
     SoAnnotation *hudSeparator = new SoAnnotation;
     hudSeparator->renderCaching = SoSeparator::OFF;
     hudSeparator->setName("hud");
-    graspItGUI->getIVmgr()->getWorld()->getIVRoot()->addChild(imageRot);// ;sceneRoot->addChild(imageRot);
-    graspItGUI->getIVmgr()->getWorld()->getIVRoot()->addChild(hudSeparator);//sceneRoot->addChild(hudSeparator);
+    graspItGUI->getIVmgr()->getWorld()->getIVRoot()->addChild(hudSeparator);
     pcam = new SoOrthographicCamera;
     pcam->position = SbVec3f(0, 0, 10);
     pcam->nearDistance = 0.1;

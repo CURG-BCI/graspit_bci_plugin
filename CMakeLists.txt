@@ -116,6 +116,7 @@ set(SOURCES
     src/BCI/utils/worldElementTools.cpp
     src/BCI/utils/plannerTools.cpp
     src/BCI/onlinePlannerController.cpp
+    src/BCI/reachabilityAnalyzer.cpp
     src/BCI/state.cpp
     src/BCI/BCIStateMachine.cpp
     src/BCI/states/objectSelectionState.cpp
@@ -131,7 +132,6 @@ set(SOURCES
     src/BCI/utils/worldElementTools.cpp
     src/BCI/controller_scene/controller_scene_mgr.cpp
     src/BCI/controller_scene/sprites.cpp
-    src/BCI/rosclient.cpp
     src/worldController.cpp
 
     ui/state_views/activeRefinementView.cpp
@@ -180,7 +180,6 @@ set(HEADERS
     include/BCIOnlinePlanner.h
     include/pointers.dat
     include/worldController.h
-    include/BCI/rosclient.h
 
     ui/bciControlWindow.h
 
@@ -204,6 +203,7 @@ set(MOCS
 
     include/BCI/bciService.h
     include/BCI/onlinePlannerController.h
+    include/BCI/reachabilityAnalyzer.h
     include/worldController.h
 
     include/BCI/state.h
@@ -219,7 +219,6 @@ set(MOCS
 
     include/BCI/controller_scene/sprites.h
     include/BCI/controller_scene/controller_scene_mgr.h
-    include/BCI/rosclient.h
     )
 
 set(UIS

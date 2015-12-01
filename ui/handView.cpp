@@ -179,8 +179,6 @@ void HandView::updateGeom(Hand & cloneHand)
   of the bodies in the scenegraph by updating the SoTransform node associated with
   each body. See CopyLinkTransforms for more details. 
 */
-
-
 void HandView::update(const GraspPlanningState & s, Hand & cloneHand)
 {
   double testResult = s.getAttribute("testResult");
@@ -195,7 +193,6 @@ void HandView::update(const GraspPlanningState & s, Hand & cloneHand)
   if(testResult > 0.0)
   {
       newBackground = SbColor(.8,1,.8);
-
   }
   else if(testResult <= -1.0)
   {
@@ -235,7 +232,7 @@ void HandView::update(const GraspPlanningState & s, Hand & cloneHand)
     //disable collisions between clone hand and everything
     //cloneHand.getWorld()->toggleCollisions(false, &cloneHand, s.getObject());
     //bci_experiment::planner_tools::setCollisionState(&cloneHand, oldCollisionStatus);
-    //cloneHand.restoreState();
+    cloneHand.restoreState();
   }
   if(updated)
   {

@@ -188,13 +188,10 @@ void
 BCIOnlinePlanner::startPlanner()
 {
     createAndUseClone();
-    //mHand->getWorld()->toggleCollisions(true, mHand);
-    DBGP("Starting on-line planner");
     mSeedHand->setTransparency(0.7);
     SimAnnPlanner::startPlanner();
     mGraspTester->startPlanner();
-    //mGraspTester->setRenderType(RENDER_NEVER);
-    mGraspTester->setRenderType(RENDER_ALWAYS);
+    mGraspTester->setRenderType(RENDER_NEVER);
 
     showClone(true);
     showSolutionClone(true);
@@ -208,6 +205,7 @@ BCIOnlinePlanner::startPlanner()
 void
 BCIOnlinePlanner::pausePlanner()
 {
+    DBGA("pausePlanner");
     mGraspTester->pausePlanner();
     msleep(1000);
     SimAnnPlanner::pausePlanner();
@@ -290,7 +288,12 @@ void BCIOnlinePlanner::setGraspAttribute(int i, const QString &attribute, double
 /*! Keeps the list of solutions sorted according to some metric */
 void BCIOnlinePlanner::updateSolutionList()
 {
-    boost::mutex::scoped_lock lock(mListAttributeMutex);
+    boost::mutex::scoped_lock lock(mListAttributeMutex, boost::try_to_lock);
+    if(lock)
+    {
+        DBGA("Failed to take lock.");
+        return;
+    }
 
     transf stateTran, currentHandTran = mSeedHand->getTran();
 
@@ -434,14 +437,11 @@ BCIOnlinePlanner::mainLoop()
 
 void BCIOnlinePlanner::graspLoop()
 {
-    GraspPlanningState *input = NULL;
-    if ( processInput() ) {
-        input = mTargetState;
-    }
+    //mTargetState is the position of the seedhand
+    GraspPlanningState *input = mTargetState;
 
-    std::cout << "In graspLoop" << std::endl;
     //call simulated annealing
-    SimAnn::Result r = mSimAnn->iterate(mCurrentState,mEnergyCalculator,input);
+    SimAnn::Result r = mSimAnn->iterate(mCurrentState, mEnergyCalculator, input);
     mCurrentStep = mSimAnn->getCurrentStep();
 
     if ( r == SimAnn::JUMP )
@@ -453,20 +453,21 @@ void BCIOnlinePlanner::graspLoop()
             DBGP("New candidate");
             GraspPlanningState *insertState = new GraspPlanningState(mCurrentState);
             //make solution independent of reference hand position
-            insertState->setPositionType(SPACE_COMPLETE,true);
+            insertState->setPositionType(SPACE_COMPLETE, true);
             insertState->setRefTran( mCurrentState->getObject()->getTran(), true);
-            insertState->setItNumber( mCurrentStep );
-            if (insertState->getEnergy() < mCurrentBest->getEnergy()) {
+            insertState->setItNumber(mCurrentStep);
+            if (insertState->getEnergy() < mCurrentBest->getEnergy())
+            {
                 mCurrentBest->copyFrom( insertState );
             }
-            if (!addToListOfUniqueSolutions(insertState, &mCandidateList,0.4))
+            if (!addToListOfUniqueSolutions(insertState, &mCandidateList, 0.4))
             {
                 DBGP("Similar to old candidate");
                 delete insertState;
             }
             else
             {
-                mCandidateList.sort(GraspPlanningState::compareStates);//CHANGED! was compareStates
+                mCandidateList.sort(GraspPlanningState::compareStates);
                 while (mCandidateList.size() > CANDIDATE_BUFFER_SIZE)
                 {
                     delete mCandidateList.back();
