@@ -5,12 +5,14 @@
 #include "bciControlWindow.h"
 #include "state_views/executionView.h"
 
+class GraspPlanningState;
+
 class ExecutionState: public State
 {
    Q_OBJECT
 
 public:
-    ExecutionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent=0);
+    ExecutionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent=0);
 
     virtual void onEntry(QEvent *e);
     virtual void onExit(QEvent *e);
@@ -25,6 +27,9 @@ private:
     BCIControlWindow *bciControlWindow;
     ExecutionView *executionView;
     ControllerSceneManager *csm;
+    ros::Publisher grasp_execution_pubisher;
+
+    void executeGrasp(const GraspPlanningState * gps);
 };
 
 

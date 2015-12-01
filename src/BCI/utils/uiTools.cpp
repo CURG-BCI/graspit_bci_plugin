@@ -11,6 +11,9 @@
 #include "BCI/utils/worldElementTools.h"
 #include "SoRing.h"
 
+#include <Inventor/elements/SoCacheElement.h>
+#include <QtOpenGL/QGLWidget>
+
 using bci_experiment::world_element_tools::getWorld;
 using bci_experiment::world_element_tools::getObjectByName;
 using bci_experiment::world_element_tools::getNextGraspableBody;
@@ -208,13 +211,24 @@ namespace bci_experiment
 
         void destroyGuideSeparator()
         {
-            SoSeparator * pointerRoot =
-
-                    graspItGUI->getIVmgr()->getPointers();
-            SoSeparator * guideSeparator = static_cast<SoSeparator *>
-                    (pointerRoot->getByName("BCIGuideSeparator"));
+            SoSeparator * pointerRoot = graspItGUI->getIVmgr()->getPointers();
+            SoSeparator * guideSeparator = static_cast<SoSeparator *>(pointerRoot->getByName("BCIGuideSeparator"));
             if(guideSeparator)
+            {
                 pointerRoot->removeChild(guideSeparator);
+            }
         }
+
+        void disableZCulling(void * userdata, SoAction * action)
+        {
+            if (action->isOfType(SoGLRenderAction::getClassTypeId())) {
+              glDisable(GL_DEPTH_TEST);
+              glDisable(GL_CULL_FACE);
+              SoCacheElement::invalidate(action->getState());
+            }
+        }
+
     }
+
+
 }

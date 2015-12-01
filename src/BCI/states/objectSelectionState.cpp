@@ -18,13 +18,11 @@ ObjectSelectionState::ObjectSelectionState(BCIControlWindow *_bciControlWindow, 
                                            QState* parent):
     State("ObjectSelectionState", parent),
     bciControlWindow(_bciControlWindow),
-    csm(_csm),
-    visionRunning(false)
+    csm(_csm)
 {
     objectSelectionView = new ObjectSelectionView(this,bciControlWindow->currentFrame);
     objectSelectionView->hide();
-    this->addSelfTransition(getWorld(), SIGNAL(numElementsChanged()), this, SLOT(onNewObjectFound()));
-    this->addSelfTransition(BCIService::getInstance(),SIGNAL(next()), this, SLOT(onRunVision()));
+    //this->addSelfTransition(getWorld(), SIGNAL(numElementsChanged()), this, SLOT(onNewObjectFound()));
 }
 
 
@@ -35,25 +33,13 @@ void ObjectSelectionState::onEntry(QEvent *e)
     WorldController::getInstance()->highlightAllBodies();
     GraspableBody *currentTarget = OnlinePlannerController::getInstance()->getCurrentTarget();
 
-    BCIService::getInstance()->getCameraOrigin(NULL,NULL);
     //Don't draw guides in this phase
     OnlinePlannerController::getInstance()->stopTimedUpdate();
     OnlinePlannerController::getInstance()->destroyGuides();
     WorldController::getInstance()->highlightCurrentBody(currentTarget);    
     OnlinePlannerController::getInstance()->setSceneLocked(false);
     OnlinePlannerController::getInstance()->showRobots(false);
-    if(BCIService::getInstance()->runObjectRetreival(this, SLOT(onVisionFinished())))
-    {
-        visionRunning = true;
-        bciControlWindow->currentState->setText("Object Selection: Running Recognition");
-        onVisionFinished();
-    }
-    else
-    {
-        visionRunning = false;
-        bciControlWindow->currentState->setText("Object Selection: Failed");
-        onVisionFinished();
-    }
+
     OnlinePlannerController::getInstance()->blockGraspAnalysis(false);
 
     csm->clearTargets();
@@ -71,32 +57,13 @@ void ObjectSelectionState::onEntry(QEvent *e)
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(onNext()));
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onSelect()));
-    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(onRunVision()));
+    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(onGoBack()));
 
     csm->addTarget(t1);
     csm->addTarget(t2);
     csm->addTarget(t3);
 }
 
-void ObjectSelectionState::onRunVision(QEvent * e)
-{
-    if(!visionRunning)
-    {
-        if(BCIService::getInstance()->runObjectRecognition(this, SLOT(onVisionFinished())))
-        {
-            bciControlWindow->currentState->setText("Object Selection: Running Recognition");
-            visionRunning = true;
-        }
-        else
-            bciControlWindow->currentState->setText("Object Selection: Failed");
-    }
-}
-
-void ObjectSelectionState::onVisionFinished()
-{
-    bciControlWindow->currentState->setText("Object Selection: Running Finished");
-    visionRunning = false;
-}
 
 void ObjectSelectionState::onExit(QEvent *e)
 {
@@ -124,19 +91,23 @@ void ObjectSelectionState::onNext()
     csm->setCursorPosition(-1,0,0);
 }
 
-
 void ObjectSelectionState::onSelect()
 {
     BCIService::getInstance()->emitGoToNextState1();
 }
 
-void ObjectSelectionState::onNewObjectFound()
+void ObjectSelectionState::onGoBack()
 {
-    GraspableBody *currentTarget = OnlinePlannerController::getInstance()->getCurrentTarget();
-
-    if(currentTarget)
-    {
-        WorldController::getInstance()->highlightCurrentBody(currentTarget);
-    }
-
+    BCIService::getInstance()->emitGoToPreviousState();
 }
+
+//void ObjectSelectionState::onNewObjectFound()
+//{
+//    GraspableBody *currentTarget = OnlinePlannerController::getInstance()->getCurrentTarget();
+
+//    if(currentTarget)
+//    {
+//        WorldController::getInstance()->highlightCurrentBody(currentTarget);
+//    }
+
+//}

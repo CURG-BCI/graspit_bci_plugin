@@ -13,8 +13,6 @@ GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, Co
     csm(_csm),
     stateName(QString("Grasp Selection"))
 {
-
-    addSelfTransition(OnlinePlannerController::getInstance()->currentPlanner,SIGNAL(update()), this, SLOT(onPlannerUpdated()));
     addSelfTransition(OnlinePlannerController::getInstance(),SIGNAL(render()), this, SLOT(onPlannerUpdated()));
 
     graspSelectionView = new GraspSelectionView(bciControlWindow->currentFrame);
@@ -59,7 +57,7 @@ void GraspSelectionState::onEntry(QEvent *e)
                                                                        QString("target_background.png"),
                                                                        0.35,
                                                                        -1.0,
-                                                                       0.0, QString("Go\nBack")));
+                                                                       0.0, QString("Select\nDifferent\nObject")));
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(onNext()));
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(emit_goToActivateRefinementState()));

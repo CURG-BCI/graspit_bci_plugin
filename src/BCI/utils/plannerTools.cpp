@@ -9,7 +9,6 @@
 
 #include "BCI/utils/worldElementTools.h"
 #include "BCI/utils/plannerTools.h"
-#include "bciService.h"
 
 
 using bci_experiment::world_element_tools::getWorld;
@@ -153,8 +152,6 @@ namespace bci_experiment
              op->setEnergyType(ENERGY_CONTACT_QUALITY);
              op->setMaxSteps(2000);
              op->setModelState(mHandObjectState);
-
-             BCIService::getInstance()->setCurrentPlanner(op);
              op->showSolutionClone(true);
              op->resetPlanner();
 

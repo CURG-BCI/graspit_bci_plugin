@@ -1,5 +1,5 @@
-#ifndef STARTSTATE_H
-#define STARTSTATE_H
+#ifndef ActivateRefinementState_H
+#define ActivateRefinementState_H
 
 #include "BCI/states/handRotationState.h"
 
@@ -19,10 +19,10 @@ public:
 public slots:
     virtual void onEntry(QEvent *e);
     virtual void onExit(QEvent *e);
-    virtual void onPlannerUpdated(QEvent *e = NULL);
+    virtual void updateView();
+
     void emit_goToConfirmationState();
 
-    virtual void updateView();
     void setTimerRunning();
 
 protected:
@@ -35,6 +35,6 @@ private:
 };
 
 
-#endif // STARTSTATE_H
+#endif // ActivateRefinementState_H
 
 

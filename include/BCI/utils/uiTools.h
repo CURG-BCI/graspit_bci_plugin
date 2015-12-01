@@ -10,6 +10,7 @@ class Hand;
 class transf;
 class GraspableBody;
 class EGPlanner;
+class SoAction;
 
 namespace bci_experiment
 {
@@ -52,6 +53,8 @@ namespace bci_experiment
         void updateCircularGuides(Hand * hand, Body * object);
 
         void destroyGuideSeparator();
+
+        void disableZCulling(void * userdata, SoAction * action);
 
     }
 }

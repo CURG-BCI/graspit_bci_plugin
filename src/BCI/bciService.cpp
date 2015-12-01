@@ -18,15 +18,6 @@
 #include <QDialog>
 #include <QtGui>
 
-void
-disableZCulling(void * userdata, SoAction * action)
-{
-    if (action->isOfType(SoGLRenderAction::getClassTypeId())) {
-      glDisable(GL_DEPTH_TEST);
-      glDisable(GL_CULL_FACE);
-      SoCacheElement::invalidate(action->getState());
-  }
-}
 
 BCIService * BCIService::bciServiceInstance = NULL;
 
@@ -79,7 +70,6 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     QObject::connect(this, SIGNAL(goToStateMedium()), this, SLOT(updateControlSceneState1()));
     QObject::connect(this, SIGNAL(goToStateHigh()), this, SLOT(updateControlSceneState2()));
 
-    rosClient = new RosClient;
     SoRotationXYZ *imageRot = new SoRotationXYZ;
     imageRot->angle = M_PI/2;
     imageRot->axis = SoRotationXYZ::X;
@@ -99,7 +89,7 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     hudLightModel->model=SoLightModel::BASE_COLOR;
     hudSeparator->addChild(hudLightModel);
     SoCallback * disableZTestNode = new SoCallback();
-    disableZTestNode->setCallback(disableZCulling);
+    disableZTestNode->setCallback(ui_tools::disableZCulling);
     hudSeparator->addChild(disableZTestNode);
     csm = new ControllerSceneManager(hudSeparator);
 
@@ -133,45 +123,5 @@ void BCIService::updateControlScene()
     bciRenderArea->setViewportRegion(pcam->getViewportBounds(bciRenderArea->getViewportRegion()));
 }
 
-
-bool BCIService::runObjectRetreival(QObject * callbackReceiver,
-                                    const char * slot)
-{
-    DBGA("BCIService::runObjectRetreival");
-    rosClient->sendObjectRecognitionRequest();
-    return true;
-}
-
-bool BCIService::runObjectRecognition(QObject * callbackReceiver ,
-                                      const char * slot)
-{
-    DBGA("BCIService::runObjectRecognition");
-    rosClient->sendObjectRecognitionRequest();
-    return true;
-}
-
-
-bool BCIService::getCameraOrigin(QObject * callbackReceiver, const char * slot)
-{
-    rosClient->sendGetCameraOriginRequest();
-    return true;
-}
-
-
-bool BCIService::checkGraspReachability(const GraspPlanningState * state,
-                                        QObject * callbackReceiver,
-                                        const char * slot)
-{
-    rosClient->sendCheckGraspReachabilityRequest(state);
-    return true;
-}
-
-bool BCIService::executeGrasp(const GraspPlanningState * gps,
-                  QObject * callbackReceiver,
-                  const char * slot)
-{
-    rosClient->executeGrasp(gps);
-    return true;
-}
 
 

@@ -28,6 +28,7 @@
 #include <QObject>
 #include <time.h>
 #include <list>
+#include <boost/thread.hpp>
 
 #include "include/EGPlanner/simAnnPlanner.h"
 
@@ -78,48 +79,51 @@ private:
 
 	//! If this flag is set, the planner will show a visual indicator of each solution grasp it finds
 	bool mMarkSolutions;
+
 	//! How far the current solution is from the hand 
 	/*! If solution distance is negative, we don't have a current solution */
 	double mSolutionDistance;
+
 	//! How far from the object we think we are (along app dir.)
 	double mObjectDistance;
+
 	//! Best state found so far
 	GraspPlanningState *mCurrentBest;
+
 	//! This one runs in a separate thread and tests grasps (usually through autograsp)
 	GraspTester *mGraspTester;
+
 	//! When using a grasp tester, this keeps a list of candidates to be sent to the tester
 	std::list<GraspPlanningState*> mCandidateList;
-	//! This class is used to interface with a real hand during grasping tasks. 
-	/*! In theory, planning and execution are different things, so this class (who does the 
-		planning) should know nothing about the class that actually executes the grasp. For 
-		now however, this was easier to code.*/
-	OnLineGraspInterface *mInterface;
 
 	int mSolutionCount;
 
     BCIOnlinePlanner(){}
+
 	//! Creates another clone that is used for showing the current solution
 	void createSolutionClone();
+
 	//! A measure of how different two states are 
 	/*! The online planner has a different idea on how to measure distance between 
 		states. It looks just at position (not posture) and ignores changes along 
 		the approach direction of the hand.*/
 	double stateDistance(const GraspPlanningState *s1, const GraspPlanningState *s2);
-	
-	
 
 	void resetParameters();
+
 	/*! The main loop here is divided into two parts. The mainLoop() itself manages 
 		the mRefHand, looks at input, manages the sub-thread that does F-C testing 
 		etc. */
 	void mainLoop();
+
 	/*! This part is called from the main loop and is responsible for the actual 
 		grasp planning that is taking place at this level.*/
 	void graspLoop();
 
 public:
     BCIOnlinePlanner(Hand *h);
-    QMutex mListAttributeMutex;
+    boost::mutex mListAttributeMutex;
+
     ~BCIOnlinePlanner();
 	virtual PlannerType getType(){return PLANNER_ONLINE;}
     virtual Hand * getRefHand(){return mSeedHand;}
@@ -127,6 +131,7 @@ public:
     virtual void startPlanner();
     virtual void pausePlanner();
     virtual bool resetPlanner();
+
     bool addSolution(GraspPlanningState *s);
 	double getSolutionDistance() const {return mSolutionDistance;}
 	double getObjectDistance() const {return mObjectDistance;}
@@ -137,13 +142,7 @@ public:
 	//! Shows or hides the planning clone, not the solution clone
 	void showClone(bool s);
 
-	//these just relay the actions to the OnLineGraspInterface. As actions have nothing to do with planning, this
-	//shouldn't theoretically be here at all, but it was easier to interface with the action class through here
-	void action(ActionType a);
-	void useRealBarrettHand(bool s);
-	ActionType getAction();
 	void showGrasp(int i);
-	void executeGrasp(int i);
     virtual void setGraspAttribute(int i, const QString &attribute, double value);
     void updateSolutionList();
     double distanceOutsideApproach(const transf &solTran, const transf &handTran, bool useApproach = true);

@@ -11,8 +11,6 @@ ActivateRefinementState::ActivateRefinementState(BCIControlWindow *_bciControlWi
     HandRotationState("ActivateRefinementState",_bciControlWindow, _csm, parent),
     csm(_csm)
 {
-    addSelfTransition(OnlinePlannerController::getInstance()->currentPlanner, SIGNAL(update()), this, SLOT(onPlannerUpdated()));
-    //addSelfTransition(BCIService::getInstance(), SIGNAL(next()), this, SLOT(nextGrasp()));
     addSelfTransition(OnlinePlannerController::getInstance(),SIGNAL(render()), this, SLOT(updateView()));
 
     activeRefinementView = new ActiveRefinementView(bciControlWindow->currentFrame);
@@ -100,12 +98,6 @@ void ActivateRefinementState::updateView()
     }
     OnlinePlannerController::getInstance()->renderPending = false;
 
-}
-
-void ActivateRefinementState::onPlannerUpdated(QEvent * e)
-{
-    std::cout << "ActivateRefinementState::onPlannerUpdated(QEvent * e)" << std::endl;
-    updateView();
 }
 
 

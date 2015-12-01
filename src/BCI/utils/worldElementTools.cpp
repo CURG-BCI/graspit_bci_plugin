@@ -8,13 +8,13 @@ namespace world_element_tools{
 
 void moveBody(Body * b, const transf & relTran)
 {
-  b->setTran(b->getTran() * relTran);
+    b->setTran(b->getTran() * relTran);
 }
 
 
 void moveAllBodies(const transf & relTran)
 {
-  for(int b_ind = 0; b_ind < getWorld()->getNumGB(); ++b_ind)
+    for(int b_ind = 0; b_ind < getWorld()->getNumGB(); ++b_ind)
     {
         moveBody(getWorld()->getGB(b_ind), relTran);
     }
@@ -23,11 +23,13 @@ void moveAllBodies(const transf & relTran)
 
 Body * getOrAddExperimentTable()
 {
-  QString bodyName("experiment_table");
-  Body * tableBody= getObjectByName(bodyName);
-  if(tableBody)
-    return tableBody;
-  return addToWorld("models/objects/","Obstacle", bodyName+".xml");
+    QString bodyName("experiment_table");
+    Body * tableBody= getObjectByName(bodyName);
+    if(tableBody)
+    {
+        return tableBody;
+    }
+    return addToWorld("models/objects/","Obstacle", bodyName+".xml");
 }
 
 
@@ -35,19 +37,19 @@ Body * getOrAddExperimentTable()
 
 void setObjectCentral(Body * b)
 {
-  Body * table = getOrAddExperimentTable();
-  moveAllBodies(table->getTran().inverse());
-  transf centralize(Quaternion::IDENTITY, -b->getTran().translation());
-  moveAllBodies(centralize);
+    Body * table = getOrAddExperimentTable();
+    moveAllBodies(table->getTran().inverse());
+    transf centralize(Quaternion::IDENTITY, -b->getTran().translation());
+    moveAllBodies(centralize);
 
-  table->setTran(centralize);
-  SoNodeList l;
-  unsigned int listLen = SoTransform::getByName("PointCloudTransform", l);
-  if(listLen == 1)
-  {
-    SoTransform * tran = static_cast<SoTransform*>(l[0]);
-    centralize.toSoTransform(tran);
-  }
+    table->setTran(centralize);
+    SoNodeList l;
+    unsigned int listLen = SoTransform::getByName("PointCloudTransform", l);
+    if(listLen == 1)
+    {
+        SoTransform * tran = static_cast<SoTransform*>(l[0]);
+        centralize.toSoTransform(tran);
+    }
 }
 
 void setNonLinkCollisions(Hand * h, bool on)
@@ -65,31 +67,34 @@ void setNonLinkCollisions(Hand * h, bool on)
 
 }
 
-  void setNontargetCollisions(Hand * h, GraspableBody * target, bool on)
+void setNontargetCollisions(Hand * h, GraspableBody * target, bool on)
 {
-  World * w = getWorld();
-  for (int i = 0; i < w->getNumGB(); ++i)
+    World * w = getWorld();
+    for (int i = 0; i < w->getNumGB(); ++i)
     {
-  if(w->getGB(i) != target)
-    w->toggleCollisions(on, w->getGB(i), h);
+        if(w->getGB(i) != target)
+        {
+            w->toggleCollisions(on, w->getGB(i), h);
+        }
     }
-  w->toggleCollisions(true, target, h);
+    w->toggleCollisions(true, target, h);
 }
 
 
 void setTableObjectCollisions(bool setting)
 {
-  World * w = getWorld();
-  Body * experiment_table = getOrAddExperimentTable();
-  for (int i = 0; i < w->getNumGB(); ++i)
-    w->toggleCollisions(setting, experiment_table, w->getGB(i));
+    World * w = getWorld();
+    Body * experiment_table = getOrAddExperimentTable();
+    for (int i = 0; i < w->getNumGB(); ++i)
+    {
+        w->toggleCollisions(setting, experiment_table, w->getGB(i));
+    }
 }
 
 void disableTableObjectCollisions()
 {
-  setTableObjectCollisions(false);
+    setTableObjectCollisions(false);
 }
-
 
 
 GraspableBody * getNextGraspableBody(GraspableBody * b)
@@ -109,7 +114,7 @@ GraspableBody * getNextGraspableBody(GraspableBody * b)
     }
     else if(w->getNumGB() > 0)
     {
-         nextBody = getWorld()->getGB(0);
+        nextBody = getWorld()->getGB(0);
     }
 
 
@@ -120,54 +125,54 @@ GraspableBody * getNextGraspableBody(GraspableBody * b)
 
 int getGraspableBodyIndex(Body * b)
 {
-  World * w = getWorld();
-  int bodyIndex = -1;
-  while(bodyIndex < w->getNumGB() - 1)
+    World * w = getWorld();
+    int bodyIndex = -1;
+    while(bodyIndex < w->getNumGB() - 1)
     {
-  ++bodyIndex;
-  if(w->getGB(bodyIndex) == b)
-    break;
+        ++bodyIndex;
+        if(w->getGB(bodyIndex) == b)
+            break;
     }
-  return bodyIndex;
+    return bodyIndex;
 }
 
 Body * getObjectByName(const QString & objectName)
 {
-  World * w = getWorld();
-  Body * b = NULL;
-  for(int i = 0; i < w->getNumBodies(); ++i)
+    World * w = getWorld();
+    Body * b = NULL;
+    for(int i = 0; i < w->getNumBodies(); ++i)
     {
-  if(w->getBody(i)->getName() == objectName)
-    b = w->getBody(i);
+        if(w->getBody(i)->getName() == objectName)
+            b = w->getBody(i);
     }
-  return b;
+    return b;
 }
 
 
 World * getWorld()
 {
-  return graspItGUI->getIVmgr()->getWorld();
+    return graspItGUI->getIVmgr()->getWorld();
 }
 
 
 //! Brief helper to add an object to the world from relative directory, model type, and model filename.
 Body * addToWorld(const QString & relativeModelDir, const QString & modelType, const QString & modelFilename)
 {
-  QString bodyFile = QString(getenv("GRASPIT")) + "/" +  relativeModelDir + modelFilename;
-  std::cout << "body string: "<< bodyFile.toStdString() << std::endl;
-  return graspItGUI->getIVmgr()->getWorld()->importBody(modelType, bodyFile);
+    QString bodyFile = QString(getenv("GRASPIT")) + "/" +  relativeModelDir + modelFilename;
+    std::cout << "body string: "<< bodyFile.toStdString() << std::endl;
+    return graspItGUI->getIVmgr()->getWorld()->importBody(modelType, bodyFile);
 }
 
 
 //! If the named body doesn't exist, add it to the world
 Body * addBodyIfUnique(const QString & bodyName)
 {
-  Body * newBody = getObjectByName(bodyName);
-  if(newBody)
-    return newBody;
-  newBody = addToWorld("models/objects/","Body", bodyName+".xml");
+    Body * newBody = getObjectByName(bodyName);
+    if(newBody)
+        return newBody;
+    newBody = addToWorld("models/objects/","Body", bodyName+".xml");
 
-  return newBody;
+    return newBody;
 }
 
 //! Aligns the hand to an object
@@ -189,15 +194,15 @@ void alignHandToObject(Hand * hand, Body * targetBody, double distance)
     //If the angle is over a small threshold, correct the approach direction
     //if(angle > .01)
     //{
-        //Find the axis to rotate around to match approach direction to
-        //to the desired direction
+    //Find the axis to rotate around to match approach direction to
+    //to the desired direction
     //    vec3 rotationAxis = approachToBody*approachDir;
 
-        //Calculate the relative transf based on the angle and axis
+    //Calculate the relative transf based on the angle and axis
     //    transf rotationTran = rotate_transf(-angle, rotationAxis);
 
-        //Move the hand to this relative transform
-        //hand->setTran(rotationTran * hand->getTran());
+    //Move the hand to this relative transform
+    //hand->setTran(rotationTran * hand->getTran());
     //}
 
     //If the distance is legal, try to set the hand to the desired distance,
@@ -210,23 +215,28 @@ void alignHandToObject(Hand * hand, Body * targetBody, double distance)
 //!  with open fingers.
 void realignHand(Hand * h)
 {
-  double approachDist;
-  h->quickOpen(1.0);
-  if(h->getGrasp()->getObject()){
-    approachDist = 300;
-    bool collisionsWereOn = !getWorld()->collisionsAreOff(h, h->getGrasp()->getObject());
-    if(collisionsWereOn)
-        getWorld()->toggleCollisions(false, h, h->getGrasp()->getObject());
-    alignHandToObject(h, h->getGrasp()->getObject(), approachDist);
-    if(collisionsWereOn)
-        getWorld()->toggleCollisions(true, h, h->getGrasp()->getObject());
-  }
-  else
+    double approachDist;
+    h->quickOpen(1.0);
+    if(h->getGrasp()->getObject())
     {
-      DBGA("Aligning hand without object");
-      approachDist = 300 - h->getTran().translation().len();
-      h->approachToContact(-approachDist, true);
-  }
+        approachDist = 300;
+        bool collisionsWereOn = !getWorld()->collisionsAreOff(h, h->getGrasp()->getObject());
+        if(collisionsWereOn)
+        {
+            getWorld()->toggleCollisions(false, h, h->getGrasp()->getObject());
+        }
+        alignHandToObject(h, h->getGrasp()->getObject(), approachDist);
+        if(collisionsWereOn)
+        {
+            getWorld()->toggleCollisions(true, h, h->getGrasp()->getObject());
+        }
+    }
+    else
+    {
+        DBGA("Aligning hand without object");
+        approachDist = 300 - h->getTran().translation().len();
+        h->approachToContact(-approachDist, true);
+    }
 }
 
 transf getCOGTransform(DynamicBody *b)
@@ -236,7 +246,6 @@ transf getCOGTransform(DynamicBody *b)
 
 transf getCenterOfRotation(DynamicBody *b)
 {
-    //return b->getTran();
     return getCOGTransform(b);
 }
 

@@ -23,8 +23,9 @@
 
 namespace db_planner
 {
-class DatabaseManager;
+    class DatabaseManager;
 }
+
 class GraspitDBModel;
 class Body;
 class transf;

@@ -33,7 +33,6 @@ class BCIService:public QObject
 public:
     ~BCIService(){}
 
-    BCIOnlinePlanner * currentPlanner;
     ControllerSceneManager * csm;
     QTimer *timer;
 
@@ -55,32 +54,10 @@ public:
     //void emitAnalyzeNextGrasp() {emit analyzeNextGrasp(); }
     void emitAnalyzeApproachDir(GraspPlanningState * gs){emit analyzeApproachDir(gs);}
 
-    //ros server calls
-    bool runObjectRetreival(QObject *callbackReceiver, const char *slot);
-
-    bool runObjectRecognition(QObject * callbackReceiver , const char * slot);
-
-    bool getCameraOrigin(QObject * callbackReceiver, const char * slot);
-
-    bool checkGraspReachability(const GraspPlanningState * state,
-                                            QObject * callbackReceiver,
-                                            const char * slot);
-
-
-    bool executeGrasp(const GraspPlanningState * gps,
-                                  QObject * callbackReceiver,
-                                  const char * slot);
-
-
     static BCIService* getInstance();
 
     void init(BCIControlWindow *bciControlWindow);
     SoQtRenderArea *bciRenderArea;
-
-    void setCurrentPlanner(BCIOnlinePlanner *p){currentPlanner = p;}
-    BCIOnlinePlanner * getCurrentPlanner(){return currentPlanner;}
-
-
 
 public slots:
     //called when active planner is updated
@@ -127,10 +104,7 @@ private:
         //this is singleton, so constructor must be private.
         BCIService();
 
-        RosClient *rosClient;
         SoOrthographicCamera * pcam;
-
-        static QMutex createLock;
 
 };
 

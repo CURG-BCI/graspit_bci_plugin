@@ -119,6 +119,7 @@ set(SOURCES
     src/BCI/state.cpp
     src/BCI/BCIStateMachine.cpp
     src/BCI/states/objectSelectionState.cpp
+    src/BCI/states/objectRecognitionState.cpp
     src/BCI/states/graspSelectionState.cpp
     src/BCI/states/confirmationState.cpp
     src/BCI/states/handRotationState.cpp
@@ -168,6 +169,7 @@ set(HEADERS
     include/BCI/states/handRotationState.h
     include/BCI/states/graspSelectionState.h
     include/BCI/states/activateRefinementState.h
+    include/BCI/states/objectRecognitionState.h
 
     include/BCI/states/executionState.h
     include/BCI/states/stoppedExecutionState.h
@@ -206,6 +208,7 @@ set(MOCS
 
     include/BCI/state.h
     include/BCI/states/objectSelectionState.h
+    include/BCI/states/objectRecognitionState.h
     include/BCI/states/placementLocationSelectionState.h
     include/BCI/states/confirmationState.h
     include/BCI/states/activateRefinementState.h

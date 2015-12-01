@@ -23,17 +23,13 @@ private:
     ObjectSelectionView *objectSelectionView;
     BCIService *bciService;
     ControllerSceneManager *csm;
-    bool visionRunning;
 
 
 public slots:
 
     void onNext();
     void onSelect();
-    void onNewObjectFound();
-
-    void onRunVision(QEvent *e = NULL);
-    void onVisionFinished();
+    void onGoBack();
 
 
 signals:
