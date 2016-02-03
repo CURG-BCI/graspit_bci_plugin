@@ -22,8 +22,8 @@ ControllerSceneManager::ControllerSceneManager(SoAnnotation *control_scene_separ
     SoEventCallback *mouseEventCB = new SoEventCallback;
     mouseEventCB->addEventCallback(SoMouseButtonEvent::getClassTypeId(), handleMouseButtonEvent);
     control_scene_separator->addChild(mouseEventCB);
-
-    cursor = new Cursor(control_scene_separator, QString("cursor_scaled.png"), -.8, -1.0, 0.0);
+    //pipeline=new Pipeline(control_scene_separator, QString("pipeline_grasp_confirmation.png"), -0.7 , 0.7, 0.0);
+    cursor = new Cursor(control_scene_separator, QString("cursor_scaled.png"), .8, -1.0, 0.0);
     current_control_scene_manager = this;
 }
 

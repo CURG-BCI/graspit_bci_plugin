@@ -181,6 +181,17 @@ void Target::update(int state, short renderAreaWidth_, short renderAreaHeight_)
     bounding_rect = new QRectF(x,y,  orig_height/500.0, orig_width/500.0);
 }
 
+Pipeline::Pipeline(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_)
+    : Sprite(control_scene_separator, filename, x_, y_, theta_)
+{}
+
+void Pipeline::update(int state, short renderAreaWidth_, short renderAreaHeight_)
+{
+
+
+}
+
+
 
 Sprite::Sprite(SoAnnotation *control_scene_separator,
                QString filename_,

@@ -30,16 +30,17 @@ void ConfirmationState::onEntry(QEvent *e)
     confirmationView->setCurrentGrasp(hand,grasp);
     confirmationView->show();
     bciControlWindow->currentState->setText("Confirmation");
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_confirmation.png"), -0.7 , 0.7, 0.0);
     OnlinePlannerController::getInstance()->setPlannerToPaused();
 
 
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                       0.35, 0.25, 0.0, QString("Confirm\nGrasp")));
+                                                                       -1.4, -1, 0.0, QString("Confirm\nGrasp")));
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                       -1.1, 0.25, 0.0, QString("Go Back")));
+                                                                       -1.4, -.8, 0.0, QString("Go Back")));
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToExecutionState()));
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(emit_goToPreviousState()));
@@ -57,6 +58,7 @@ void ConfirmationState::onNextGrasp(QEvent *e)
 void ConfirmationState::onExit(QEvent * e)
 {
     csm->clearTargets();
+    delete csm->pipeline;
     Q_UNUSED(e);
     confirmationView->hide();
 

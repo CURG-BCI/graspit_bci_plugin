@@ -1,5 +1,5 @@
 #include "stoppedExecutionView.h"
-#include "graspit_bci_plugin/ui_stoppedExecutionView.h"
+#include "ui_stoppedExecutionView.h"
 #include "BCI/bciService.h"
 
 StoppedExecutionView::StoppedExecutionView(QWidget *parent) :

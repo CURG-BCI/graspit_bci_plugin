@@ -1,5 +1,5 @@
 #include "confirmationView.h"
-#include "graspit_bci_plugin/ui_confirmationView.h"
+#include "ui_confirmationView.h"
 #include "BCI/bciService.h"
 #include "include/graspitGUI.h"
 #include "include/ivmgr.h"

@@ -84,4 +84,13 @@ public:
 
 };
 
+class Pipeline: public Sprite
+{
+        Q_OBJECT ;
+public:
+    Pipeline(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_);
+    //void setXYTheta(double x_, double y_, double theta_);
+    void update(int state, short renderAreaWidth, short renderAreaHeight);
+
+};
 #endif

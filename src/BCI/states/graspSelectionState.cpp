@@ -24,32 +24,32 @@ void GraspSelectionState::onEntry(QEvent *e)
 {
     graspSelectionView->show();
     bciControlWindow->currentState->setText(stateName);
-
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_selection.png"), -0.7 , 0.7, 0.0);
     onPlannerUpdated();
 
     csm->clearTargets();
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                       0.35,
-                                                                       0.25,
+                                                                       -1.4,
+                                                                       -1.0,
                                                                        0.0, QString("Next\nGrasp")));
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                       -1.1,
-                                                                       0.25,
+                                                                       -1.4,
+                                                                       0.8,
                                                                        0.0, QString("Refine\nGrasp")));
     std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                       -1.1,
-                                                                       -1.0,
+                                                                       -1.4,
+                                                                       -0.6,
                                                                        0.0, QString("Select\nGrasp")));
 
     std::shared_ptr<Target>  t4 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                       0.35,
-                                                                       -1.0,
+                                                                       -1.4,
+                                                                       -0.4,
                                                                        0.0, QString("Select\nDifferent\nObject")));
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(onNext()));
@@ -67,6 +67,7 @@ void GraspSelectionState::onEntry(QEvent *e)
 void GraspSelectionState::onExit(QEvent *e)
 {
     csm->clearTargets();
+    delete csm->pipeline;
     graspSelectionView->hide();
 }
 

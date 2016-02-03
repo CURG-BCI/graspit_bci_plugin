@@ -102,6 +102,14 @@ include_directories(include include/BCI include/BCI/utils ui ${catkin_INCLUDE_DI
 #include_directories(/home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/src)
 #include_directories(/home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/src/DBase)
 #include_directories(/home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/src/DBase/DBPlanner)
+#include_directories(/home/armuser/ros/graspit_bci_plugin_ws/build/graspit-ros/graspit/ui)
+
+# Make sure the compiler can find the pre-processed files from qt4_wrap_ui
+include_directories("${CMAKE_BINARY_DIR}")
+include_directories("${CMAKE_BINARY_DIR}/graspit-ros/graspit/ui")
+include_directories("${CMAKE_BINARY_DIR}/graspit_bci_plugin")
+MESSAGE("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
+
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ###
@@ -246,10 +254,7 @@ qt4_wrap_cpp(GENERATED_SOURCES ${MOCS})
 
 source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
 
-# Make sure the compiler can find the pre-processed files from qt4_wrap_ui
-include_directories("${CMAKE_BINARY_DIR}")
-include_directories("${CMAKE_BINARY_DIR}/graspit-ros/graspit/ui")
-MESSAGE("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
+
 
 ## Declare a cpp library
  add_library(graspit_bci_plugin

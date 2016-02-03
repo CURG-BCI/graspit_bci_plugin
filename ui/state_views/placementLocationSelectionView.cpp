@@ -1,5 +1,5 @@
 #include "placementLocationSelectionView.h"
-#include "graspit_bci_plugin/ui_placementLocationSelectionView.h"
+#include "ui_placementLocationSelectionView.h"
 
 PlacementLocationSelectionView::PlacementLocationSelectionView(QWidget *parent) :
     QWidget(parent),

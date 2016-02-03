@@ -1,5 +1,5 @@
 #include "activeRefinementView.h"
-#include "graspit_bci_plugin/ui_activeRefinementView.h"
+#include "ui_activeRefinementView.h"
 #include "BCI/bciService.h"
 #include "BCI/onlinePlannerController.h"
 

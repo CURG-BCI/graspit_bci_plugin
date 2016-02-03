@@ -12,6 +12,7 @@
 class Cursor;
 class Target;
 class SoAnnotation;
+class Pipeline;
 
 enum CursorState{SPINNING = 0, MOVING_SLOW = 1, MOVING_FAST = 2};
 
@@ -25,6 +26,7 @@ class ControllerSceneManager: public QObject {
 protected:
 
     int state;
+
     Cursor *cursor;
     std::vector<std::shared_ptr<Target>> targets;
     std::vector<std::shared_ptr<Target>> temp_targets;
@@ -45,7 +47,7 @@ protected:
 
 public:
     ControllerSceneManager(SoAnnotation *control_scene_separator_);
-
+    Pipeline* pipeline;
     virtual ~ControllerSceneManager() {};
     void addTarget(std::shared_ptr<Target> t);
     void clearTargets();

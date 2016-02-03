@@ -23,10 +23,10 @@ void ExecutionState::onEntry(QEvent *e)
     executeGrasp(OnlinePlannerController::getInstance()->getCurrentGrasp());
 
     csm->clearTargets();
-
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_execution.png"), -0.7 , 0.7, 0.0);
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                       -1.1, 0.25, 0.0, QString("STOP!")));
+                                                                       -1.4, -1.0, 0.0, QString("STOP!")));
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToStoppedExecutionState()));
 
@@ -34,7 +34,7 @@ void ExecutionState::onEntry(QEvent *e)
 }
 
 void ExecutionState::onExit(QEvent *e)
-{
+{   delete csm->pipeline;
     executionView->hide();
 }
 

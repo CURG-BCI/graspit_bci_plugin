@@ -1,5 +1,5 @@
 #include "objectSelectionView.h"
-#include "graspit_bci_plugin/ui_objectSelectionView.h"
+#include "ui_objectSelectionView.h"
 #include "include/debug.h"
 
 ObjectSelectionView::ObjectSelectionView(ObjectSelectionState *state,QWidget *parent) :

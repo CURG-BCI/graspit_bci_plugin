@@ -39,19 +39,19 @@ void ObjectSelectionState::onEntry(QEvent *e)
     WorldController::getInstance()->highlightCurrentBody(currentTarget);    
     OnlinePlannerController::getInstance()->setSceneLocked(false);
     OnlinePlannerController::getInstance()->showRobots(false);
-
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), -0.7 , 0.7, 0.0);
     csm->clearTargets();
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                      -1.1, -1.0, 0.0, QString("Next\nObject")));
+                                                                      -1.4, -1.0, 0.0, QString("Next\nObject")));
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                      0.35, -1.0, 0.0, QString("Select\nObject")));
+                                                                      -1.4, -0.8, 0.0, QString("Select\nObject")));
 
     std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                      0.35, 0.25, 0.0, QString("Rerun\nVision")));
+                                                                      -1.4, -0.6 , 0.0, QString("Rerun\nVision")));
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(onNext()));
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onSelect()));
@@ -69,7 +69,8 @@ void ObjectSelectionState::onExit(QEvent *e)
     OnlinePlannerController::getInstance()->setSceneLocked(true);
     OnlinePlannerController::getInstance()->setPlannerToReady();
     OnlinePlannerController::getInstance()->startGraspReachabilityAnalysis();
-
+    delete csm->pipeline;
+    std::cout<<"Deleted Pipeline object!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "<<std::endl;
     objectSelectionView->hide();
 
     OnlinePlannerController::getInstance()->showRobots(true);

@@ -1,5 +1,5 @@
 #include "graspSelectionView.h"
-#include "graspit_bci_plugin/ui_graspSelectionView.h"
+#include "ui_graspSelectionView.h"
 #include "BCI/bciService.h"
 #include "include/debug.h"
 

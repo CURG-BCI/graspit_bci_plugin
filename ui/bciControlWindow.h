@@ -2,7 +2,7 @@
 #define BCICONTROLWINDOW_H
 
 #include <QDialog>
-#include "graspit_bci_plugin/ui_BCIControlWindowBase.h"
+#include "ui_BCIControlWindowBase.h"
 #include "BCI/bciService.h"
 #include "include/debug.h"
 #include "BCI/onlinePlannerController.h"
