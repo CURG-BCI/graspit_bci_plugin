@@ -29,6 +29,7 @@ protected:
     SoImage *image;
     SoTransform * imageTran;
     QString filename;
+    QString button_text;
 
     short renderAreaWidth;
     short renderAreaHeight;
