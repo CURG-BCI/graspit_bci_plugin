@@ -25,6 +25,7 @@ ControllerSceneManager::ControllerSceneManager(SoAnnotation *control_scene_separ
     //pipeline=new Pipeline(control_scene_separator, QString("pipeline_grasp_confirmation.png"), -0.7 , 0.7, 0.0);
     cursor = new Cursor(control_scene_separator, QString("cursor_scaled.png"), .8, -1.0, 0.0);
     current_control_scene_manager = this;
+    next_target=0;
 }
 
 void ControllerSceneManager::addTarget(std::shared_ptr<Target> t)
@@ -84,7 +85,28 @@ void ControllerSceneManager::update()
                 SoDB::writeunlock();
             }
         }
-        this->unlock();
+//        if(this->state==CursorState::SPINNING)
+//                {
+//                    //std::cout<<"Spinning!!!!!!!!!!!!!!!!!!!!!!!!!1"<<std::endl;
+//                }
+        if(this->state==CursorState::MOVING_SLOW)
+                        {   std::cout<<"Size:"<<temp_targets.size()<<std::endl;
+                            temp_targets[next_target]->active=false;
+                            next_target=next_target<temp_targets.size()-1 ? next_target+1:0;
+                            while(!(temp_targets[next_target]->valid))
+                            {
+                               next_target=next_target<temp_targets.size()-1 ? next_target+1:0;
+                            }
+                            temp_targets[next_target]->update2(renderAreaWidth, renderAreaHeight);
+                            std::cout<<"<"<<next_target<<">"<<std::endl;
+                        }
+         else if(this->state==CursorState::MOVING_FAST)
+                        {  temp_targets[next_target]->setHit();
+
+                            std::cout<<"Moving Fast****************************************"<<std::endl;
+                        }
+          this->state=CursorState::SPINNING;
+          this->unlock();
     }
 
 

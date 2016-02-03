@@ -157,9 +157,42 @@ void Target::update(int state, short renderAreaWidth_, short renderAreaHeight_)
     else if(steps_since_last_hit < 5)
     {
         steps_since_last_hit += 1;
-        image->filename = "/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/target_hit.png";
+        if(this->active)
+        {std::cout<<"updating&&&&&&&&&&&&&&&&"<<std::endl;
+        image->filename = "/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/target_active.png";
+}
     }
 
+    int orig_height = qimage->height();
+    int orig_width = qimage->width();
+
+    int scaled_height = int(1.0/10 *renderAreaHeight);
+    int scaled_width = int(1.0/10*renderAreaWidth);
+    scaled_height = std::max(scaled_height, 5);
+    scaled_width = std::max(scaled_width, 5);
+    QSize scaled_size = QSize(scaled_height, scaled_width);
+    QImage scaled_img = qimage->scaled(scaled_size, Qt::KeepAspectRatio);
+
+    int height = scaled_img.height();
+    int width = scaled_img.width();
+
+    convert(scaled_img.copy(QRect((scaled_img.width()-width)/2,
+                                   (scaled_img.height()-height)/2,
+                                   width,
+                                   height)), image->image);
+
+    bounding_rect = new QRectF(x,y,  orig_height/500.0, orig_width/500.0);
+}
+
+void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
+{
+
+    renderAreaHeight = renderAreaHeight_;
+    renderAreaWidth = renderAreaWidth_;
+
+
+        image->filename = "/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/target_active.png";
+    qimage = new QImage("/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/target_active.png");
     int orig_height = qimage->height();
     int orig_width = qimage->width();
 
