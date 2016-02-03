@@ -102,6 +102,9 @@ void GraspSelectionState::showCurrentGrasp()
     {
         currentGrasp->execute(OnlinePlannerController::getInstance()->getSolutionHand());
         OnlinePlannerController::getInstance()->alignHand();
+        OnlinePlannerController::getInstance()->showSeedHand(false);
+        OnlinePlannerController::getInstance()->showMHand(false);
+        OnlinePlannerController::getInstance()->showSolutionHand(false);
     }
 }
 

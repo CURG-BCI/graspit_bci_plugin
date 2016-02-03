@@ -118,11 +118,12 @@ void Cursor::update(int state, short renderAreaWidth_, short renderAreaHeight_)
 Target::Target(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_, QString target_text)
     : Sprite(control_scene_separator, filename, x_, y_, theta_),
       steps_since_last_hit(500)
-{    
+{
+    button_text=target_text;
     QPainter p(qimage);
     p.setPen(QPen(Qt::lightGray));
     p.setFont(QFont("Times", 28, QFont::Bold));
-    p.drawText(qimage->rect(), Qt::AlignCenter, target_text.toStdString().c_str());
+    p.drawText(qimage->rect(), Qt::AlignCenter, button_text.toStdString().c_str());
     convert(*qimage, image->image);
 }
 
@@ -158,12 +159,14 @@ void Target::update(int state, short renderAreaWidth_, short renderAreaHeight_)
     else if(steps_since_last_hit < 5)
     {
         steps_since_last_hit += 1;
-        //image->filename = "/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/target_hit.png";
-        image->filename = "/home/jvarley/ros/bci_project_ws/src/graspit_bci_plugin/sprites/target_hit.png";
+
+        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("/target_hit.png");
+        image->filename = sprite_file.toStdString().c_str();
 
         if(this->active)
-        {std::cout<<"updating&&&&&&&&&&&&&&&&"<<std::endl;
-            image->filename = "/home/jvarley/ros/bci_project_ws/src/graspit_bci_plugin/sprites/target_active.png";
+        {
+            sprite_file = QString(getenv("SPRITES_DIR")) + QString("/target_active.png");
+            image->filename =  sprite_file.toStdString().c_str();
         }
     }
 
@@ -195,8 +198,25 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
     renderAreaWidth = renderAreaWidth_;
 
 
-        image->filename = "/home/jvarley/ros/bci_project_ws/src/graspit_bci_plugin/sprites/target_active.png";
-    qimage = new QImage("/home/jvarley/ros/bci_project_ws/src/graspit_bci_plugin/sprites/target_active.png");
+    if(this->active)
+    {
+        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("/target_active.png");
+        qimage = new QImage(sprite_file);
+        QPainter p(qimage);
+        p.setPen(QPen(Qt::lightGray));
+        p.setFont(QFont("Times", 28, QFont::Bold));
+        p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
+
+    }
+    else
+    {   QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("/target_background.png");
+        qimage = new QImage(sprite_file);
+        QPainter p(qimage);
+        p.setPen(QPen(Qt::lightGray));
+        p.setFont(QFont("Times", 28, QFont::Bold));
+        p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
+
+    }
     int orig_height = qimage->height();
     int orig_width = qimage->width();
 

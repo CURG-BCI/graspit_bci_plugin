@@ -93,6 +93,7 @@ void OnlinePlannerController::showRobots(bool show)
 void OnlinePlannerController::showSeedHand(bool show)
 {
     mPlanner->getSeedHand()->setRenderGeometry(show);
+    mPlanner->getSeedHand()->getWorld()->removeElementFromSceneGraph(mPlanner->getSeedHand());
 }
 void OnlinePlannerController::showMHand(bool show)
 {
@@ -172,6 +173,7 @@ void OnlinePlannerController::initializeTarget()
     targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
 
     // Download grasps from database and load them in to the planner
+    DBGA("OnlinePlannerController::initializeTarget: about to initializeDbInterface");
     initializeDbInterface();
     targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
     DBGA("OnlinePlannerController::initializeTarget: about to update solution list");

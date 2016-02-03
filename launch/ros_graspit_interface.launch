@@ -1,6 +1,8 @@
 <launch>
   <node name="graspit_ros" pkg="graspit" type="graspit" args="plugin:libgraspit_bci_plugin" output="screen">
     <env name="GRASPIT" value="$(find graspit)/graspit_source"/>
-    <env name="GRASPIT_PLUGIN_DIR" value="/home/jvarley/ros/bci_project_ws/devel/lib"/>
+    <env name="CGDB_MODEL_ROOT" value="$(find graspit)/graspit_source/cgdb"/>
+    <env name="GRASPIT_PLUGIN_DIR" value="$(find graspit_bci_plugin)/../../devel/lib"/>
+    <env name="SPRITES_DIR" value="$(find graspit_bci_plugin)/sprites"/>
   </node>
 </launch>

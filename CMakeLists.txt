@@ -120,6 +120,7 @@ set(SOURCES
     src/main.cpp
     src/SoRing.cpp
     src/BCIOnlinePlanner.cpp
+    src/BCIOnlinePlanner_2.cpp
     src/BCI/utils/uiTools.cpp
     src/BCI/utils/worldElementTools.cpp
     src/BCI/utils/plannerTools.cpp
@@ -186,6 +187,7 @@ set(HEADERS
     include/BCI/controller_scene/controller_scene_mgr.h
     include/BCI/controller_scene/sprites.h
     include/BCIOnlinePlanner.h
+    include/BCIOnlinePlanner_2.h
     include/pointers.dat
     include/worldController.h
 

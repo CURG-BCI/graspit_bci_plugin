@@ -66,15 +66,15 @@ void ControllerSceneManager::update()
     {
         temp_targets = targets;
         targets.clear();
-        cursor->update(state, renderAreaWidth, renderAreaHeight);
+        //cursor->update(state, renderAreaWidth, renderAreaHeight);
         for(int i = 0; i < temp_targets.size(); i++)
         {
             if (temp_targets[i]->valid)
             {
                 temp_targets[i]->update(state, renderAreaWidth, renderAreaHeight);
-                if (temp_targets[i]->intersects(cursor->bounding_rect))
+                if (temp_targets[i]->active)
                 {
-                    temp_targets[i]->setHit();
+                   // temp_targets[i]->update2()
                 }
                 targets.push_back(temp_targets[i]);
             }
@@ -92,11 +92,13 @@ void ControllerSceneManager::update()
         if(this->state==CursorState::MOVING_SLOW)
                         {   std::cout<<"Size:"<<temp_targets.size()<<std::endl;
                             temp_targets[next_target]->active=false;
+                            temp_targets[next_target]->update2(renderAreaWidth, renderAreaHeight);
                             next_target=next_target<temp_targets.size()-1 ? next_target+1:0;
                             while(!(temp_targets[next_target]->valid))
                             {
                                next_target=next_target<temp_targets.size()-1 ? next_target+1:0;
                             }
+                            temp_targets[next_target]->active=true;
                             temp_targets[next_target]->update2(renderAreaWidth, renderAreaHeight);
                             std::cout<<"<"<<next_target<<">"<<std::endl;
                         }
