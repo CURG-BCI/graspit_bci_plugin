@@ -42,7 +42,7 @@ void ObjectSelectionState::onEntry(QEvent *e)
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), -0.7 , 0.7, 0.0);
     csm->clearTargets();
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
+                                                                       QString("target_active.png"),
                                                                       -1.4, -1.0, 0.0, QString("Next\nObject")));
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
@@ -68,13 +68,13 @@ void ObjectSelectionState::onExit(QEvent *e)
     WorldController::getInstance()->unhighlightAllBodies();
     OnlinePlannerController::getInstance()->setSceneLocked(true);
     OnlinePlannerController::getInstance()->setPlannerToReady();
-    OnlinePlannerController::getInstance()->startGraspReachabilityAnalysis();
-    delete csm->pipeline;
-    std::cout<<"Deleted Pipeline object!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "<<std::endl;
-    objectSelectionView->hide();
+//    OnlinePlannerController::getInstance()->startGraspReachabilityAnalysis();
+//    delete csm->pipeline;
+//    std::cout<<"Deleted Pipeline object!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "<<std::endl;
+//    objectSelectionView->hide();
 
-    OnlinePlannerController::getInstance()->showRobots(true);
-    csm->clearTargets();
+//    OnlinePlannerController::getInstance()->showRobots(true);
+//    csm->clearTargets();
     std::cout << "Finished onExit of Object Selection State." << std::endl;
 
 

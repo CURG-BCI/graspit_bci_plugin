@@ -67,6 +67,8 @@ public:
     virtual ~Target();
     void update(int state, short renderAreaWidth, short renderAreaHeight);
     void setHit();
+        void update2(short renderAreaWidth_, short renderAreaHeight_);
+    bool active;
 
 signals:
         void hit();
@@ -91,6 +93,7 @@ public:
     Pipeline(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_);
     //void setXYTheta(double x_, double y_, double theta_);
     void update(int state, short renderAreaWidth, short renderAreaHeight);
+
 
 };
 #endif

@@ -132,20 +132,27 @@ OnlinePlannerController::plannerTimedUpdate()
 
 void OnlinePlannerController::initializeDbInterface()
 {
+    DBGA("OnlinePlannerController::initializeDbInterface: checking for mDbMgr");
     if (!mDbMgr)
     {
+        DBGA("OnlinePlannerController::initializeDbInterface: about to create graspitDBModelAllocator");
         GraspitDBModelAllocator *graspitDBModelAllocator = new GraspitDBModelAllocator();
+        DBGA("OnlinePlannerController::initializeDbInterface: about to create graspitDBGraspAllocator");
         GraspitDBGraspAllocator *graspitDBGraspAllocator = new GraspitDBGraspAllocator(mPlanner->getHand());
+        DBGA("OnlinePlannerController::initializeDbInterface: about to connect");
         mDbMgr = new db_planner::SqlDatabaseManager("tonga.cs.columbia.edu", 5432,
                                                     "postgres","roboticslab","armdb",graspitDBModelAllocator,graspitDBGraspAllocator);
-
+        DBGA("OnlinePlannerController::initializeDbInterface: inited mDbMgr\n");
     }
 
+    DBGA("OnlinePlannerController::initializeDbInterface: checking for mPlanner.getHand()");
     if(mPlanner->getHand())
     {
+        std::cout << "about to import grasps from dbmgr." << std::endl;
         planner_tools::importGraspsFromDBMgr(mPlanner, mDbMgr);
         std::cout << "Sucessfully imported grasps from dbmgr." << std::endl;
     }
+    DBGA("OnlinePlannerController::initializeDbInterface: finished");
 }
 
 
@@ -160,12 +167,14 @@ void OnlinePlannerController::initializeTarget()
     //start planner
     targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
 
+    DBGA("OnlinePlannerController::initializeTarget: about to reset planner");
     mPlanner->resetPlanner();
     targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
 
     // Download grasps from database and load them in to the planner
     initializeDbInterface();
     targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
+    DBGA("OnlinePlannerController::initializeTarget: about to update solution list");
     mPlanner->updateSolutionList();
     targetsOff = getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
     // Set the hand to it's highest ranked grasp
@@ -183,6 +192,7 @@ void OnlinePlannerController::initializeTarget()
     //world_element_tools::realignHand(currentPlanner->getHand());
 
     //Now transfer that position to the reference hand.
+    DBGA("OnlinePlannerController::initializeTarget: finished");
 
 }
 
@@ -346,13 +356,16 @@ void OnlinePlannerController::setPlannerToReady()
 
     if(plannerCanBeSetToReady())
     {
+        DBGA("OnlinePlannerController::setPlannerToReady: About to initialize Target");
         initializeTarget();
+        DBGA("OnlinePlannerController::setPlannerToReady: About to shutoff collisions between hand and object");
         getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
     }
     else
     {
         DBGA("OnlinePlannerController::setPlannerToReady: ERROR Attempted to set planner to ready");
     }
+    DBGA("OnlinePlannerController::setPlannerToReady: Success");
 }
 
 void OnlinePlannerController::rotateHandLong()
