@@ -17,7 +17,8 @@
 #define MIN_Y  -1.015
 #define MAX_Y  0.85
 
-const std::string Sprite::DEFAULT_SPRITE_DIR = "/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/";
+//const std::string Sprite::DEFAULT_SPRITE_DIR = "/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/";
+const std::string Sprite::DEFAULT_SPRITE_DIR = "/home/jvarley/ros/bci_project_ws/src/graspit_bci_plugin/sprites/";
 
 Cursor::Cursor(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_)
     : Sprite(control_scene_separator, filename, x_, y_, theta_)
@@ -157,7 +158,8 @@ void Target::update(int state, short renderAreaWidth_, short renderAreaHeight_)
     else if(steps_since_last_hit < 5)
     {
         steps_since_last_hit += 1;
-        image->filename = "/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/target_hit.png";
+        //image->filename = "/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/target_hit.png";
+	image->filename = "/home/jvarley/ros/bci_project_ws/src/graspit_bci_plugin/sprites/target_hit.png";
     }
 
     int orig_height = qimage->height();
