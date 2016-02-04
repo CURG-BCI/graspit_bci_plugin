@@ -93,7 +93,10 @@ void OnlinePlannerController::showRobots(bool show)
 void OnlinePlannerController::showSeedHand(bool show)
 {
     mPlanner->getSeedHand()->setRenderGeometry(show);
-    mPlanner->getSeedHand()->getWorld()->removeElementFromSceneGraph(mPlanner->getSeedHand());
+    if(!show)
+    {
+        mPlanner->getSeedHand()->getWorld()->removeElementFromSceneGraph(mPlanner->getSeedHand());
+    }
 }
 void OnlinePlannerController::showMHand(bool show)
 {
