@@ -85,10 +85,7 @@ void ControllerSceneManager::update()
                 SoDB::writeunlock();
             }
         }
-//        if(this->state==CursorState::SPINNING)
-//                {
-//                    //std::cout<<"Spinning!!!!!!!!!!!!!!!!!!!!!!!!!1"<<std::endl;
-//                }
+
         if(this->state==CursorState::MOVING_SLOW)
                         {   std::cout<<"Size:"<<temp_targets.size()<<std::endl;
                             temp_targets[next_target]->active=false;
@@ -104,8 +101,6 @@ void ControllerSceneManager::update()
                         }
          else if(this->state==CursorState::MOVING_FAST)
                         {  temp_targets[next_target]->setHit();
-
-                            std::cout<<"Moving Fast****************************************"<<std::endl;
                         }
           this->state=CursorState::SPINNING;
           this->unlock();

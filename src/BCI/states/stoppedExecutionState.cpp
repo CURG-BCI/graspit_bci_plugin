@@ -1,6 +1,7 @@
 #include "BCI/states/stoppedExecutionState.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "BCI/controller_scene/sprites.h"
+#include <Inventor/nodes/SoAnnotation.h>
 
 StoppedExecutionState::StoppedExecutionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent)
     :State("StoppedExecutionState", parent), bciControlWindow(_bciControlWindow), csm(_csm)
@@ -18,7 +19,7 @@ void StoppedExecutionState::onEntry(QEvent *e)
     csm->clearTargets();
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_paused_execution.png"), -0.7 , 0.7, 0.0);
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
+                                                                       QString("target_active.png"),
                                                                        -1.4, -1.0, 0.0, QString("Continue")));
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
@@ -33,6 +34,10 @@ void StoppedExecutionState::onEntry(QEvent *e)
 
 
 void StoppedExecutionState::onExit(QEvent *e)
-{   delete csm->pipeline;
+{       SoDB::writelock();
+        csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
+        SoDB::writeunlock();
+    delete csm->pipeline;
+    csm->next_target=0;
     stoppedExecutionView->hide();
 }

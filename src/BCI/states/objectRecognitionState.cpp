@@ -63,7 +63,7 @@ void ObjectRecognitionState::onExit(QEvent *e)
                    csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
                    SoDB::writeunlock();
     delete csm->pipeline;
-
+    csm->next_target=0;
      objectRecognitionView->hide();
 }
 

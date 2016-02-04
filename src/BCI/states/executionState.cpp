@@ -3,6 +3,7 @@
 #include "BCI/controller_scene/sprites.h"
 #include "BCI/onlinePlannerController.h"
 #include "include/EGPlanner/searchState.h"
+#include <Inventor/nodes/SoAnnotation.h>
 
 ExecutionState::ExecutionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent)
     : State("ExecutionState", parent), bciControlWindow(_bciControlWindow),
@@ -25,7 +26,7 @@ void ExecutionState::onEntry(QEvent *e)
     csm->clearTargets();
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_execution.png"), -0.7 , 0.7, 0.0);
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
+                                                                       QString("target_active.png"),
                                                                        -1.4, -1.0, 0.0, QString("STOP!")));
     t1->active=true;
 
@@ -35,7 +36,11 @@ void ExecutionState::onEntry(QEvent *e)
 }
 
 void ExecutionState::onExit(QEvent *e)
-{   delete csm->pipeline;
+{   SoDB::writelock();
+    csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
+    SoDB::writeunlock();
+    csm->next_target=0;
+    delete csm->pipeline;
     executionView->hide();
 }
 

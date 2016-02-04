@@ -61,6 +61,7 @@ void ConfirmationState::onExit(QEvent * e)
     SoDB::writelock();
      csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
      SoDB::writeunlock();
+     csm->next_target=0;
     delete csm->pipeline;
     Q_UNUSED(e);
     confirmationView->hide();
