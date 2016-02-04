@@ -29,9 +29,9 @@ ObjectRecognitionState::ObjectRecognitionState(BCIControlWindow *_bciControlWind
 
      connect(
          this,
-         SIGNAL(addToWorld(const QString, const QString, const QString )),
+         SIGNAL(addToWorld(const QString, const QString, const transf )),
          OnlinePlannerController::getInstance(),
-         SLOT(addToWorld(const QString , const QString, const QString )));
+         SLOT(addToWorld(const QString , const QString, const transf )));
 }
 
 
@@ -105,8 +105,6 @@ void ObjectRecognitionState::addObject(graspit_msgs::ObjectInfo object)
     QString  modelName(QString::fromStdString(object.model_name) + ".xml");
     QString objectName(QString::fromStdString(object.object_name));
 
-    ROS_INFO("Adding Model %s", object.model_name.c_str());
-
     transf object_pose = transf(
                 Quaternion(
                     object.object_pose.orientation.w,
@@ -118,6 +116,9 @@ void ObjectRecognitionState::addObject(graspit_msgs::ObjectInfo object)
                     object.object_pose.position.y*1000.0,
                     object.object_pose.position.z*1000.0
                     ));
+
+    ROS_INFO("Adding Model %s", modelName.toStdString().c_str());
+    ROS_INFO("Adding Model %s", objectName.toStdString().c_str());
 
     emit addToWorld(modelName, objectName, object_pose);
 }

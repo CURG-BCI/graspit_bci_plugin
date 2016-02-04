@@ -634,6 +634,7 @@ void OnlinePlannerController::addToWorld(const QString model_filename, const QSt
     {
         b->setTran(object_pose);
         b->setName(object_name);
+        b->setObjectName(object_name);
     }
 
 }

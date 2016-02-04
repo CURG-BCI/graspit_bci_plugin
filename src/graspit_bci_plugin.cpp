@@ -34,6 +34,7 @@ namespace graspit_bci_plugin
     int GraspitBCIPlugin::init(int argc, char **argv)
     {
 
+      qRegisterMetaType<transf>("transf");
       //copy the arguments somewhere else so we can pass them to ROS
       int ros_argc = argc;
       char** ros_argv = new char*[argc];
