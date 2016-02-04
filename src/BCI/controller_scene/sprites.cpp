@@ -239,7 +239,11 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
 Pipeline::Pipeline(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_)
     : Sprite(control_scene_separator, filename, x_, y_, theta_)
 {}
-
+Pipeline::~Pipeline()
+{
+    delete qimage;
+    std::cout << "Deleting Pipeline" << std::endl;
+}
 void Pipeline::update(int state, short renderAreaWidth_, short renderAreaHeight_)
 {
 

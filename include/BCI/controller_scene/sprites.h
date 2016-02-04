@@ -95,6 +95,7 @@ class Pipeline: public Sprite
 public:
     Pipeline(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_);
     //void setXYTheta(double x_, double y_, double theta_);
+    ~Pipeline();
     void update(int state, short renderAreaWidth, short renderAreaHeight);
 
 

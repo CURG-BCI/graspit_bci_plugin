@@ -39,7 +39,7 @@ void ObjectRecognitionState::onEntry(QEvent *e)
   {
     objectRecognitionView->show();
     bciControlWindow->currentState->setText("Object Recognition State");
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), -0.7 , 0.7, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), -0.3 , 0, 0.0);
 
     sendGetCameraOriginRequest();
     sendObjectRecognitionRequest();

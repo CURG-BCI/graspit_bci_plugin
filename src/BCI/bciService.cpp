@@ -41,25 +41,25 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     ROS_INFO("Initing BCI Service");
     bciRenderArea = bciControlWindow->bciWorldView->renderArea;
 
-    QPushButton * spinButton = new QPushButton("Spin");
-    QPushButton * slowButton = new QPushButton("Move Slow");
-    QPushButton * fastButton = new QPushButton("Move Fast");
+    //QPushButton * spinButton = new QPushButton("Spin");
+    QPushButton * slowButton = new QPushButton("Flex Medium");
+    QPushButton * fastButton = new QPushButton("Flex Hard");
 
-    spinButton->setDefault(true);
+    //spinButton->setDefault(true);
     slowButton->setDefault(true);
     fastButton->setDefault(true);
 
     QDialogButtonBox *cursorControlBox = new QDialogButtonBox(Qt::Vertical);
     cursorControlBox->setCaption(QString("Cursor Control Box"));
 
-    cursorControlBox->addButton(spinButton, QDialogButtonBox::ActionRole);
+    //cursorControlBox->addButton(spinButton, QDialogButtonBox::ActionRole);
     cursorControlBox->addButton(slowButton, QDialogButtonBox::ActionRole);
     cursorControlBox->addButton(fastButton, QDialogButtonBox::ActionRole);
     cursorControlBox->setWindowFlags(Qt::WindowStaysOnTopHint);
     cursorControlBox->resize(QSize(200,100));
     cursorControlBox->show();
 
-    QObject::connect(spinButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState0()));
+    //QObject::connect(spinButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState0()));
     QObject::connect(slowButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState1()));
     QObject::connect(fastButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState2()));
 
