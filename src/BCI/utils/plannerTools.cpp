@@ -95,7 +95,7 @@ namespace bci_experiment
             Hand*mHand = mPlanner->getSeedHand();
 
             db_planner::Model *m=new db_planner::Model;
-            m->SetModelName(mHand->getGrasp()->getObject()->getName().toStdString());
+            m->SetModelName(mHand->getGrasp()->getObject()->getName().split("_").at(0).toStdString());
 
             std::vector<db_planner::Grasp*> grasps;
             mDbMgr->GetGrasps(*m, getHandDBName(mHand).toStdString(), &grasps);
