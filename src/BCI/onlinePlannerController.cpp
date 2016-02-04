@@ -67,6 +67,8 @@ OnlinePlannerController::OnlinePlannerController(QObject *parent) :
 {
     mPlanner = planner_tools::createDefaultPlanner();
     mReachabilityAnalyzer = new ReachabilityAnalyzer();
+
+    connect(mReachabilityAnalyzer, SIGNAL(updateGraspReachability(int , bool )), this, SLOT(analyzeNextGraspReachabilityCallback(int , bool )), Qt::QueuedConnection);
 }
 
 bool OnlinePlannerController::analyzeApproachDir()
@@ -550,7 +552,7 @@ void OnlinePlannerController::analyzeNextGraspReachability()
 
     if(!mReachabilityAnalyzer->isRunning())
     {
-        DBGA("OnlinePlannerController:: Grasp analysis blocked");
+        DBGA("OnlinePlannerController::analyzeNextGraspReachability() analysis blocked");
         return;
     }
 
@@ -566,13 +568,13 @@ void OnlinePlannerController::analyzeNextGraspReachability()
     const GraspPlanningState * graspToEvaluate = NULL;
     // Lock planner's grasp list
     {
-        boost::mutex::scoped_lock lock(mPlanner->mListAttributeMutex, boost::try_to_lock);
-        if(lock)
-        {
-            DBGA("Failed to take lock.");
-            return;
-        }
-        DBGA("Took the planner lock");
+//        boost::mutex::scoped_lock lock(mPlanner->mListAttributeMutex, boost::try_to_lock);
+//        if(lock)
+//        {
+//            DBGA("OnlinePlannerController::analyzeNextGraspReachability() Failed to take lock.");
+//            return;
+//        }
+//        DBGA("OnlinePlannerController::analyzeNextGraspReachability() Took the planner lock");
 
         //Check if any test is still pending
         //Go through all grasps

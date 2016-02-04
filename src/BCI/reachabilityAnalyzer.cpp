@@ -72,7 +72,7 @@ void ReachabilityAnalyzer::buildCheckReachabilityRequest(const GraspPlanningStat
 
 void ReachabilityAnalyzer::sendCheckGraspReachabilityRequest(const GraspPlanningState * gps)
 {
-
+    ROS_INFO("ReachabilityAnalyzer::sendCheckGraspReachabilityRequest About to send");
     if(is_running)
     {
         CheckGraspReachabilityGoal goal;
@@ -81,12 +81,15 @@ void ReachabilityAnalyzer::sendCheckGraspReachabilityRequest(const GraspPlanning
         analzeGraspReachabilityActionClient.sendGoal(goal,  boost::bind(&ReachabilityAnalyzer::checkGraspReachabilityCallback, this, _1, _2),
                     actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction>::SimpleActiveCallback(),
                     actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction>::SimpleFeedbackCallback());
+
+        ROS_INFO("ReachabilityAnalyzer::sendCheckGraspReachabilityRequest sent");
     }
 }
 
 void ReachabilityAnalyzer::checkGraspReachabilityCallback(const actionlib::SimpleClientGoalState& state,
                                                const moveit_trajectory_planner::CheckGraspReachabilityResultConstPtr& result)
 {
+    ROS_INFO("ReachabilityAnalyzer::checkGraspReachabilityCallback");
     if(is_running)
     {
         emit updateGraspReachability(result->grasp_id, result->isPossible);
