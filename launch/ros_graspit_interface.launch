@@ -3,6 +3,6 @@
     <env name="GRASPIT" value="$(find graspit)/graspit_source"/>
     <env name="CGDB_MODEL_ROOT" value="$(find graspit)/graspit_source/cgdb"/>
     <env name="GRASPIT_PLUGIN_DIR" value="$(find graspit_bci_plugin)/../../devel/lib"/>
-    <env name="SPRITES_DIR" value="$(find graspit_bci_plugin)/sprites"/>
+    <env name="SPRITES_DIR" value="$(find graspit_bci_plugin)/sprites/"/>
   </node>
 </launch>

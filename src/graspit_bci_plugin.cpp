@@ -64,8 +64,8 @@ namespace graspit_bci_plugin
 
 
       //this should go away, just a hack
-      //graspItGUI->getIVmgr()->getWorld()->load("/home/armuser/ros/graspit_bci_plugin_ws/src/graspit-ros/graspit/graspit_source/worlds/allVision2fromjon.xml");
-      graspItGUI->getIVmgr()->getWorld()->load("/home/jvarley/ros/bci_project_ws/src/graspit-ros/graspit/graspit_source/worlds/allVision2fromjon.xml");
+      QString worldfile = QString(getenv("GRASPIT")) + QString("/worlds/allVision2fromjon.xml");
+      graspItGUI->getIVmgr()->getWorld()->load(worldfile.toStdString().c_str());
 
       BCIControlWindow *bciControlWindow= new BCIControlWindow();
       BCIService::getInstance()->init(bciControlWindow);

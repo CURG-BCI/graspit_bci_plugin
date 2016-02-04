@@ -24,20 +24,22 @@ void ActivateRefinementState::onEntry(QEvent *e)
     activeRefinementView->show();
     updateView();
     bciControlWindow->currentState->setText("Refinement State");
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_selection.png"), -0.7 , 0.7, 0.0);
     OnlinePlannerController::getInstance()->setPlannerToRunning();
     OnlinePlannerController::getInstance()->startTimedUpdate();
 
     csm->clearTargets();
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                       -1.1, 0.25, 0.0, QString("Rotate\nLat")));
+                                                                       QString("target_active.png"),
+                                                                       -1.4, -0.6, 0.0, QString("Rotate\nLat")));
+    t2->active=true;
     std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                        -1.1, -1.0, 0.0, QString("Rotate\nLong")));
+                                                                        -1.4, -0.8, 0.0, QString("Rotate\nLong")));
     std::shared_ptr<Target>  t4 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                        0.35, -1.0, 0.0, QString("Finished\nRefinement")));
+                                                                        -1.4, -1.0, 0.0, QString("Finished\nRefinement")));
 
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onRotateHandLat()));
     QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(onRotateHandLong()));
@@ -58,6 +60,7 @@ void ActivateRefinementState::setTimerRunning()
 void ActivateRefinementState::onExit(QEvent *e)
 {
     csm->clearTargets();
+    delete csm->pipeline;
     activeRefinementView->hide();
     OnlinePlannerController::getInstance()->setPlannerToPaused();
     OnlinePlannerController::getInstance()->stopTimedUpdate();

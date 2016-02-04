@@ -23,7 +23,7 @@ ControllerSceneManager::ControllerSceneManager(SoAnnotation *control_scene_separ
     mouseEventCB->addEventCallback(SoMouseButtonEvent::getClassTypeId(), handleMouseButtonEvent);
     control_scene_separator->addChild(mouseEventCB);
     //pipeline=new Pipeline(control_scene_separator, QString("pipeline_grasp_confirmation.png"), -0.7 , 0.7, 0.0);
-    cursor = new Cursor(control_scene_separator, QString("cursor_scaled.png"), .8, -1.0, 0.0);
+    //cursor = new Cursor(control_scene_separator, QString("cursor_scaled.png"), .8, -1.0, 0.0);
     current_control_scene_manager = this;
     next_target=0;
 }
@@ -48,13 +48,13 @@ void ControllerSceneManager::clearTargets()
         temp_targets[i]->valid = false;
     }
     //targets.clear();
-    this->setCursorPosition(-1,0,0);
+   // this->setCursorPosition(-1,0,0);
     this->unlock();
 }
 
 void ControllerSceneManager::setCursorPosition(double x, double y, double theta)
 {
-    cursor->setXYTheta(x, y, theta );
+    //cursor->setXYTheta(x, y, theta );
 }
 
 void ControllerSceneManager::update()
@@ -142,7 +142,7 @@ void ControllerSceneManager::handleMouseButtonEvent(void *, SoEventCallback *eve
 //      std::cout  << "x: " << x << std::endl;
 //      std::cout  << "y: " << y << std::endl;
 
-      current_control_scene_manager->setCursorPosition(x, y, 0);
+     // current_control_scene_manager->setCursorPosition(x, y, 0);
   }
 
 

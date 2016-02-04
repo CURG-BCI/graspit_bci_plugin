@@ -55,6 +55,7 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     cursorControlBox->addButton(spinButton, QDialogButtonBox::ActionRole);
     cursorControlBox->addButton(slowButton, QDialogButtonBox::ActionRole);
     cursorControlBox->addButton(fastButton, QDialogButtonBox::ActionRole);
+    cursorControlBox->setWindowFlags(Qt::WindowStaysOnTopHint);
     cursorControlBox->resize(QSize(200,100));
     cursorControlBox->show();
 

@@ -27,6 +27,7 @@ void ExecutionState::onEntry(QEvent *e)
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
                                                                        -1.4, -1.0, 0.0, QString("STOP!")));
+    t1->active=true;
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToStoppedExecutionState()));
 

@@ -30,31 +30,33 @@ void GraspSelectionState::onEntry(QEvent *e)
     csm->clearTargets();
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
+                                                                       QString("target_active.png"),
                                                                        -1.4,
-                                                                       -1.0,
-                                                                       0.0, QString("Next\nGrasp")));
+                                                                       -0.4,
+                                                                       0.0, QString("Select\nGrasp")));
+    t1->active=true;
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
                                                                        -1.4,
-                                                                       0.8,
-                                                                       0.0, QString("Refine\nGrasp")));
+                                                                       -0.6,
+                                                                       0.0, QString("Next\nGrasp")));
+
     std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
                                                                        -1.4,
-                                                                       -0.6,
-                                                                       0.0, QString("Select\nGrasp")));
+                                                                       -0.8,
+                                                                       0.0, QString("Refine\nGrasp")));
 
     std::shared_ptr<Target>  t4 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
                                                                        -1.4,
-                                                                       -0.4,
-                                                                       0.0, QString("Select\nDifferent\nObject")));
+                                                                       -1.0,
+                                                                        0.0, QString("Back")));
 
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(onNext()));
-    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(emit_goToActivateRefinementState()));
-    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(emit_goToConfirmationState()));
+    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToConfirmationState()));
+    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onNext()));
+    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(emit_goToActivateRefinementState()));
     QObject::connect(t4.get(), SIGNAL(hit()), this, SLOT(emit_goToObjectSelectionState()));
 
     csm->addTarget(t1);

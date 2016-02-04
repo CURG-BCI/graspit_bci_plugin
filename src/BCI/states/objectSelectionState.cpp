@@ -36,7 +36,7 @@ void ObjectSelectionState::onEntry(QEvent *e)
     //Don't draw guides in this phase
     OnlinePlannerController::getInstance()->stopTimedUpdate();
     OnlinePlannerController::getInstance()->destroyGuides();
-    WorldController::getInstance()->highlightCurrentBody(currentTarget);    
+    WorldController::getInstance()->highlightCurrentBody(currentTarget);
     OnlinePlannerController::getInstance()->setSceneLocked(false);
     OnlinePlannerController::getInstance()->showRobots(false);
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), -0.7 , 0.7, 0.0);

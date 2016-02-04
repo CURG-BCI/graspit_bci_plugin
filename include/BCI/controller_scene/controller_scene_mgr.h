@@ -27,7 +27,7 @@ protected:
 
     int state;
     int next_target;
-    Cursor *cursor;
+    //Cursor *cursor;
     std::vector<std::shared_ptr<Target>> targets;
     std::vector<std::shared_ptr<Target>> temp_targets;
 

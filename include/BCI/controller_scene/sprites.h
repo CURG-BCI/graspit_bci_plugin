@@ -71,6 +71,8 @@ public:
         void update2(short renderAreaWidth_, short renderAreaHeight_);
     bool active;
 
+
+
 signals:
         void hit();
 };

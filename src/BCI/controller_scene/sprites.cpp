@@ -17,8 +17,6 @@
 #define MIN_Y  -1.015
 #define MAX_Y  0.85
 
-//const std::string Sprite::DEFAULT_SPRITE_DIR = "/home/armuser/ros/graspit_bci_plugin_ws/src/graspit_bci_plugin/sprites/";
-const std::string Sprite::DEFAULT_SPRITE_DIR = "/home/jvarley/ros/bci_project_ws/src/graspit_bci_plugin/sprites/";
 
 Cursor::Cursor(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_)
     : Sprite(control_scene_separator, filename, x_, y_, theta_)
@@ -160,12 +158,12 @@ void Target::update(int state, short renderAreaWidth_, short renderAreaHeight_)
     {
         steps_since_last_hit += 1;
 
-        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("/target_hit.png");
+        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_hit.png");
         image->filename = sprite_file.toStdString().c_str();
 
         if(this->active)
         {
-            sprite_file = QString(getenv("SPRITES_DIR")) + QString("/target_active.png");
+            sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_active.png");
             image->filename =  sprite_file.toStdString().c_str();
         }
     }
@@ -200,7 +198,7 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
 
     if(this->active)
     {
-        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("/target_active.png");
+        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_active.png");
         qimage = new QImage(sprite_file);
         QPainter p(qimage);
         p.setPen(QPen(Qt::lightGray));
@@ -209,7 +207,7 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
 
     }
     else
-    {   QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("/target_background.png");
+    {   QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_background.png");
         qimage = new QImage(sprite_file);
         QPainter p(qimage);
         p.setPen(QPen(Qt::lightGray));
@@ -258,7 +256,7 @@ Sprite::Sprite(SoAnnotation *control_scene_separator,
     : x(x_),
       y(y_),
       theta(theta_),
-      filename(QString(this->DEFAULT_SPRITE_DIR.c_str()) + filename_)
+      filename(QString(getenv("SPRITES_DIR")) + filename_)
 {
     valid=true;
     sprite_root = new SoAnnotation;
