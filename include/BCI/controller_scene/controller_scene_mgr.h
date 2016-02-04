@@ -26,7 +26,7 @@ class ControllerSceneManager: public QObject {
 protected:
 
     int state;
-    int next_target;
+
     //Cursor *cursor;
     std::vector<std::shared_ptr<Target>> targets;
     std::vector<std::shared_ptr<Target>> temp_targets;
@@ -54,7 +54,7 @@ public:
     void setCursorPosition(double x, double y,  double theta);
     static void handleMouseButtonEvent(void *,SoEventCallback *eventCB);
 
-
+    int next_target;
     static ControllerSceneManager *current_control_scene_manager;
     SoAnnotation * control_scene_separator;
 
