@@ -1,7 +1,7 @@
 #include "BCI/states/objectSelectionState.h"
 #include "BCI/bciService.h"
 #include "state_views/objectSelectionView.h"
-
+#include <Inventor/nodes/SoAnnotation.h>
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "BCI/controller_scene/sprites.h"
 
@@ -69,8 +69,11 @@ void ObjectSelectionState::onExit(QEvent *e)
     OnlinePlannerController::getInstance()->setSceneLocked(true);
     OnlinePlannerController::getInstance()->setPlannerToReady();
     OnlinePlannerController::getInstance()->startGraspReachabilityAnalysis();
+    SoDB::writelock();
+     csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
+     SoDB::writeunlock();
     delete csm->pipeline;
-    std::cout<<"Deleted Pipeline object!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "<<std::endl;
+
     objectSelectionView->hide();
 
     OnlinePlannerController::getInstance()->showRobots(true);

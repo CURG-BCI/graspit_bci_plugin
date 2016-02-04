@@ -2,7 +2,7 @@
 #include "BCI/bciService.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "BCI/controller_scene/sprites.h"
-
+#include <Inventor/nodes/SoAnnotation.h>
 using bci_experiment::OnlinePlannerController;
 using bci_experiment::world_element_tools::getWorld;
 using bci_experiment::WorldController;
@@ -60,6 +60,9 @@ void ActivateRefinementState::setTimerRunning()
 void ActivateRefinementState::onExit(QEvent *e)
 {
     csm->clearTargets();
+    SoDB::writelock();
+     csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
+     SoDB::writeunlock();
     delete csm->pipeline;
     activeRefinementView->hide();
     OnlinePlannerController::getInstance()->setPlannerToPaused();

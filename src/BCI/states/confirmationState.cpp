@@ -1,7 +1,7 @@
 
 #include "BCI/states/confirmationState.h"
 #include  <QSignalTransition>
-
+#include <Inventor/nodes/SoAnnotation.h>
 #include "BCI/onlinePlannerController.h"
 #include "BCI/bciService.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
@@ -58,6 +58,9 @@ void ConfirmationState::onNextGrasp(QEvent *e)
 void ConfirmationState::onExit(QEvent * e)
 {
     csm->clearTargets();
+    SoDB::writelock();
+     csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
+     SoDB::writeunlock();
     delete csm->pipeline;
     Q_UNUSED(e);
     confirmationView->hide();
