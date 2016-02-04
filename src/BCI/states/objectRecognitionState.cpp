@@ -47,6 +47,9 @@ void ObjectRecognitionState::onEntry(QEvent *e)
 
     ROS_INFO("NOT MAKEING CAMERA ORIGIN REQUEST, DONT WANT TO VIEW FROM ORIGIN");
     //sendGetCameraOriginRequest();
+    ROS_INFO("CLEARING ALL GRASPABLE BODIES ON ENTRANCE TO OBJECT RECOGNITION STATE");
+    emit clearGB();
+
     sendObjectRecognitionRequest();
 
 //    if(OnlinePlannerController::getInstance()->hasRecognizedObjects())
