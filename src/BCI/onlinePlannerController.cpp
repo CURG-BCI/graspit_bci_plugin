@@ -615,8 +615,10 @@ void OnlinePlannerController::analyzeNextGraspReachability()
     DBGA("checkGraspReachability: " << currentTime -  QDateTime::currentDateTime().toTime_t());
 }
 
-void OnlinePlannerController::addToWorld(const QString model_filename, const QString object_name, const transf object_pose)
+void OnlinePlannerController::addToWorld(const QString modelname, const QString object_name, const transf object_pose)
 {
+    QString model_filename = modelname + QString(".xml");
+    ROS_INFO("model filename: %s" , model_filename.toStdString().c_str());
     if(isSceneLocked())
     {
         DBGA("OnlinePlannerController::addToWorld::Tried to add objects to locked world");

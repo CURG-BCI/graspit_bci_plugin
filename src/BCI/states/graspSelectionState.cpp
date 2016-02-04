@@ -34,7 +34,6 @@ void GraspSelectionState::onEntry(QEvent *e)
                                                                        -1.4,
                                                                        -0.4,
                                                                        0.0, QString("Select\nGrasp")));
-    t1->active=true;
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),

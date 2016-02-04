@@ -41,7 +41,8 @@ void ObjectRecognitionState::onEntry(QEvent *e)
     bciControlWindow->currentState->setText("Object Recognition State");
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), -0.7 , 0.7, 0.0);
 
-    sendGetCameraOriginRequest();
+    ROS_INFO("NOT MAKEING CAMERA ORIGIN REQUEST, DONT WANT TO VIEW FROM ORIGIN");
+    //sendGetCameraOriginRequest();
     sendObjectRecognitionRequest();
 
 //    if(OnlinePlannerController::getInstance()->hasRecognizedObjects())
@@ -103,7 +104,7 @@ void ObjectRecognitionState::objectRecognitionCallback(const actionlib::SimpleCl
 
 void ObjectRecognitionState::addObject(graspit_msgs::ObjectInfo object)
 {
-    QString  modelName(QString::fromStdString(object.model_name) + ".xml");
+    QString  modelName(QString::fromStdString(object.model_name));
     QString objectName(QString::fromStdString(object.object_name));
 
     transf object_pose = transf(
