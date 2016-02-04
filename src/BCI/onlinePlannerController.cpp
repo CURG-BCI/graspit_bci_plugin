@@ -62,7 +62,8 @@ OnlinePlannerController::OnlinePlannerController(QObject *parent) :
     currentTarget(NULL),
     currentGraspIndex(0),
     graspDemonstrationHand(NULL),
-    renderPending(false)
+    renderPending(false),
+    sceneLocked(false)
 {
     mPlanner = planner_tools::createDefaultPlanner();
     mReachabilityAnalyzer = new ReachabilityAnalyzer();

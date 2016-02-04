@@ -98,6 +98,7 @@ void ObjectRecognitionState::objectRecognitionCallback(const actionlib::SimpleCl
                   boost::bind(&ObjectRecognitionState::addObject, this, _1));
 
     ROS_INFO("Sucessfully Finished runObjectRecognition Request");
+     BCIService::getInstance()->emitGoToNextState1();
 }
 
 void ObjectRecognitionState::addObject(graspit_msgs::ObjectInfo object)
