@@ -276,28 +276,40 @@ void BCIOnlinePlanner::updateSolutionList()
     //re-compute distance between current hand position and solutions.
     for ( it = mBestList.begin(); it != mBestList.end(); it++ )
     {
-        stateTran = (*it)->getTotalTran();
-        //compute distance between each solution and current hand position
-        double dist = distanceOutsideApproach(stateTran, currentHandTran, false);
-        if (dist < 0)
+
+
+//        stateTran = (*it)->getTotalTran();
+
+//        //compute distance between each solution and current hand position
+//        double dist = distanceOutsideApproach(stateTran, currentHandTran, false);
+//        if (dist < 0)
+//        {
+//            dist = -dist;
+//        }
+
+        double dist = (*it)->getEnergy();
+
+        int reachable = 1;
+        int unreachable = -1;
+        int untested = 0;
+
+        if((*it)->getAttribute("testResult") == reachable)
         {
-            dist = -dist;
+            dist -= 1000;
+            (*it)->setIVMarkerColor(1-dist, dist, 0);
+        }
+        else if ((*it)->getAttribute("testResult") == unreachable)
+        {
+            dist += 2000;
+            (*it)->setIVMarkerColor(0 , 1, 1);
+        }
+        else //untested
+        {
+            dist += 1000;
         }
 
-        dist += 1000 * (1-(*it)->getAttribute("testResult"));
         (*it)->setDistance(dist);
 
-        if (mMarkSolutions)
-        {
-            if (dist<1)
-            {
-                (*it)->setIVMarkerColor(1-dist, dist, 0);
-            }
-            else
-            {
-                (*it)->setIVMarkerColor(0 , 1, 1);
-            }
-        }
     }
 
     //sort list according to distance from current hand position
