@@ -42,8 +42,8 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     bciRenderArea = bciControlWindow->bciWorldView->renderArea;
 
     //QPushButton * spinButton = new QPushButton("Spin");
-    QPushButton * slowButton = new QPushButton("Flex Medium");
-    QPushButton * fastButton = new QPushButton("Flex Hard");
+    QPushButton * slowButton = new QPushButton("Flex Medium (Next)");
+    QPushButton * fastButton = new QPushButton("Flex Hard (Select)");
 
     //spinButton->setDefault(true);
     slowButton->setDefault(true);

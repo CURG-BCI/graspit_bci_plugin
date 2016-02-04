@@ -2,6 +2,7 @@
 #include "BCI/bciService.h"
 #include "BCI/onlinePlannerController.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
+#include<Inventor/nodes/SoAnnotation.h>
 #include "BCI/controller_scene/sprites.h"
 #include <QPushButton>
 
@@ -68,6 +69,9 @@ void GraspSelectionState::onEntry(QEvent *e)
 void GraspSelectionState::onExit(QEvent *e)
 {
     csm->clearTargets();
+    SoDB::writelock();
+     csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
+     SoDB::writeunlock();
     delete csm->pipeline;
     graspSelectionView->hide();
 }

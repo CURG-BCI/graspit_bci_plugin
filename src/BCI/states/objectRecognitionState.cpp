@@ -3,7 +3,11 @@
 #include "BCI/controller_scene/sprites.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "get_camera_origin/GetCameraOrigin.h"
-
+#include <Inventor/nodes/SoAnnotation.h>
+#include <Inventor/SoDB.h>
+#include "include/graspitGUI.h"
+#include "include/ivmgr.h"
+#include <Inventor/nodes/SoPerspectiveCamera.h>
 using bci_experiment::OnlinePlannerController;
 using namespace moveit_trajectory_planner;
 
@@ -52,7 +56,10 @@ void ObjectRecognitionState::onEntry(QEvent *e)
 }
 
 void ObjectRecognitionState::onExit(QEvent *e)
-{  delete csm->pipeline;
+{                  SoDB::writelock();
+                   csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
+                   SoDB::writeunlock();
+    delete csm->pipeline;
 
      objectRecognitionView->hide();
 }
