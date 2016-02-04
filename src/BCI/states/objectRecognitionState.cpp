@@ -1,6 +1,7 @@
 #include "BCI/states/objectRecognitionState.h"
 #include "BCI/onlinePlannerController.h"
-
+#include "BCI/controller_scene/sprites.h"
+#include "BCI/controller_scene/controller_scene_mgr.h"
 #include "get_camera_origin/GetCameraOrigin.h"
 
 using bci_experiment::OnlinePlannerController;
@@ -38,18 +39,20 @@ void ObjectRecognitionState::onEntry(QEvent *e)
   {
     objectRecognitionView->show();
     bciControlWindow->currentState->setText("Object Recognition State");
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), -0.7 , 0.7, 0.0);
 
     sendGetCameraOriginRequest();
     sendObjectRecognitionRequest();
 
-    if(OnlinePlannerController::getInstance()->hasRecognizedObjects())
-    {
-        BCIService::getInstance()->emitGoToNextState1();
-    }
+//    if(OnlinePlannerController::getInstance()->hasRecognizedObjects())
+//    {
+//        BCIService::getInstance()->emitGoToNextState1();
+//    }
 }
 
 void ObjectRecognitionState::onExit(QEvent *e)
-{
+{  delete csm->pipeline;
+
      objectRecognitionView->hide();
 }
 
