@@ -100,7 +100,7 @@ namespace bci_experiment{
             void setCurrentTarget(GraspableBody * gb);
 
             void analyzeNextGraspReachability();
-            void analyzeNextGraspReachabilityCallback(int graspId, bool isReachable);
+
 
             bool plannerCanBeSetToReady();
             bool plannerCanBeSetToRunning();
@@ -123,6 +123,8 @@ namespace bci_experiment{
             bool startGraspReachabilityAnalysis();
             //! analyze reachability of grasps from database and plan new grasps
             bool stopGraspReachabilityAnalysis();
+
+            void analyzeNextGraspReachabilityCallback(int graspId, bool isReachable);
 
             void addToWorld(const QString model_filename, const QString object_name, const transf object_pose);
             void clearObjects();

@@ -68,7 +68,7 @@ OnlinePlannerController::OnlinePlannerController(QObject *parent) :
     mPlanner = planner_tools::createDefaultPlanner();
     mReachabilityAnalyzer = new ReachabilityAnalyzer();
 
-    connect(mReachabilityAnalyzer, SIGNAL(updateGraspReachability(int , bool )), this, SLOT(analyzeNextGraspReachabilityCallback(int , bool )), Qt::QueuedConnection);
+    connect(mReachabilityAnalyzer, SIGNAL(updateGraspReachability(int , bool )), this, SLOT(analyzeNextGraspReachabilityCallback(int , bool )));
 }
 
 bool OnlinePlannerController::analyzeApproachDir()
@@ -514,13 +514,14 @@ bool OnlinePlannerController::stopGraspReachabilityAnalysis()
 
 void OnlinePlannerController::analyzeNextGraspReachabilityCallback(int graspId, bool isReachable)
 {
+    ROS_INFO("OnlinePlannerController::analyzeNextGraspReachabilityCallback");
     if(!mReachabilityAnalyzer->isRunning())
         return;
 
     QString attribute = QString("testResult");
 
     boost::mutex::scoped_lock lock(mPlanner->mListAttributeMutex);
-
+    ROS_INFO_STREAM("OnlinePlannerController::analyzeNextGraspReachabilityCallback planner list size" <<  mPlanner->getListSize() << std::endl);
     for(int i = 0; i < mPlanner->getListSize(); i++ )
     {
         const GraspPlanningState * gps = mPlanner->getGrasp(i);
@@ -538,11 +539,11 @@ void OnlinePlannerController::analyzeNextGraspReachabilityCallback(int graspId, 
             }
 
             mPlanner->setGraspAttribute(i, attribute, reachabilityScore);
-            std::cout << "SetGraspAttribute graspId " << graspId << " attributeString: " << reachabilityScore << "\n";
+            ROS_INFO_STREAM("OnlinePlannerController::analyzeNextGraspReachabilityCallback "  << "SetGraspAttribute graspId " << graspId << " attributeString: " << reachabilityScore << "\n");
             break;
         }
     }
-
+    BCIService::getInstance()->onPlannerUpdated();
     analyzeNextGraspReachability();
 }
 
