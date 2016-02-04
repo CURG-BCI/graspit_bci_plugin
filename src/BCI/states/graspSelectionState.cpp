@@ -14,6 +14,7 @@ GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, Co
     csm(_csm),
     stateName(QString("Grasp Selection"))
 {
+    addSelfTransition(BCIService::getInstance(),SIGNAL(plannerUpdated()), this, SLOT(onPlannerUpdated()));
     addSelfTransition(OnlinePlannerController::getInstance(),SIGNAL(render()), this, SLOT(onPlannerUpdated()));
 
     graspSelectionView = new GraspSelectionView(bciControlWindow->currentFrame);
@@ -63,6 +64,9 @@ void GraspSelectionState::onEntry(QEvent *e)
     csm->addTarget(t2);
     csm->addTarget(t3);
     csm->addTarget(t4);
+
+
+
 }
 
 
@@ -126,6 +130,7 @@ void GraspSelectionState::onNext()
 
 void GraspSelectionState::onPlannerUpdated()
 {
+    ROS_INFO("GraspSelectionState::onPlannerUpdated()");
     static QTime activeTimer;
     qint64 minElapsedMSecs = 300;
     if(!activeTimer.isValid() || activeTimer.elapsed() >= minElapsedMSecs)

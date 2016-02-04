@@ -96,7 +96,7 @@ namespace bci_experiment
 
             db_planner::Model *m=new db_planner::Model;
 
-            m->SetModelName(mHand->getGrasp()->getObject()->getName().remove(".xml").toStdString());
+            m->SetModelName(mHand->getGrasp()->getObject()->getName().remove(".xml").remove(QRegExp("_[0-9]{1,2}")).toStdString());
 
             std::vector<db_planner::Grasp*> grasps;
             mDbMgr->GetGrasps(*m, getHandDBName(mHand).toStdString(), &grasps);
