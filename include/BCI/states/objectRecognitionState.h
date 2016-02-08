@@ -7,8 +7,8 @@
 
 #include "graspit_msgs/GetObjectInfo.h"
 #include "graspit_msgs/ObjectInfo.h"
-#include "moveit_trajectory_planner/LocationInfo.h"
-#include "moveit_trajectory_planner/RunObjectRecognitionAction.h"
+#include "graspit_msgs/LocationInfo.h"
+#include "graspit_msgs/RunObjectRecognitionAction.h"
 #include <actionlib/client/simple_action_client.h>
 #include "ros/ros.h"
 
@@ -29,13 +29,14 @@ private:
    ObjectRecognitionView *objectRecognitionView;
    BCIControlWindow *bciControlWindow;
    ControllerSceneManager *csm;
-   actionlib::SimpleActionClient<moveit_trajectory_planner::RunObjectRecognitionAction> recognizeObjectsActionClient;
+   actionlib::SimpleActionClient<graspit_msgs::RunObjectRecognitionAction> recognizeObjectsActionClient;
    ros::ServiceClient get_camera_origin;
+   bool use_hardware;
 
    void sendObjectRecognitionRequest();
    void sendGetCameraOriginRequest();
    void objectRecognitionCallback(const actionlib::SimpleClientGoalState& state,
-                                  const moveit_trajectory_planner::RunObjectRecognitionResultConstPtr& result);
+                                  const graspit_msgs::RunObjectRecognitionResultConstPtr& result);
    void addObject(graspit_msgs::ObjectInfo object);
 
 

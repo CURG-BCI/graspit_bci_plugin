@@ -2,14 +2,14 @@
 #include "BCI/onlinePlannerController.h"
 #include "BCI/controller_scene/sprites.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
-#include "get_camera_origin/GetCameraOrigin.h"
+#include "graspit_msgs/GetCameraOrigin.h"
 #include <Inventor/nodes/SoAnnotation.h>
 #include <Inventor/SoDB.h>
 #include "include/graspitGUI.h"
 #include "include/ivmgr.h"
 #include <Inventor/nodes/SoPerspectiveCamera.h>
 using bci_experiment::OnlinePlannerController;
-using namespace moveit_trajectory_planner;
+using namespace graspit_msgs;
 
 ObjectRecognitionState::ObjectRecognitionState(BCIControlWindow *_bciControlWindow,
                                                ControllerSceneManager *_csm,
@@ -23,8 +23,9 @@ ObjectRecognitionState::ObjectRecognitionState(BCIControlWindow *_bciControlWind
      objectRecognitionView = new ObjectRecognitionView(bciControlWindow->currentFrame);
      objectRecognitionView->hide();
 
-     get_camera_origin = n->serviceClient<get_camera_origin::GetCameraOrigin>("get_camera_origin");
+     get_camera_origin = n->serviceClient<graspit_msgs::GetCameraOrigin>("get_camera_origin");
 
+     n->getParam("use_hardware", use_hardware);
      connect(
          this,
          SIGNAL(clearGB()),
@@ -44,18 +45,22 @@ void ObjectRecognitionState::onEntry(QEvent *e)
     objectRecognitionView->show();
     bciControlWindow->currentState->setText("Object Recognition State");
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), -0.3 , 0, 0.0);
+    if(use_hardware)
+    {
+        ROS_INFO("CLEARING ALL GRASPABLE BODIES ON ENTRANCE TO OBJECT RECOGNITION STATE");
+        emit clearGB();
+        ROS_INFO("NOT MAKEING CAMERA ORIGIN REQUEST, DONT WANT TO VIEW FROM ORIGIN");
+        //sendGetCameraOriginRequest();
+        sendObjectRecognitionRequest();
+    }
+    else
+    {
+          if(OnlinePlannerController::getInstance()->hasRecognizedObjects())
+            {
+                BCIService::getInstance()->emitGoToNextState1();
+            }
+    }
 
-    ROS_INFO("NOT MAKEING CAMERA ORIGIN REQUEST, DONT WANT TO VIEW FROM ORIGIN");
-    //sendGetCameraOriginRequest();
-    ROS_INFO("CLEARING ALL GRASPABLE BODIES ON ENTRANCE TO OBJECT RECOGNITION STATE");
-    emit clearGB();
-
-    sendObjectRecognitionRequest();
-
-//    if(OnlinePlannerController::getInstance()->hasRecognizedObjects())
-//    {
-//        BCIService::getInstance()->emitGoToNextState1();
-//    }
 }
 
 void ObjectRecognitionState::onExit(QEvent *e)
@@ -69,7 +74,7 @@ void ObjectRecognitionState::onExit(QEvent *e)
 
 void ObjectRecognitionState::sendGetCameraOriginRequest()
 {
-    get_camera_origin::GetCameraOrigin srv;
+    graspit_msgs::GetCameraOrigin srv;
     if ( get_camera_origin.call(srv))
     {
        ROS_INFO("Successfully received Camera Origin.");
@@ -91,12 +96,12 @@ void ObjectRecognitionState::sendObjectRecognitionRequest()
     RunObjectRecognitionGoal goal;
 
     recognizeObjectsActionClient.sendGoal(goal,  boost::bind(&ObjectRecognitionState::objectRecognitionCallback, this, _1, _2),
-                actionlib::SimpleActionClient<moveit_trajectory_planner::RunObjectRecognitionAction>::SimpleActiveCallback(),
-                actionlib::SimpleActionClient<moveit_trajectory_planner::RunObjectRecognitionAction>::SimpleFeedbackCallback());
+                actionlib::SimpleActionClient<graspit_msgs::RunObjectRecognitionAction>::SimpleActiveCallback(),
+                actionlib::SimpleActionClient<graspit_msgs::RunObjectRecognitionAction>::SimpleFeedbackCallback());
 }
 
 void ObjectRecognitionState::objectRecognitionCallback(const actionlib::SimpleClientGoalState& state,
-                       const moveit_trajectory_planner::RunObjectRecognitionResultConstPtr& result)
+                       const graspit_msgs::RunObjectRecognitionResultConstPtr& result)
 {
     emit clearGB();
     while(graspItGUI->getIVmgr()->getWorld()->getNumGB())

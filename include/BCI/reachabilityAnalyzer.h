@@ -4,9 +4,9 @@
 #include <QObject>
 #include "graspit_msgs/GetObjectInfo.h"
 #include "graspit_msgs/ObjectInfo.h"
-#include "moveit_trajectory_planner/LocationInfo.h"
-#include "moveit_trajectory_planner/RunObjectRecognitionAction.h"
-#include "moveit_trajectory_planner/CheckGraspReachabilityAction.h"
+#include "graspit_msgs/LocationInfo.h"
+#include "graspit_msgs/RunObjectRecognitionAction.h"
+#include "graspit_msgs/CheckGraspReachabilityAction.h"
 #include <actionlib/client/simple_action_client.h>
 #include "ros/ros.h"
 
@@ -34,10 +34,10 @@ private:
     ros::NodeHandle *n;
     bool is_running;
 
-    actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction> analzeGraspReachabilityActionClient;
+    actionlib::SimpleActionClient<graspit_msgs::CheckGraspReachabilityAction> analzeGraspReachabilityActionClient;
 
-    void buildCheckReachabilityRequest(const GraspPlanningState * gps, moveit_trajectory_planner::CheckGraspReachabilityGoal &goal);
-    void checkGraspReachabilityCallback(const actionlib::SimpleClientGoalState& state,  const moveit_trajectory_planner::CheckGraspReachabilityResultConstPtr& result);
+    void buildCheckReachabilityRequest(const GraspPlanningState * gps, graspit_msgs::CheckGraspReachabilityGoal &goal);
+    void checkGraspReachabilityCallback(const actionlib::SimpleClientGoalState& state,  const graspit_msgs::CheckGraspReachabilityResultConstPtr& result);
 };
 
 #endif //REACHABILITYANALYZER_H

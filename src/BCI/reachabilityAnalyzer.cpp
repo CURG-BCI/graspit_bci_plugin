@@ -3,7 +3,7 @@
 #include "include/grasp.h"
 #include "include/robot.h"
 
-using namespace moveit_trajectory_planner;
+using namespace graspit_msgs;
 
 ReachabilityAnalyzer::ReachabilityAnalyzer():
       analzeGraspReachabilityActionClient("analyze_grasp_action", true),
@@ -17,7 +17,7 @@ ReachabilityAnalyzer::ReachabilityAnalyzer():
 
 
 void ReachabilityAnalyzer::buildCheckReachabilityRequest(const GraspPlanningState * gps,
-                                                         moveit_trajectory_planner::CheckGraspReachabilityGoal &goal)
+                                                         graspit_msgs::CheckGraspReachabilityGoal &goal)
 {
     goal.grasp.object_name = gps->getObject()->getName().toStdString().c_str();
     goal.grasp.epsilon_quality=gps->getEpsilonQuality();
@@ -79,15 +79,15 @@ void ReachabilityAnalyzer::sendCheckGraspReachabilityRequest(const GraspPlanning
         buildCheckReachabilityRequest(gps, goal);
 
         analzeGraspReachabilityActionClient.sendGoal(goal,  boost::bind(&ReachabilityAnalyzer::checkGraspReachabilityCallback, this, _1, _2),
-                    actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction>::SimpleActiveCallback(),
-                    actionlib::SimpleActionClient<moveit_trajectory_planner::CheckGraspReachabilityAction>::SimpleFeedbackCallback());
+                    actionlib::SimpleActionClient<graspit_msgs::CheckGraspReachabilityAction>::SimpleActiveCallback(),
+                    actionlib::SimpleActionClient<graspit_msgs::CheckGraspReachabilityAction>::SimpleFeedbackCallback());
 
         ROS_INFO("ReachabilityAnalyzer::sendCheckGraspReachabilityRequest sent");
     }
 }
 
 void ReachabilityAnalyzer::checkGraspReachabilityCallback(const actionlib::SimpleClientGoalState& state,
-                                               const moveit_trajectory_planner::CheckGraspReachabilityResultConstPtr& result)
+                                               const graspit_msgs::CheckGraspReachabilityResultConstPtr& result)
 {
     ROS_INFO("ReachabilityAnalyzer::checkGraspReachabilityCallback");
     if(is_running)

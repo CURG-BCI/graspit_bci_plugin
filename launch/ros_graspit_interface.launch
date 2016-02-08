@@ -1,4 +1,6 @@
 <launch>
+   <param name="use_hardware" value="false" />
+
   <node name="graspit_ros" pkg="graspit" type="graspit" args="plugin:libgraspit_bci_plugin" output="screen">
     <env name="GRASPIT" value="$(find graspit)/graspit_source"/>
     <env name="CGDB_MODEL_ROOT" value="$(find graspit)/graspit_source/cgdb"/>
