@@ -66,6 +66,7 @@ namespace graspit_bci_plugin
 
       //this should go away, just a hack
       QString worldfile = QString(getenv("GRASPIT")) + QString("/worlds/allVision2fromjon.xml");
+      std::cout<<worldfile.toStdString().c_str()<<std::endl;
       graspItGUI->getIVmgr()->getWorld()->load(worldfile.toStdString().c_str());
 
       BCIControlWindow *bciControlWindow= new BCIControlWindow();
