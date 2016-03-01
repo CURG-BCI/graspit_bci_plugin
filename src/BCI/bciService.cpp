@@ -71,6 +71,10 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     QObject::connect(this, SIGNAL(goToStateMedium()), this, SLOT(updateControlSceneState1()));
     QObject::connect(this, SIGNAL(goToStateHigh()), this, SLOT(updateControlSceneState2()));
 
+//    QObject::connect(graspItGUI, SIGNAL(goToStateLow()), this, SLOT(updateControlSceneState0()));
+//    QObject::connect(graspItGUI, SIGNAL(goToStateMedium()), this, SLOT(updateControlSceneState1()));
+//    QObject::connect(graspItGUI, SIGNAL(goToStateHigh()), this, SLOT(updateControlSceneState2()));
+
     SoAnnotation *hudSeparator = new SoAnnotation;
     hudSeparator->renderCaching = SoSeparator::OFF;
     hudSeparator->setName("hud");

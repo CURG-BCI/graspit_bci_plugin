@@ -6,6 +6,7 @@
 
 //GraspIt! includes
 #include <include/plugin.h>
+#include "BCIControlServer.h"
 
 #include <QWidget>
 
@@ -54,6 +55,9 @@ class GraspitBCIPlugin : public Plugin
 public:
     //! Node handle in the root namespace
     ros::NodeHandle *root_nh_;
+
+
+    QThread* server_thread;
 
     //! Inits ROS, but (for now) without passing any arguments
     GraspitBCIPlugin();

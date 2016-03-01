@@ -1,10 +1,20 @@
 <launch>
-   <param name="use_hardware" value="false" />
 
-  <node name="graspit_ros" pkg="graspit" type="graspit" args=" -p libgraspit_bci_plugin" output="screen">
+   <arg name="use_bci_device" default="True" />  
+
+   <param name="use_hardware" value="False" />
+   
+   MESSAGE(Hello World)
+  <node name="graspit_ros" pkg="graspit" type="graspit" args=" -p libgraspit_bci_plugin" output="screen" >
     <env name="GRASPIT" value="$(find graspit)/graspit_source"/>
     <env name="CGDB_MODEL_ROOT" value="$(find graspit)/graspit_source/cgdb"/>
-    <env name="GRASPIT_PLUGIN_DIR" value="$(find graspit_bci_plugin)/../../devel/lib"/>
+    <!--<env name="GRASPIT_PLUGIN_DIR" value="$(find graspit_bci_plugin)/../../devel/lib"/>-->
+    <env name="GRASPIT_PLUGIN_DIR" value="/home/srihari/ros/graspit_bci_ws/devel/lib" />
     <env name="SPRITES_DIR" value="$(find graspit_bci_plugin)/sprites/"/>
   </node>
+
+  <group if="$(arg use_bci_device)">
+  	 <node name="bci_device" pkg="graspit_threshold_controller" type="run.sh"/>
+  </group>
+  
 </launch>

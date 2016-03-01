@@ -142,6 +142,8 @@ set(SOURCES
     src/BCI/controller_scene/controller_scene_mgr.cpp
     src/BCI/controller_scene/sprites.cpp
     src/worldController.cpp
+    src/BCIControlServer.cpp
+
 
     ui/state_views/activeRefinementView.cpp
     ui/state_views/confirmationView.cpp
@@ -229,6 +231,8 @@ set(MOCS
 
     include/BCI/controller_scene/sprites.h
     include/BCI/controller_scene/controller_scene_mgr.h
+
+    include/BCIControlServer.h
     )
 
 set(UIS
