@@ -32,7 +32,7 @@ void ObjectSelectionState::onEntry(QEvent *e)
 
     WorldController::getInstance()->highlightAllBodies();
     GraspableBody *currentTarget = OnlinePlannerController::getInstance()->getCurrentTarget();
-
+    state_timer.start();
     //Don't draw guides in this phase
     OnlinePlannerController::getInstance()->stopTimedUpdate();
     OnlinePlannerController::getInstance()->destroyGuides();
@@ -42,33 +42,30 @@ void ObjectSelectionState::onEntry(QEvent *e)
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), -0.7 , 0.7, 0.0);
     csm->clearTargets();
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -1.0, 0.0, QString("Next\nObject")));
+                                                                       QString("target_active.png"),
+                                                                      -1.4, -0.6, 0.0, QString("Next\nObject")));
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
                                                                       -1.4, -0.8, 0.0, QString("Select\nObject")));
 
     std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_active.png"),
-                                                                      -1.4, -0.6 , 0.0, QString("Rerun\nVision")));
+                                                                       QString("target_background.png"),
+                                                                      -1.4, -1 , 0.0, QString("Rerun\nVision")));
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(onNext()));
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onSelect()));
     QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(onGoBack()));
 
-    csm->addTarget(t3);
-    csm->addTarget(t2);
     csm->addTarget(t1);
+    csm->addTarget(t2);
+    csm->addTarget(t3);
 }
 
 
 void ObjectSelectionState::onExit(QEvent *e)
 {
-    WorldController::getInstance()->unhighlightAllBodies();
-    OnlinePlannerController::getInstance()->setSceneLocked(true);
-    OnlinePlannerController::getInstance()->setPlannerToReady();
-    OnlinePlannerController::getInstance()->startGraspReachabilityAnalysis();
+
     SoDB::writelock();
      csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
      SoDB::writeunlock();
@@ -77,8 +74,17 @@ void ObjectSelectionState::onExit(QEvent *e)
 
     objectSelectionView->hide();
 
-    OnlinePlannerController::getInstance()->showRobots(true);
+
     csm->clearTargets();
+    float time=(float) state_timer.elapsed()/1000;
+
+    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
+    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
+    {
+        QTextStream stream( &log );
+        stream << "Time Elapsed in Object Selection State: " <<time<<" Seconds."<< endl;
+    }
+
     std::cout << "Finished onExit of Object Selection State." << std::endl;
 
 

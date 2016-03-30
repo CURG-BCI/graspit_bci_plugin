@@ -1,0 +1,28 @@
+---------------------------------------TRIAL START-------------------------------------------------------------
+Time Elapsed in Object Recognition State: 0 Seconds.
+---------------------------------------TRIAL START-------------------------------------------------------------
+Time Elapsed in Object Recognition State: 0 Seconds.
+Time Elapsed in Object Selection State: 40.393 Seconds.
+Time Elapsed in Grasp Selection State: 185.852 Seconds.
+Time Elapsed in Object Selection State: 14.461 Seconds.
+Time Elapsed in Grasp Selection State: 13.088 Seconds.
+Time Elapsed in Object Selection State: 107.89 Seconds.
+Time Elapsed in Object Recognition State: 0 Seconds.
+Time Elapsed in Object Selection State: 61.778 Seconds.
+Time Elapsed in Object Recognition State: 0 Seconds.
+Time Elapsed in Object Selection State: 32.667 Seconds.
+Time Elapsed in Grasp Selection State: 8.286 Seconds.
+Time Elapsed in Confirmation State: 1.735 Seconds.
+Time Elapsed in Execution State: 6.31 Seconds.
+Time Elapsed in Stopped Execution State: 0.493 Seconds.
+Time Elapsed in Execution State: 2.396 Seconds.
+Time Elapsed in Stopped Execution State: 6.85 Seconds.
+Time Elapsed in Object Selection State: 69.739 Seconds.
+---------------------------------------TRIAL START-------------------------------------------------------------
+Time Elapsed in Object Recognition State: 0 Seconds.
+Time Elapsed in Object Selection State: 81.491 Seconds.
+Time Elapsed in Grasp Selection State: 24.244 Seconds.
+Time Elapsed in Confirmation State: 3.854 Seconds.
+Time Elapsed in Execution State: 7.799 Seconds.
+Time Elapsed in Stopped Execution State: 0.327 Seconds.
+Time Elapsed in Execution State: 0.322 Seconds.

@@ -263,15 +263,20 @@ void BCIOnlinePlanner::setGraspAttribute(int i, const QString &attribute, double
 /*! Keeps the list of solutions sorted according to some metric */
 void BCIOnlinePlanner::updateSolutionList()
 {
-    boost::mutex::scoped_lock lock(mListAttributeMutex, boost::try_to_lock);
-    if(lock)
-    {
-        DBGA("Failed to take lock.");
-        return;
-    }
+    boost::mutex::scoped_lock lock(mListAttributeMutex);
+
+//    if(lock)
+//    {
+//        DBGA("Failed to take lock.");
+////        while(true)
+////        {
+////         std::cout<<"Pushing for deletion222222222222222222222222222!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+////         }
+//        return;
+//    }
 
     transf stateTran, currentHandTran = mSeedHand->getTran();
-
+    std::list<GraspPlanningState *> for_deletion;
     std::list<GraspPlanningState*>::iterator it;
     //re-compute distance between current hand position and solutions.
     for ( it = mBestList.begin(); it != mBestList.end(); it++ )
@@ -302,6 +307,10 @@ void BCIOnlinePlanner::updateSolutionList()
         {
             dist += 2000;
             (*it)->setIVMarkerColor(0 , 1, 1);
+            //std::cout<<"Pushing for deletion!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+            for_deletion.push_back(*it);//Debug
+
+
         }
         else //untested
         {
@@ -311,6 +320,37 @@ void BCIOnlinePlanner::updateSolutionList()
         (*it)->setDistance(dist);
 
     }
+
+    std::cout<<"Size:" <<mBestList.size()<<std::endl;
+    //auto delete_it=for_deletion.begin();
+    //auto i=mBestList.begin();
+    for(auto delete_it=for_deletion.begin();delete_it!=for_deletion.end();delete_it++)
+    {
+        for(auto i=mBestList.begin();i!=mBestList.end();i++)
+        {
+            if((*delete_it)==(*i))
+            {mBestList.erase(i);
+             break;
+            }
+
+        }
+    }
+
+//    while(i!=mBestList.end())
+
+
+//    {std::cout<<"Deleting!!!!!!!!!!!!!!!!!!!!!!1"<<std::endl;
+//        if((*delete_it)==(*i))
+//        {
+//            i=mBestList.erase(i);
+//            delete_it++;
+//            continue;
+//        }
+//        i++;
+
+//    }
+    std::cout<<"Size:" <<mBestList.size()<<std::endl;
+
 
     //sort list according to distance from current hand position
     mBestList.sort(GraspPlanningState::compareStatesDistances);

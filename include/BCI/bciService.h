@@ -39,6 +39,7 @@ public:
     void emitGoToNextState1(){emit goToNextState1();}
     void emitGoToNextState2(){emit goToNextState2();}
     void emitGoToPreviousState(){emit goToPreviousState();}
+    void emitFinishedRecognition(){emit finishedRecognition();}
     void emitExec(){emit exec();}
     void emitNext(){emit next();}
     void emitRotLat(){emit rotLat();}
@@ -80,6 +81,7 @@ signals:
     void next();
     void rotLong();
     void rotLat();
+    void finishedRecognition();
 
     void plannerUpdated();
 

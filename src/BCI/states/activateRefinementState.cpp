@@ -27,6 +27,7 @@ void ActivateRefinementState::onEntry(QEvent *e)
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_selection.png"), -0.7 , 0.7, 0.0);
     OnlinePlannerController::getInstance()->setPlannerToRunning();
     OnlinePlannerController::getInstance()->startTimedUpdate();
+    state_timer.start();
 
     csm->clearTargets();
 
@@ -69,6 +70,18 @@ void ActivateRefinementState::onExit(QEvent *e)
     OnlinePlannerController::getInstance()->setPlannerToPaused();
     OnlinePlannerController::getInstance()->stopTimedUpdate();
     OnlinePlannerController::getInstance()->destroyGuides();
+    float time=(float) state_timer.elapsed()/1000;
+    std::cout<<"!!!!!!!!!!!Elapsed Time is: "<<time<<std::endl;
+
+    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
+    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
+    {
+        std::cout<<"File Writer!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+        QTextStream stream( &log );
+        stream << "Time Elapsed in Active Refinement State: " <<time<<" Seconds."<< endl;
+}
+
+    std::cout << "Finished onExit of Object Selection State." << std::endl;
 }
 
 

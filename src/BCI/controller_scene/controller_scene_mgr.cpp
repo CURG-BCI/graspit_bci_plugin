@@ -48,7 +48,7 @@ void ControllerSceneManager::clearTargets()
         temp_targets[i]->valid = false;
     }
     //targets.clear();
-   // this->setCursorPosition(-1,0,0);
+    // this->setCursorPosition(-1,0,0);
     this->unlock();
 }
 
@@ -74,7 +74,7 @@ void ControllerSceneManager::update()
                 temp_targets[i]->update(state, renderAreaWidth, renderAreaHeight);
                 if (temp_targets[i]->active)
                 {
-                   // temp_targets[i]->update2()
+                    // temp_targets[i]->update2()
                 }
                 targets.push_back(temp_targets[i]);
             }
@@ -87,23 +87,35 @@ void ControllerSceneManager::update()
         }
 
         if(this->state==CursorState::MOVING_SLOW)
-                        {   std::cout<<"Size:"<<temp_targets.size()<<std::endl;
-                            temp_targets[next_target]->active=false;
-                            temp_targets[next_target]->update2(renderAreaWidth, renderAreaHeight);
-                            next_target=next_target<temp_targets.size()-1 ? next_target+1:0;
-                            while(!(temp_targets[next_target]->valid))
-                            {
-                               next_target=next_target<temp_targets.size()-1 ? next_target+1:0;
-                            }
-                            temp_targets[next_target]->active=true;
-                            temp_targets[next_target]->update2(renderAreaWidth, renderAreaHeight);
-                            std::cout<<"<"<<next_target<<">"<<std::endl;
-                        }
-         else if(this->state==CursorState::MOVING_FAST)
-                        {  temp_targets[next_target]->setHit();
-                        }
-          this->state=CursorState::SPINNING;
-          this->unlock();
+        {
+            std::cout << "temp_targets.size(): " << temp_targets.size() << std::endl;
+            if (temp_targets.size() ==0)
+            {
+                this->unlock();
+                return;
+            }
+            temp_targets[next_target]->active=false;
+            temp_targets[next_target]->update2(renderAreaWidth, renderAreaHeight);
+            next_target=next_target<temp_targets.size()-1 ? next_target+1:0;
+            while(!(temp_targets[next_target]->valid))
+            {
+                next_target=next_target<temp_targets.size()-1 ? next_target+1:0;
+            }
+            temp_targets[next_target]->active=true;
+            temp_targets[next_target]->update2(renderAreaWidth, renderAreaHeight);
+            std::cout<<"<"<<next_target<<">"<<std::endl;
+        }
+        else if(this->state==CursorState::MOVING_FAST)
+        {
+            if (temp_targets.size() ==0)
+            {
+                this->unlock();
+                return;
+            }
+            temp_targets[next_target]->setHit();
+        }
+        this->state=CursorState::SPINNING;
+        this->unlock();
     }
 
 
@@ -113,32 +125,32 @@ void ControllerSceneManager::update()
 
 void ControllerSceneManager::handleMouseButtonEvent(void *, SoEventCallback *eventCB)
 {
-//    std::cout  << "handleMouseButtonEvent" << std::endl;
+    //    std::cout  << "handleMouseButtonEvent" << std::endl;
 
-  const SoEvent *event = eventCB->getEvent();
-  if (SO_MOUSE_RELEASE_EVENT(event,BUTTON1))
-  {
+    const SoEvent *event = eventCB->getEvent();
+    if (SO_MOUSE_RELEASE_EVENT(event,BUTTON1))
+    {
 
-//      std::cout  << "X: " << event->getPosition().getValue()[0] << std::endl;
-//      std::cout  << "Y: " << event->getPosition().getValue()[1] << std::endl;
+        //      std::cout  << "X: " << event->getPosition().getValue()[0] << std::endl;
+        //      std::cout  << "Y: " << event->getPosition().getValue()[1] << std::endl;
 
-      short renderAreaWidth = BCIService::getInstance()->bciRenderArea->getSize()[0];
-      short renderAreaHeight = BCIService::getInstance()->bciRenderArea->getSize()[1];
+        short renderAreaWidth = BCIService::getInstance()->bciRenderArea->getSize()[0];
+        short renderAreaHeight = BCIService::getInstance()->bciRenderArea->getSize()[1];
 
-//      std::cout  << "renderAreaWidth: " << renderAreaWidth << std::endl;
-//      std::cout  << "renderAreaHeight: " << renderAreaHeight << std::endl;
-      //this works for full screen.
-      double x = event->getPosition().getValue()[0]/500.0 - renderAreaWidth/1000.0;
-      double y = event->getPosition().getValue()[1]/500.0 - renderAreaHeight/1000.0;
+        //      std::cout  << "renderAreaWidth: " << renderAreaWidth << std::endl;
+        //      std::cout  << "renderAreaHeight: " << renderAreaHeight << std::endl;
+        //this works for full screen.
+        double x = event->getPosition().getValue()[0]/500.0 - renderAreaWidth/1000.0;
+        double y = event->getPosition().getValue()[1]/500.0 - renderAreaHeight/1000.0;
 
-//      double x = -renderAreaWidth/1000.0;
-//      double y = 0;
+        //      double x = -renderAreaWidth/1000.0;
+        //      double y = 0;
 
-//      std::cout  << "x: " << x << std::endl;
-//      std::cout  << "y: " << y << std::endl;
+        //      std::cout  << "x: " << x << std::endl;
+        //      std::cout  << "y: " << y << std::endl;
 
-     // current_control_scene_manager->setCursorPosition(x, y, 0);
-  }
+        // current_control_scene_manager->setCursorPosition(x, y, 0);
+    }
 
 
 }
@@ -148,6 +160,6 @@ void ControllerSceneManager::handleMouseButtonEvent(void *, SoEventCallback *eve
 
 void ControllerSceneManager::setState(int _state)
 {
-        state = _state;
+    state = _state;
 }
 

@@ -1,0 +1,5 @@
+---------------------------------------TRIAL START-------------------------------------------------------------
+Time Elapsed in Object Recognition State: 28.773 Seconds.
+Time Elapsed in Object Selection State: 13.36 Seconds.
+Time Elapsed in Grasp Selection State: 21.931 Seconds.
+Time Elapsed in Confirmation State: 2.266 Seconds.

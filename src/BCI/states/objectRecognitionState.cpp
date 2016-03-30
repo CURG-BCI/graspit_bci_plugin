@@ -18,7 +18,7 @@ ObjectRecognitionState::ObjectRecognitionState(BCIControlWindow *_bciControlWind
     State("ObjectRecognitionState", parent),
     bciControlWindow(_bciControlWindow),
     csm(_csm),
-    recognizeObjectsActionClient("recognize_objections_action", true)
+    recognizeObjectsActionClient("recognize_objects_action", true)
 {
      objectRecognitionView = new ObjectRecognitionView(bciControlWindow->currentFrame);
      objectRecognitionView->hide();
@@ -45,6 +45,7 @@ void ObjectRecognitionState::onEntry(QEvent *e)
     objectRecognitionView->show();
     bciControlWindow->currentState->setText("Object Recognition State");
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), -0.3 , 0, 0.0);
+    state_timer.start();
     if(use_hardware)
     {
         ROS_INFO("CLEARING ALL GRASPABLE BODIES ON ENTRANCE TO OBJECT RECOGNITION STATE");
@@ -57,19 +58,33 @@ void ObjectRecognitionState::onEntry(QEvent *e)
     {
           if(OnlinePlannerController::getInstance()->hasRecognizedObjects())
             {
-                BCIService::getInstance()->emitGoToNextState1();
+                BCIService::getInstance()->emitFinishedRecognition();
             }
     }
 
 }
 
 void ObjectRecognitionState::onExit(QEvent *e)
-{                  SoDB::writelock();
-                   csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
-                   SoDB::writeunlock();
+{
+    ROS_INFO(" ObjectRecognitionState::onExit(QEvent *e)");
+    SoDB::writelock();
+   csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
+   SoDB::writeunlock();
+
     delete csm->pipeline;
     csm->next_target=0;
      objectRecognitionView->hide();
+     float time=(float) state_timer.elapsed()/1000;
+
+    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
+    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
+    {
+        QTextStream stream( &log );
+        stream << "Time Elapsed in Object Recognition State: " <<time<<" Seconds."<< endl;
+    }
+
+    std::cout << "Finished onExit of Object Selection State." << std::endl;
+
 }
 
 void ObjectRecognitionState::sendGetCameraOriginRequest()
@@ -94,7 +109,6 @@ void ObjectRecognitionState::sendGetCameraOriginRequest()
 void ObjectRecognitionState::sendObjectRecognitionRequest()
 {
     RunObjectRecognitionGoal goal;
-
     recognizeObjectsActionClient.sendGoal(goal,  boost::bind(&ObjectRecognitionState::objectRecognitionCallback, this, _1, _2),
                 actionlib::SimpleActionClient<graspit_msgs::RunObjectRecognitionAction>::SimpleActiveCallback(),
                 actionlib::SimpleActionClient<graspit_msgs::RunObjectRecognitionAction>::SimpleFeedbackCallback());
@@ -114,7 +128,7 @@ void ObjectRecognitionState::objectRecognitionCallback(const actionlib::SimpleCl
                   boost::bind(&ObjectRecognitionState::addObject, this, _1));
 
     ROS_INFO("Sucessfully Finished runObjectRecognition Request");
-     BCIService::getInstance()->emitGoToNextState1();
+     BCIService::getInstance()->emitFinishedRecognition();
 }
 
 void ObjectRecognitionState::addObject(graspit_msgs::ObjectInfo object)

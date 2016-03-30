@@ -362,17 +362,17 @@ void OnlinePlannerController::setPlannerToReady()
 {
     DBGA("OnlinePlannerController::setPlannerToReady");
 
-    if(plannerCanBeSetToReady())
-    {
+    //if(plannerCanBeSetToReady())
+    //{
         DBGA("OnlinePlannerController::setPlannerToReady: About to initialize Target");
         initializeTarget();
         DBGA("OnlinePlannerController::setPlannerToReady: About to shutoff collisions between hand and object");
         getWorld()->collisionsAreOff(mPlanner->getHand(), mPlanner->getHand()->getGrasp()->getObject());
-    }
-    else
-    {
-        DBGA("OnlinePlannerController::setPlannerToReady: ERROR Attempted to set planner to ready");
-    }
+//    }
+//    else
+//    {
+//        DBGA("OnlinePlannerController::setPlannerToReady: ERROR Attempted to set planner to ready");
+//    }
     DBGA("OnlinePlannerController::setPlannerToReady: Success");
 }
 
@@ -411,6 +411,19 @@ void OnlinePlannerController::incrementGraspIndex()
         return;
     }
     currentGraspIndex = (currentGraspIndex + 1)%(mPlanner->getListSize());
+}
+
+void OnlinePlannerController::decrementGraspIndex()
+{
+    if (mPlanner->getListSize()==0)
+    {
+        return;
+    }
+    currentGraspIndex = currentGraspIndex - 1;
+    if (currentGraspIndex < 0)
+    {
+       currentGraspIndex = mPlanner->getListSize()-1;
+    }
 }
 
 Hand * OnlinePlannerController::getSeedHand()

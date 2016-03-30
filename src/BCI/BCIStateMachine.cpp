@@ -28,12 +28,14 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     ExecutionState *executionState = new ExecutionState(bciControlWindow, csm, n);
     StoppedExecutionState *stoppedExecutionState = new StoppedExecutionState(bciControlWindow, csm);
 
-    objectRecognitionState->addStateTransition(bciService, SIGNAL(goToNextState1()), objectSelectionState);
+    objectRecognitionState->addStateTransition(bciService, SIGNAL(finishedRecognition()), objectSelectionState);
 
     objectSelectionState->addStateTransition(bciService,SIGNAL(goToNextState1()), graspSelectionState);
     objectSelectionState->addStateTransition(objectSelectionState,SIGNAL(goToNextState()), graspSelectionState);
     objectSelectionState->addSelfTransition(bciService, SIGNAL(exec()), objectSelectionState, SLOT(onSelect()));
     objectSelectionState->addSelfTransition(bciService, SIGNAL(rotLat()), objectSelectionState, SLOT(onNext()));
+
+    objectSelectionState->addStateTransition(bciService,SIGNAL(goToPreviousState()), objectRecognitionState);
 
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToActivateRefinementState()), activateRefinementState);
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);

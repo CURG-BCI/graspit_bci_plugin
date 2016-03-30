@@ -99,5 +99,5 @@ void BCIControlServer::process() {
     int port_num = 4775;
     server = new QTcpServer(this);
     connect(server, SIGNAL(newConnection()), this, SLOT(onConnection()));
-    server->listen(QHostAddress::LocalHost,port_num);
+    server->listen(QHostAddress::Any,port_num);
 }

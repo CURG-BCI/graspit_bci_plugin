@@ -4,6 +4,8 @@
 #include <QState>
 #include <QSignalTransition>
 #include <vector>
+#include <QTime>
+#include <QFile>
 class BCIEvent;
 class QImage;
 class QColor;
@@ -17,6 +19,7 @@ public:
 
     QString name() const { return m_name; }
     QString prefix() const { return m_prefix; }
+
 
     QSignalTransition * addSelfTransition(QObject * sender, const char * signal, const QObject *receiver, const char* slot);
     //Reimplement addTransition interface more safely -- explicitly disallow duplicates.
@@ -37,6 +40,8 @@ protected:
 protected:
     QString m_name;
     QString m_prefix;
+    QTime state_timer;
+    QFile log_file;
 
 };
 

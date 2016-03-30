@@ -30,6 +30,7 @@ void StoppedExecutionState::onEntry(QEvent *e)
 
     csm->addTarget(t1);
     csm->addTarget(t2);
+    state_timer.start();
 }
 
 
@@ -40,4 +41,17 @@ void StoppedExecutionState::onExit(QEvent *e)
     delete csm->pipeline;
     csm->next_target=0;
     stoppedExecutionView->hide();
+
+     float time=(float) state_timer.elapsed()/1000;
+     std::cout<<"!!!!!!!!!!!Elapsed Time is: "<<time<<std::endl;
+
+     QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
+     if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
+     {
+         std::cout<<"File Writer!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+         QTextStream stream( &log );
+         stream << "Time Elapsed in Stopped Execution State: " <<time<<" Seconds."<< endl;
+ }
+
+
 }

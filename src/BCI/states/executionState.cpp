@@ -20,7 +20,7 @@ void ExecutionState::onEntry(QEvent *e)
 {
     executionView->show();
     bciControlWindow->currentState->setText("Execution");
-
+    state_timer.start();
     executeGrasp(OnlinePlannerController::getInstance()->getCurrentGrasp());
 
     csm->clearTargets();
@@ -42,6 +42,18 @@ void ExecutionState::onExit(QEvent *e)
     csm->next_target=0;
     delete csm->pipeline;
     executionView->hide();
+    float time=(float) state_timer.elapsed()/1000;
+    std::cout<<"!!!!!!!!!!!Elapsed Time is: "<<time<<std::endl;
+
+    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
+    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
+    {
+        std::cout<<"File Writer!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+        QTextStream stream( &log );
+        stream << "Time Elapsed in Execution State: " <<time<<" Seconds."<< endl;
+}
+
+    std::cout << "Finished onExit of Object Selection State." << std::endl;
 }
 
 

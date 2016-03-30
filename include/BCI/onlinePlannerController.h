@@ -57,6 +57,7 @@ namespace bci_experiment{
             bool isSceneLocked(){return sceneLocked;}
 
             void incrementGraspIndex();
+            void decrementGraspIndex();
             void resetGraspIndex();
             void sortGrasps();
             unsigned int getNumGrasps();
