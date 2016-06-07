@@ -3,3 +3,5 @@
 *.*~
 CMakeLists.txt.user
 logs/*
+Makefile
+rss_2016_logs
