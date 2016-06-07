@@ -14,9 +14,11 @@
 
 #include <Inventor/actions/SoGLRenderAction.h>
 #include <QtOpenGL/QGLWidget>
-#include <QPushButton>
 #include <QDialog>
 #include <QtGui>
+
+
+#include "BCI/utils/BCILogger.h"
 
 
 BCIService * BCIService::bciServiceInstance = NULL;
@@ -41,27 +43,48 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     ROS_INFO("Initing BCI Service");
     bciRenderArea = bciControlWindow->bciWorldView->renderArea;
 
-    //QPushButton * spinButton = new QPushButton("Spin");
     QPushButton * slowButton = new QPushButton("Flex Medium (Next)");
     QPushButton * fastButton = new QPushButton("Flex Hard (Select)");
 
-    //spinButton->setDefault(true);
     slowButton->setDefault(true);
     fastButton->setDefault(true);
 
     QDialogButtonBox *cursorControlBox = new QDialogButtonBox(Qt::Vertical);
     cursorControlBox->setCaption(QString("Cursor Control Box"));
 
-    //cursorControlBox->addButton(spinButton, QDialogButtonBox::ActionRole);
     cursorControlBox->addButton(slowButton, QDialogButtonBox::ActionRole);
     cursorControlBox->addButton(fastButton, QDialogButtonBox::ActionRole);
     cursorControlBox->setWindowFlags(Qt::WindowStaysOnTopHint);
     cursorControlBox->resize(QSize(200,100));
     cursorControlBox->show();
 
-    //QObject::connect(spinButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState0()));
     QObject::connect(slowButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState1()));
     QObject::connect(fastButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState2()));
+
+
+    endOfExperimentFormat = new QFormLayout();
+
+    successFailure = new QComboBox();
+    successFailure->insertItem("Success");
+    successFailure->insertItem("Failure");
+
+    finalComments = new QTextEdit();
+
+    finishedButton = new QPushButton("FINISHED");
+
+
+    endOfExperimentFormat->addRow(tr("&Success or failure: "), successFailure);
+    endOfExperimentFormat->addRow(tr("&Comments: "), finalComments);
+    endOfExperimentFormat->addRow(tr(""), finishedButton);
+
+    endOfExperiment = new QGroupBox();
+    endOfExperiment->setLayout(endOfExperimentFormat);
+
+
+
+    QObject::connect(finishedButton, SIGNAL(clicked()), this, SLOT(onFinishedFinalLog()));
+
+    endOfExperiment->show();
 
     timer = new QTimer;
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(updateControlScene()));
@@ -119,5 +142,14 @@ void BCIService::updateControlScene()
     bciRenderArea->setViewportRegion(pcam->getViewportBounds(bciRenderArea->getViewportRegion()));
 }
 
+void BCIService::onFinishedFinalLog()
+{
+    endOfExperiment->close();
+    QString result = QString(successFailure->currentText());
+    finalComments->selectAll();
+    QString comments = QString(finalComments->selectedText());
+    BCILogger::getInstance()->writeExperimentSettings("Result", result);
+    BCILogger::getInstance()->writeExperimentSettings("Final comments", comments);
+}
 
 

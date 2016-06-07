@@ -68,13 +68,7 @@ void CollectUserInfoState::onFinishedEnteringData()
     BCILogger::getInstance()->writeExperimentSettings("Name", name);
     BCILogger::getInstance()->writeExperimentSettings("Device", device);
     BCILogger::getInstance()->writeExperimentSettings("Target Object", targetName);
-    BCILogger::getInstance()->writeExperimentSettings("Comments", comments);
-
-    //        QTextStream stream( experimentSettingsLog );
-    //        stream << "SubjectName: " << QString("Jake") << std::endl;
-    //        stream << "Device: " << QString("Microphone") << std::endl;
-    //        stream << "Target Object: " << QString("All Bottle") << std::endl;
-    //        stream << "Comments: " << QString("n/a") << std::endl;
+    BCILogger::getInstance()->writeExperimentSettings("Experiment comments", comments);
 
     BCIService::getInstance()->emitFinishedCollectingUserInfo();
 

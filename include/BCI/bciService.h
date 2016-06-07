@@ -6,6 +6,13 @@
 #include <QMutex>
 #include <vector>
 
+#include <QPushButton>
+
+#include <QFormLayout>
+#include <QComboBox>
+#include <QTextEdit>
+#include <QGroupBox>
+
 #include "BCI/worldController.h"
 #include "BCIOnlinePlanner.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
@@ -70,6 +77,7 @@ public slots:
     void updateControlSceneState2();
 
     void updateControlScene();
+    void onFinishedFinalLog();
 
 
 signals:
@@ -108,6 +116,13 @@ private:
         BCIService();
 
         SoOrthographicCamera * pcam;
+
+        QTextEdit * finalComments;
+        QFormLayout * endOfExperimentFormat;
+        QComboBox * successFailure;
+        QPushButton * finishedButton;
+        QGroupBox * endOfExperiment;
+
 
 };
 

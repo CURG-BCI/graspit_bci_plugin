@@ -21,14 +21,6 @@ namespace graspit_bci_plugin
 GraspitBCIPlugin::GraspitBCIPlugin()
 {
     ROS_INFO("BCI PLUGIN STARTING");
-
-    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
-    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
-    {
-        QTextStream stream( &log );
-        stream<<"---------------------------------------TRIAL START-------------------------------------------------------------"<<endl;
-    }
-
 }
 
 GraspitBCIPlugin::~GraspitBCIPlugin()
