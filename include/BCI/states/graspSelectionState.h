@@ -18,8 +18,8 @@ public:
     QString stateName;
     BCIControlWindow *bciControlWindow;
 
-    virtual void onEntry(QEvent *e);
-    virtual void onExit(QEvent *e);
+    virtual void onEntryImpl(QEvent *e);
+    virtual void onExitImpl(QEvent *e);
 
 protected:
     GraspSelectionView *graspSelectionView;

@@ -13,14 +13,15 @@ ExecutionState::ExecutionState(BCIControlWindow *_bciControlWindow, ControllerSc
     executionView->hide();
 
     grasp_execution_pubisher = n->advertise<graspit_msgs::Grasp>("/graspit/grasps", 5);
+    grasp_stop_execution_pubisher = n->advertise<actionlib_msgs::GoalID>("/mico_arm_driver/controller/follow_joint_trajectory/cancel", 5);
+    grasp_stop_fingers_execution_pubisher = n->advertise<actionlib_msgs::GoalID>("/mico_arm_driver/fingers/finger_positions/cancel", 5);
 }
 
 
-void ExecutionState::onEntry(QEvent *e)
+void ExecutionState::onEntryImpl(QEvent *e)
 {
     executionView->show();
     bciControlWindow->currentState->setText("Execution");
-    state_timer.start();
     executeGrasp(OnlinePlannerController::getInstance()->getCurrentGrasp());
 
     csm->clearTargets();
@@ -35,23 +36,35 @@ void ExecutionState::onEntry(QEvent *e)
     csm->addTarget(t1);
 }
 
-void ExecutionState::onExit(QEvent *e)
+void ExecutionState::emit_goToStoppedExecutionState()
+{
+    actionlib_msgs::GoalID goal;
+
+    grasp_stop_execution_pubisher.publish(goal);
+    usleep(10000);
+    grasp_stop_execution_pubisher.publish(goal);
+    usleep(10000);
+    grasp_stop_execution_pubisher.publish(goal);
+    usleep(10000);
+
+    grasp_stop_fingers_execution_pubisher.publish(goal);
+    usleep(10000);
+    grasp_stop_fingers_execution_pubisher.publish(goal);
+    usleep(10000);
+    grasp_stop_fingers_execution_pubisher.publish(goal);
+    usleep(10000);
+
+    emit goToStoppedExecutionState();
+}
+
+void ExecutionState::onExitImpl(QEvent *e)
 {   SoDB::writelock();
     csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
     SoDB::writeunlock();
     csm->next_target=0;
     delete csm->pipeline;
     executionView->hide();
-    float time=(float) state_timer.elapsed()/1000;
-    std::cout<<"!!!!!!!!!!!Elapsed Time is: "<<time<<std::endl;
 
-    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
-    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
-    {
-        std::cout<<"File Writer!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
-        QTextStream stream( &log );
-        stream << "Time Elapsed in Execution State: " <<time<<" Seconds."<< endl;
-}
 
     std::cout << "Finished onExit of Object Selection State." << std::endl;
 }

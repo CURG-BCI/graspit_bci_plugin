@@ -22,7 +22,7 @@ ConfirmationState::ConfirmationState(BCIControlWindow *_bciControlWindow, Contro
 }
 
 
-void ConfirmationState::onEntry(QEvent *e)
+void ConfirmationState::onEntryImpl(QEvent *e)
 {
     const GraspPlanningState *grasp = OnlinePlannerController::getInstance()->getCurrentGrasp();
     Hand * hand = OnlinePlannerController::getInstance()->getSolutionHand();
@@ -32,8 +32,6 @@ void ConfirmationState::onEntry(QEvent *e)
     bciControlWindow->currentState->setText("Confirmation");
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_confirmation.png"), -0.7 , 0.7, 0.0);
     OnlinePlannerController::getInstance()->setPlannerToPaused();
-    state_timer.start();
-
 
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
@@ -56,7 +54,7 @@ void ConfirmationState::onNextGrasp(QEvent *e)
 
 }
 
-void ConfirmationState::onExit(QEvent * e)
+void ConfirmationState::onExitImpl(QEvent * e)
 {
     csm->clearTargets();
     SoDB::writelock();
@@ -66,15 +64,7 @@ void ConfirmationState::onExit(QEvent * e)
     delete csm->pipeline;
     Q_UNUSED(e);
     confirmationView->hide();
-    float time=(float) state_timer.elapsed()/1000;
-    std::cout<<"!!!!!!!!!!!Elapsed Time is: "<<time<<std::endl;
-    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
-    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
-    {
-        std::cout<<"File Writer!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
-        QTextStream stream( &log );
-        stream << "Time Elapsed in Confirmation State: " <<time<<" Seconds."<< endl;
-}
+
 
     std::cout << "Finished onExit of Object Selection State." << std::endl;
 

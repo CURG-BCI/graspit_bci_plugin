@@ -26,13 +26,12 @@ ObjectSelectionState::ObjectSelectionState(BCIControlWindow *_bciControlWindow, 
 }
 
 
-void ObjectSelectionState::onEntry(QEvent *e)
+void ObjectSelectionState::onEntryImpl(QEvent *e)
 {
     objectSelectionView->show();
 
     WorldController::getInstance()->highlightAllBodies();
     GraspableBody *currentTarget = OnlinePlannerController::getInstance()->getCurrentTarget();
-    state_timer.start();
     //Don't draw guides in this phase
     OnlinePlannerController::getInstance()->stopTimedUpdate();
     OnlinePlannerController::getInstance()->destroyGuides();
@@ -63,7 +62,7 @@ void ObjectSelectionState::onEntry(QEvent *e)
 }
 
 
-void ObjectSelectionState::onExit(QEvent *e)
+void ObjectSelectionState::onExitImpl(QEvent *e)
 {
 
     SoDB::writelock();
@@ -76,14 +75,6 @@ void ObjectSelectionState::onExit(QEvent *e)
 
 
     csm->clearTargets();
-    float time=(float) state_timer.elapsed()/1000;
-
-    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
-    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
-    {
-        QTextStream stream( &log );
-        stream << "Time Elapsed in Object Selection State: " <<time<<" Seconds."<< endl;
-    }
 
     std::cout << "Finished onExit of Object Selection State." << std::endl;
 

@@ -22,7 +22,7 @@ GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, Co
 
 }
 
-void GraspSelectionState::onEntry(QEvent *e)
+void GraspSelectionState::onEntryImpl(QEvent *e)
 {
 
     WorldController::getInstance()->unhighlightAllBodies();
@@ -35,7 +35,6 @@ void GraspSelectionState::onEntry(QEvent *e)
     bciControlWindow->currentState->setText(stateName);
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_selection.png"), -0.7 , 0.7, 0.0);
     onPlannerUpdated();
-    state_timer.start();
     csm->clearTargets();
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
@@ -79,7 +78,7 @@ void GraspSelectionState::onEntry(QEvent *e)
 }
 
 
-void GraspSelectionState::onExit(QEvent *e)
+void GraspSelectionState::onExitImpl(QEvent *e)
 {
     csm->clearTargets();
     SoDB::writelock();
@@ -88,14 +87,6 @@ void GraspSelectionState::onExit(QEvent *e)
     delete csm->pipeline;
     csm->next_target=0;
     graspSelectionView->hide();
-    float time=(float) state_timer.elapsed()/1000;
-
-    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
-    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
-    {
-        QTextStream stream( &log );
-        stream << "Time Elapsed in Grasp Selection State: " <<time<<" Seconds."<< endl;
-    }
 
 }
 

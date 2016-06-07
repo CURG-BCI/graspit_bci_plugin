@@ -124,6 +124,7 @@ set(SOURCES
     src/BCI/utils/uiTools.cpp
     src/BCI/utils/worldElementTools.cpp
     src/BCI/utils/plannerTools.cpp
+    src/BCI/utils/BCILogger.cpp
     src/BCI/onlinePlannerController.cpp
     src/BCI/reachabilityAnalyzer.cpp
     src/BCI/state.cpp
@@ -132,6 +133,7 @@ set(SOURCES
     src/BCI/states/objectRecognitionState.cpp
     src/BCI/states/graspSelectionState.cpp
     src/BCI/states/confirmationState.cpp
+    src/BCI/states/collectUserInfoState.cpp
     src/BCI/states/handRotationState.cpp
     src/BCI/states/activateRefinementState.cpp
     src/BCI/states/placementLocationSelectionState.cpp
@@ -168,6 +170,7 @@ set(HEADERS
     include/BCI/utils/uiTools.h
     include/BCI/utils/worldElementTools.h
     include/BCI/utils/plannerTools.h
+    include/BCI/utils/BCILogger.h
     include/BCI/onlinePlannerController.h
     include/BCI/state.h
     include/BCI/handView.h
@@ -176,7 +179,7 @@ set(HEADERS
     include/BCI/states/objectSelectionState.h
     include/BCI/states/placementLocationSelectionState.h
     include/BCI/states/confirmationState.h
-
+    include/BCI/states/collectUserInfoState.h
     include/BCI/states/handRotationState.h
     include/BCI/states/graspSelectionState.h
     include/BCI/states/activateRefinementState.h
@@ -228,6 +231,7 @@ set(MOCS
     include/BCI/states/graspSelectionState.h
     include/BCI/states/executionState.h
     include/BCI/states/stoppedExecutionState.h
+    include/BCI/states/collectUserInfoState.h
 
     include/BCI/controller_scene/sprites.h
     include/BCI/controller_scene/controller_scene_mgr.h

@@ -12,8 +12,8 @@ class ConfirmationState:public State
 public:
     ConfirmationState(BCIControlWindow *_bciControlWindow,ControllerSceneManager *_csm, QState* parent = 0 );
 
-     virtual void onEntry(QEvent *e);
-     virtual void onExit(QEvent *e);
+     virtual void onEntryImpl(QEvent *e);
+     virtual void onExitImpl(QEvent *e);
 
 
 public slots:

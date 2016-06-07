@@ -147,7 +147,7 @@ void OnlinePlannerController::initializeDbInterface()
         DBGA("OnlinePlannerController::initializeDbInterface: about to create graspitDBGraspAllocator");
         GraspitDBGraspAllocator *graspitDBGraspAllocator = new GraspitDBGraspAllocator(mPlanner->getHand());
         DBGA("OnlinePlannerController::initializeDbInterface: about to connect");
-        mDbMgr = new db_planner::SqlDatabaseManager("tonga.cs.columbia.edu", 5432,
+        mDbMgr = new db_planner::SqlDatabaseManager("localhost", 5432,
                                                     "postgres","roboticslab","armdb",graspitDBModelAllocator,graspitDBGraspAllocator);
         DBGA("OnlinePlannerController::initializeDbInterface: inited mDbMgr\n");
     }

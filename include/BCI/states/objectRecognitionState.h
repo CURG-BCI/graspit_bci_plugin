@@ -18,8 +18,8 @@ class ObjectRecognitionState : public State
 public:
     ObjectRecognitionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent=0);
 
-    virtual void onEntry(QEvent *e);
-    virtual void onExit(QEvent *e);
+    virtual void onEntryImpl(QEvent *e);
+    virtual void onExitImpl(QEvent *e);
 
 signals:
     void addToWorld(const QString model_filename, const QString object_name, const transf object_pose);

@@ -8,6 +8,7 @@
 #include "BCI/states/executionState.h"
 #include "BCI/states/stoppedExecutionState.h"
 #include "BCI/states/objectRecognitionState.h"
+#include "BCI/states/collectUserInfoState.h"
 
 #include "BCI/bciService.h"
 
@@ -18,7 +19,7 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
 
     csm = bciService->csm;
     ros::NodeHandle *n = new ros::NodeHandle("");
-
+    CollectUserInfoState *collectUserInfoState = new CollectUserInfoState();
     ObjectRecognitionState *objectRecognitionState = new ObjectRecognitionState(bciControlWindow, csm, n);
     ObjectSelectionState *objectSelectionState = new ObjectSelectionState(bciControlWindow, csm);
     GraspSelectionState *graspSelectionState = new GraspSelectionState(bciControlWindow, csm);
@@ -28,6 +29,7 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     ExecutionState *executionState = new ExecutionState(bciControlWindow, csm, n);
     StoppedExecutionState *stoppedExecutionState = new StoppedExecutionState(bciControlWindow, csm);
 
+    collectUserInfoState->addStateTransition(bciService, SIGNAL(finishedCollectingUserInfo()), objectRecognitionState);
     objectRecognitionState->addStateTransition(bciService, SIGNAL(finishedRecognition()), objectSelectionState);
 
     objectSelectionState->addStateTransition(bciService,SIGNAL(goToNextState1()), graspSelectionState);
@@ -51,6 +53,7 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     stoppedExecutionState->addStateTransition(stoppedExecutionState, SIGNAL(goToExecutionState()), executionState);
     stoppedExecutionState->addStateTransition(stoppedExecutionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
 
+    stateMachine.addState(collectUserInfoState);
     stateMachine.addState(objectRecognitionState);
     stateMachine.addState(objectSelectionState);
     stateMachine.addState(graspSelectionState);
@@ -60,7 +63,7 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     stateMachine.addState(executionState);
     stateMachine.addState(stoppedExecutionState);
 
-    stateMachine.setInitialState(objectRecognitionState);
+    stateMachine.setInitialState(collectUserInfoState);
 }
 
 void BCIStateMachine::start()

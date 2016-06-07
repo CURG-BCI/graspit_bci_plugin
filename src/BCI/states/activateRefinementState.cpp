@@ -3,6 +3,8 @@
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "BCI/controller_scene/sprites.h"
 #include <Inventor/nodes/SoAnnotation.h>
+#include "BCI/utils/BCILogger.h"
+
 using bci_experiment::OnlinePlannerController;
 using bci_experiment::world_element_tools::getWorld;
 using bci_experiment::WorldController;
@@ -19,7 +21,7 @@ ActivateRefinementState::ActivateRefinementState(BCIControlWindow *_bciControlWi
 
 
 
-void ActivateRefinementState::onEntry(QEvent *e)
+void ActivateRefinementState::onEntryImpl(QEvent *e)
 {
     activeRefinementView->show();
     updateView();
@@ -27,7 +29,6 @@ void ActivateRefinementState::onEntry(QEvent *e)
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_selection.png"), -0.7 , 0.7, 0.0);
     OnlinePlannerController::getInstance()->setPlannerToRunning();
     OnlinePlannerController::getInstance()->startTimedUpdate();
-    state_timer.start();
 
     csm->clearTargets();
 
@@ -58,7 +59,7 @@ void ActivateRefinementState::setTimerRunning()
         OnlinePlannerController::getInstance()->startTimedUpdate();
 }
 
-void ActivateRefinementState::onExit(QEvent *e)
+void ActivateRefinementState::onExitImpl(QEvent *e)
 {
     csm->clearTargets();
     SoDB::writelock();
@@ -70,16 +71,7 @@ void ActivateRefinementState::onExit(QEvent *e)
     OnlinePlannerController::getInstance()->setPlannerToPaused();
     OnlinePlannerController::getInstance()->stopTimedUpdate();
     OnlinePlannerController::getInstance()->destroyGuides();
-    float time=(float) state_timer.elapsed()/1000;
-    std::cout<<"!!!!!!!!!!!Elapsed Time is: "<<time<<std::endl;
 
-    QFile log("/home/srihari/ros/graspit_bci_ws/src/graspit_bci_plugin/log.txt");
-    if(log.open(QIODevice::ReadWrite | QIODevice::Text|QIODevice::Append))
-    {
-        std::cout<<"File Writer!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
-        QTextStream stream( &log );
-        stream << "Time Elapsed in Active Refinement State: " <<time<<" Seconds."<< endl;
-}
 
     std::cout << "Finished onExit of Object Selection State." << std::endl;
 }

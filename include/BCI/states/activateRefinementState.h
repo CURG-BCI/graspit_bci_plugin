@@ -17,8 +17,8 @@ public:
 
 
 public slots:
-    virtual void onEntry(QEvent *e);
-    virtual void onExit(QEvent *e);
+    virtual void onEntryImpl(QEvent *e);
+    virtual void onExitImpl(QEvent *e);
     virtual void updateView();
 
     void emit_returnToGraspSelectionState();

@@ -33,8 +33,14 @@ public slots:
 
 
 protected:
+    //these should NOT be overwritten.  We want these called for every state for logging etc.
     virtual void onEntry( QEvent* e );
     virtual void onExit( QEvent* e );
+
+    //override these for subclass specific entry/exit actions to occur
+    virtual void onEntryImpl( QEvent* e );
+    virtual void onExitImpl( QEvent* e );
+
     QAbstractTransition *checkForDuplicateTransitions(QAbstractTransition * transition);
 
 protected:

@@ -2,14 +2,15 @@
 
    <arg name="use_bci_device" default="False" />  
 
-   <param name="use_hardware" value="True" />
+   <param name="use_hardware" value="False" />
    
   <node name="graspit_ros" pkg="graspit" type="graspit" args=" -p libgraspit_bci_plugin" output="screen" >
     <env name="GRASPIT" value="$(find graspit)/graspit_source"/>
     <env name="CGDB_MODEL_ROOT" value="$(find graspit)/graspit_source/cgdb"/>
     <!--<env name="GRASPIT_PLUGIN_DIR" value="$(find graspit_bci_plugin)/../../devel/lib"/>-->
-    <env name="GRASPIT_PLUGIN_DIR" value="/home/srihari/ros/graspit_bci_ws/devel/lib" />
+    <env name="GRASPIT_PLUGIN_DIR" value="/home/armuser/ros/graspit_bci_ws/devel/lib" />
     <env name="SPRITES_DIR" value="$(find graspit_bci_plugin)/sprites/"/>
+    <env name="LOG_DIR" value="$(find graspit_bci_plugin)/logs/"/>
   </node>
 
   <group if="$(arg use_bci_device)">

@@ -14,11 +14,11 @@ class ExecutionState: public State
 public:
     ExecutionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent=0);
 
-    virtual void onEntry(QEvent *e);
-    virtual void onExit(QEvent *e);
+    virtual void onEntryImpl(QEvent *e);
+    virtual void onExitImpl(QEvent *e);
 
 public slots:
-    void emit_goToStoppedExecutionState(){emit goToStoppedExecutionState();}
+    void emit_goToStoppedExecutionState();
 
 signals:
     void goToStoppedExecutionState();
@@ -28,6 +28,8 @@ private:
     ExecutionView *executionView;
     ControllerSceneManager *csm;
     ros::Publisher grasp_execution_pubisher;
+    ros::Publisher grasp_stop_execution_pubisher;
+    ros::Publisher grasp_stop_fingers_execution_pubisher;
 
     void executeGrasp(const GraspPlanningState * gps);
 };
