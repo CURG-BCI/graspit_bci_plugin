@@ -1,5 +1,5 @@
 #include "BCI/states/objectRecognitionState.h"
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 #include "BCI/controller_scene/sprites.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "graspit_msgs/GetCameraOrigin.h"
@@ -8,7 +8,7 @@
 #include "include/graspitGUI.h"
 #include "include/ivmgr.h"
 #include <Inventor/nodes/SoPerspectiveCamera.h>
-using bci_experiment::OnlinePlannerController;
+using bci_experiment::GraspManager;
 using namespace graspit_msgs;
 
 ObjectRecognitionState::ObjectRecognitionState(BCIControlWindow *_bciControlWindow,
@@ -29,13 +29,13 @@ ObjectRecognitionState::ObjectRecognitionState(BCIControlWindow *_bciControlWind
      connect(
          this,
          SIGNAL(clearGB()),
-         OnlinePlannerController::getInstance(),
+         GraspManager::getInstance(),
          SLOT(clearObjects()));
 
      connect(
          this,
          SIGNAL(addToWorld(const QString, const QString, const transf )),
-         OnlinePlannerController::getInstance(),
+         GraspManager::getInstance(),
          SLOT(addToWorld(const QString , const QString, const transf )));
 }
 
@@ -55,7 +55,7 @@ void ObjectRecognitionState::onEntryImpl(QEvent *e)
     }
     else
     {
-          if(OnlinePlannerController::getInstance()->hasRecognizedObjects())
+          if(GraspManager::getInstance()->hasRecognizedObjects())
             {
                 BCIService::getInstance()->emitFinishedRecognition();
             }

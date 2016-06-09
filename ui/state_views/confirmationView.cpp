@@ -7,7 +7,7 @@
 #include "include/world.h"
 #include "include/robot.h"
 #include "include/grasp.h"
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 #include "BCI/qtWaitingSpinner.h"
 #include "BCI/handView.h"
 
@@ -18,7 +18,7 @@ ConfirmationView::ConfirmationView(QWidget *parent) :
     ui->setupUi(this);
 
     SoQtExaminerViewer *mainViewer = graspItGUI->getIVmgr()->getViewer();
-    Hand * h = OnlinePlannerController::getInstance()->getSolutionHand();
+    Hand * h = GraspManager::getInstance()->getHand();
     QFrame *parentWindow = this->ui->previewFrame;
     QString viewName = QString("current best grasp");
     handView = new HandView(mainViewer,h,*parentWindow,viewName);

@@ -1,7 +1,7 @@
 #include "BCI/states/executionState.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "BCI/controller_scene/sprites.h"
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 #include "include/EGPlanner/searchState.h"
 #include <Inventor/nodes/SoAnnotation.h>
 
@@ -22,7 +22,7 @@ void ExecutionState::onEntryImpl(QEvent *e)
 {
     executionView->show();
     bciControlWindow->currentState->setText("Execution");
-    executeGrasp(OnlinePlannerController::getInstance()->getCurrentGrasp());
+    executeGrasp(GraspManager::getInstance()->getCurrentGrasp());
 
     csm->clearTargets();
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_execution.png"), -0.7 , 0.7, 0.0);

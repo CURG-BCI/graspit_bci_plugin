@@ -55,7 +55,9 @@ BCIControlServer::onConnection()
      {
          printf("New connection established.\n");
          qDebug()<<socket->peerAddress();
+         std::cout << "Socket Connection Established" << std::endl;
      }
+     std::cout << "Socket Connection Maybe Established" << std::endl;
      connect(socket, SIGNAL(disconnected()),
      this, SLOT(on_disconnected()));
      connect(socket, SIGNAL(readyRead()),
@@ -96,7 +98,10 @@ void BCIControlServer::on_disconnected()
 
 
 void BCIControlServer::process() {
+
     int port_num = 4775;
+
+    std::cout << "Server Listening on Port num: " << port_num << std::endl;
     server = new QTcpServer(this);
     connect(server, SIGNAL(newConnection()), this, SLOT(onConnection()));
     server->listen(QHostAddress::Any,port_num);

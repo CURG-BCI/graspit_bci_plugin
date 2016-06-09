@@ -5,7 +5,7 @@
 #include <Inventor/nodes/SoAnnotation.h>
 #include "BCI/utils/BCILogger.h"
 
-using bci_experiment::OnlinePlannerController;
+using bci_experiment::GraspManager;
 using bci_experiment::world_element_tools::getWorld;
 using bci_experiment::WorldController;
 
@@ -13,7 +13,7 @@ ActivateRefinementState::ActivateRefinementState(BCIControlWindow *_bciControlWi
     HandRotationState("ActivateRefinementState",_bciControlWindow, _csm, parent),
     csm(_csm)
 {
-    addSelfTransition(OnlinePlannerController::getInstance(),SIGNAL(render()), this, SLOT(updateView()));
+    addSelfTransition(GraspManager::getInstance(),SIGNAL(render()), this, SLOT(updateView()));
 
     activeRefinementView = new ActiveRefinementView(bciControlWindow->currentFrame);
     activeRefinementView->hide();
@@ -27,8 +27,6 @@ void ActivateRefinementState::onEntryImpl(QEvent *e)
     updateView();
     bciControlWindow->currentState->setText("Refinement State");
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_selection.png"), -0.7 , 0.7, 0.0);
-    OnlinePlannerController::getInstance()->setPlannerToRunning();
-    OnlinePlannerController::getInstance()->startTimedUpdate();
 
     csm->clearTargets();
 
@@ -55,8 +53,6 @@ void ActivateRefinementState::onEntryImpl(QEvent *e)
 
 void ActivateRefinementState::setTimerRunning()
 {
-    if(!OnlinePlannerController::getInstance()->timedUpdateRunning)
-        OnlinePlannerController::getInstance()->startTimedUpdate();
 }
 
 void ActivateRefinementState::onExitImpl(QEvent *e)
@@ -68,9 +64,6 @@ void ActivateRefinementState::onExitImpl(QEvent *e)
     delete csm->pipeline;
      csm->next_target=0;
     activeRefinementView->hide();
-    OnlinePlannerController::getInstance()->setPlannerToPaused();
-    OnlinePlannerController::getInstance()->stopTimedUpdate();
-    OnlinePlannerController::getInstance()->destroyGuides();
 
 
     std::cout << "Finished onExit of Object Selection State." << std::endl;
@@ -85,10 +78,9 @@ void ActivateRefinementState::emit_returnToGraspSelectionState()
 
 void ActivateRefinementState::updateView()
 {
-    OnlinePlannerController::getInstance()->sortGrasps();
-    const GraspPlanningState *bestGrasp = OnlinePlannerController::getInstance()->getGrasp(0);
-    const GraspPlanningState *nextGrasp = OnlinePlannerController::getInstance()->getNextGrasp();
-    Hand *hand = OnlinePlannerController::getInstance()->getSolutionHand();
+    const GraspPlanningState *bestGrasp = GraspManager::getInstance()->getGrasp(0);
+    const GraspPlanningState *nextGrasp = GraspManager::getInstance()->getNextGrasp();
+    Hand *hand = GraspManager::getInstance()->getHand();
 
     if(nextGrasp)
     {
@@ -101,7 +93,7 @@ void ActivateRefinementState::updateView()
         QString graspID;
         bciControlWindow->currentState->setText("Refinement State - Grasp:" + graspID.setNum(bestGrasp->getAttribute("graspId")) );
     }
-    OnlinePlannerController::getInstance()->renderPending = false;
+    GraspManager::getInstance()->renderPending = false;
 
 }
 

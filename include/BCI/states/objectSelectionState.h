@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QSignalTransition>
 #include "BCI/state.h"
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 #include "bciControlWindow.h"
 
 class ObjectSelectionView;

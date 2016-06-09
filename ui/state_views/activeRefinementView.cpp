@@ -1,9 +1,9 @@
 #include "activeRefinementView.h"
 #include "ui_activeRefinementView.h"
 #include "BCI/bciService.h"
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 
-using bci_experiment::OnlinePlannerController;
+using bci_experiment::GraspManager;
 
 ActiveRefinementView::ActiveRefinementView(QWidget *parent) :
     QWidget(parent),
@@ -18,7 +18,7 @@ ActiveRefinementView::ActiveRefinementView(QWidget *parent) :
 
 void ActiveRefinementView::createHandView()
 {
-    Hand * h = OnlinePlannerController::getInstance()->getSolutionHand();
+    Hand * h = GraspManager::getInstance()->getHand();
 
     SoQtExaminerViewer *mainViewer = graspItGUI->getIVmgr()->getViewer();
     QString viewName = QString("current best grasp");
@@ -29,8 +29,8 @@ void ActiveRefinementView::createHandView()
 
 void ActiveRefinementView::showEvent(QShowEvent *)
 {
-    Hand * h = OnlinePlannerController::getInstance()->getSolutionHand();
-    this->currentGraspView->updateGeom(*OnlinePlannerController::getInstance()->getSolutionHand());
+    Hand * h = GraspManager::getInstance()->getHand();
+    this->currentGraspView->updateGeom(*GraspManager::getInstance()->getHand());
     showSelectedGrasp(h,NULL);
     showNextGrasp(h,NULL);
 }

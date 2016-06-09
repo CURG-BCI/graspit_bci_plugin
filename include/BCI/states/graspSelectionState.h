@@ -31,9 +31,9 @@ protected:
 
 public slots:
     void onNext();
-    void onPlannerUpdated();
+    void render();
 
-
+    void emit_goToGraspPlanningState() {emit goToGraspPlanningState();}
     void emit_goToActivateRefinementState(){emit goToActivateRefinementState();}
     void emit_goToObjectSelectionState(){emit goToObjectSelectionState();}
     void emit_goToConfirmationState(){emit goToConfirmationState();}
@@ -43,6 +43,7 @@ signals:
     void goToActivateRefinementState();
     void goToObjectSelectionState();
     void goToConfirmationState();
+    void goToGraspPlanningState();
 
 
 

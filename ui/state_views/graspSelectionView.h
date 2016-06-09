@@ -27,7 +27,7 @@
 #include "include/world.h"
 #include "include/robot.h"
 #include "include/grasp.h"
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 #include "BCI/qtWaitingSpinner.h"
 #include "BCI/handView.h"
 
@@ -48,11 +48,7 @@ public:
 protected:
     virtual void showEvent(QShowEvent *);
 private:
-     void showSpinners();
-     void hideSpinners();
 
-     QtWaitingSpinner* currentGraspSpinner;
-     QtWaitingSpinner* nextGraspSpinner;
      HandView *selectedHandView;
      HandView *nextHandView;
 

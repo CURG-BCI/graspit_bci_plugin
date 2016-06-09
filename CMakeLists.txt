@@ -126,11 +126,13 @@ set(SOURCES
     src/BCI/utils/plannerTools.cpp
     src/BCI/utils/BCILogger.cpp
     src/BCI/onlinePlannerController.cpp
+    src/BCI/graspManager.cpp
     src/BCI/reachabilityAnalyzer.cpp
     src/BCI/state.cpp
     src/BCI/BCIStateMachine.cpp
     src/BCI/states/objectSelectionState.cpp
     src/BCI/states/objectRecognitionState.cpp
+    src/BCI/states/graspPlanningState.cpp
     src/BCI/states/graspSelectionState.cpp
     src/BCI/states/confirmationState.cpp
     src/BCI/states/collectUserInfoState.cpp
@@ -153,6 +155,7 @@ set(SOURCES
     ui/state_views/graspSelectionView.cpp
     ui/state_views/graspView.cpp
     ui/state_views/objectRecognitionView.cpp
+    ui/state_views/graspPlanningView.cpp
     ui/state_views/objectSelectionView.cpp
     ui/state_views/placementLocationSelectionView.cpp
     ui/state_views/stoppedExecutionView.cpp
@@ -172,6 +175,7 @@ set(HEADERS
     include/BCI/utils/plannerTools.h
     include/BCI/utils/BCILogger.h
     include/BCI/onlinePlannerController.h
+    include/BCI/graspManager.h
     include/BCI/state.h
     include/BCI/handView.h
     include/BCI/qtWaitingSpinner.h
@@ -182,6 +186,7 @@ set(HEADERS
     include/BCI/states/collectUserInfoState.h
     include/BCI/states/handRotationState.h
     include/BCI/states/graspSelectionState.h
+    include/BCI/states/graspPlanningState.h
     include/BCI/states/activateRefinementState.h
     include/BCI/states/objectRecognitionState.h
 
@@ -208,6 +213,7 @@ set(MOCS
     ui/state_views/confirmationView.h
     ui/state_views/executionView.h
     ui/state_views/graspSelectionView.h
+    ui/state_views/graspPlanningView.h
     ui/state_views/graspView.h
     ui/state_views/objectRecognitionView.h
     ui/state_views/objectSelectionView.h
@@ -218,6 +224,7 @@ set(MOCS
 
     include/BCI/bciService.h
     include/BCI/onlinePlannerController.h
+    include/BCI/graspManager.h
     include/BCI/reachabilityAnalyzer.h
     include/worldController.h
 
@@ -229,6 +236,7 @@ set(MOCS
     include/BCI/states/activateRefinementState.h
     include/BCI/states/handRotationState.h
     include/BCI/states/graspSelectionState.h
+    include/BCI/states/graspPlanningState.h
     include/BCI/states/executionState.h
     include/BCI/states/stoppedExecutionState.h
     include/BCI/states/collectUserInfoState.h
@@ -248,6 +256,7 @@ set(UIS
     ui/state_views/graspSelectionView.ui
     ui/state_views/graspView.ui
     ui/state_views/objectRecognitionView.ui
+    ui/state_views/graspPlanningView.ui
     ui/state_views/objectSelectionView.ui
     ui/state_views/placementLocationSelectionView.ui
     ui/state_views/stoppedExecutionView.ui)

@@ -9,6 +9,7 @@
 #include "BCI/states/stoppedExecutionState.h"
 #include "BCI/states/objectRecognitionState.h"
 #include "BCI/states/collectUserInfoState.h"
+#include "BCI/states/graspPlanningState.h"
 
 #include "BCI/bciService.h"
 
@@ -28,6 +29,7 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     ConfirmationState *confirmationState = new ConfirmationState(bciControlWindow, csm);
     ExecutionState *executionState = new ExecutionState(bciControlWindow, csm, n);
     StoppedExecutionState *stoppedExecutionState = new StoppedExecutionState(bciControlWindow, csm);
+    PlanGraspState *planGraspState = new PlanGraspState(bciControlWindow, csm);
 
     collectUserInfoState->addStateTransition(bciService, SIGNAL(finishedCollectingUserInfo()), objectRecognitionState);
     objectRecognitionState->addStateTransition(bciService, SIGNAL(finishedRecognition()), objectSelectionState);
@@ -42,6 +44,9 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToActivateRefinementState()), activateRefinementState);
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToConfirmationState()), confirmationState);
+    graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToGraspPlanningState()), planGraspState);
+
+    planGraspState->addStateTransition(planGraspState, SIGNAL(goToGraspSelectionState()), graspSelectionState);
 
     activateRefinementState->addStateTransition(bciService, SIGNAL(goToNextState1()), graspSelectionState);
 
@@ -62,6 +67,7 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     stateMachine.addState(confirmationState);
     stateMachine.addState(executionState);
     stateMachine.addState(stoppedExecutionState);
+    stateMachine.addState(planGraspState);
 
     stateMachine.setInitialState(collectUserInfoState);
 }

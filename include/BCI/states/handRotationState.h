@@ -3,7 +3,7 @@
 
 #include "BCI/state.h"
 #include <QSignalTransition>
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 #include "bciControlWindow.h"
 
 

@@ -2,7 +2,7 @@
 #include "BCI/states/confirmationState.h"
 #include  <QSignalTransition>
 #include <Inventor/nodes/SoAnnotation.h>
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 #include "BCI/bciService.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "BCI/controller_scene/sprites.h"
@@ -10,7 +10,7 @@
 #include <memory>
 
 using bci_experiment::world_element_tools::getWorld;
-using bci_experiment::OnlinePlannerController;
+using bci_experiment::GraspManager;
 
 ConfirmationState::ConfirmationState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent):
         State("ConfirmationState", parent),bciControlWindow(_bciControlWindow),
@@ -24,14 +24,12 @@ ConfirmationState::ConfirmationState(BCIControlWindow *_bciControlWindow, Contro
 
 void ConfirmationState::onEntryImpl(QEvent *e)
 {
-    const GraspPlanningState *grasp = OnlinePlannerController::getInstance()->getCurrentGrasp();
-    Hand * hand = OnlinePlannerController::getInstance()->getSolutionHand();
-    OnlinePlannerController::getInstance()->destroyGuides();
+    const GraspPlanningState *grasp = GraspManager::getInstance()->getCurrentGrasp();
+    Hand * hand = GraspManager::getInstance()->getHand();
     confirmationView->setCurrentGrasp(hand,grasp);
     confirmationView->show();
     bciControlWindow->currentState->setText("Confirmation");
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_confirmation.png"), -0.7 , 0.7, 0.0);
-    OnlinePlannerController::getInstance()->setPlannerToPaused();
 
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,

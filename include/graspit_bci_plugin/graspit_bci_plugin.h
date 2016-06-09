@@ -59,6 +59,8 @@ public:
 
     QThread* server_thread;
 
+    bool isInited;
+
     //! Inits ROS, but (for now) without passing any arguments
     GraspitBCIPlugin();
     //! Deletes the node handle and the db manager

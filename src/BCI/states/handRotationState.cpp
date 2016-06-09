@@ -1,10 +1,10 @@
 #include "BCI/states/handRotationState.h"
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 #include "BCI/bciService.h"
 
 
 using bci_experiment::world_element_tools::getWorld;
-using bci_experiment::OnlinePlannerController;
+using bci_experiment::GraspManager;
 using bci_experiment::WorldController;
 
 
@@ -41,17 +41,12 @@ void HandRotationState::setRotationAllowed(bool allowed)
 
 void HandRotationState::onRotateHandLong()
 {
-    if(rotationAllowed)
-        OnlinePlannerController::getInstance()->rotateHandLong();
 }
 
 void HandRotationState::onRotateHandLat()
 {
-    if(rotationAllowed)
-        OnlinePlannerController::getInstance()->rotateHandLat();
 }
 
 void HandRotationState::onHandRotationStateEntry()
 {
-    OnlinePlannerController::getInstance()->alignHand();
 }

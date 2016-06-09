@@ -91,8 +91,17 @@ SoSeparator * HandView::initIVObjectGeometry(Hand * h)
     {
         IVRoot->removeChild(IVRoot->findChild(this->IVObjectGeometry));
     }
-    if(!this->objectName_.compare(h->getGrasp()->getObject()->getName()))
+
+    if((!h) || (h == NULL) || (!h->getGrasp()) || (h->getGrasp() == NULL))
+    {
         return this->IVObjectGeometry;
+    }
+
+    if(!this->objectName_.compare(h->getGrasp()->getObject()->getName()))
+    {
+        return this->IVObjectGeometry;
+    }
+
     this->objectName_ = h->getGrasp()->getObject()->getName();
     this->IVObjectGeometry = static_cast<SoSeparator*>(h->getGrasp()->getObject()->getIVRoot()->copy(false));
 

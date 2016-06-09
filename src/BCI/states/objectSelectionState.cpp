@@ -10,7 +10,7 @@
 
 
 using bci_experiment::world_element_tools::getWorld;
-using bci_experiment::OnlinePlannerController;
+using bci_experiment::GraspManager;
 using bci_experiment::WorldController;
 
 
@@ -22,7 +22,6 @@ ObjectSelectionState::ObjectSelectionState(BCIControlWindow *_bciControlWindow, 
 {
     objectSelectionView = new ObjectSelectionView(this,bciControlWindow->currentFrame);
     objectSelectionView->hide();
-    //this->addSelfTransition(getWorld(), SIGNAL(numElementsChanged()), this, SLOT(onNewObjectFound()));
 }
 
 
@@ -31,13 +30,10 @@ void ObjectSelectionState::onEntryImpl(QEvent *e)
     objectSelectionView->show();
 
     WorldController::getInstance()->highlightAllBodies();
-    GraspableBody *currentTarget = OnlinePlannerController::getInstance()->getCurrentTarget();
-    //Don't draw guides in this phase
-    OnlinePlannerController::getInstance()->stopTimedUpdate();
-    OnlinePlannerController::getInstance()->destroyGuides();
+    GraspableBody *currentTarget = GraspManager::getInstance()->getCurrentTarget();
     WorldController::getInstance()->highlightCurrentBody(currentTarget);
-    OnlinePlannerController::getInstance()->setSceneLocked(false);
-    OnlinePlannerController::getInstance()->showRobots(false);
+    GraspManager::getInstance()->setSceneLocked(false);
+    GraspManager::getInstance()->showRobots(false);
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), -0.7 , 0.7, 0.0);
     csm->clearTargets();
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
@@ -77,6 +73,9 @@ void ObjectSelectionState::onExitImpl(QEvent *e)
     csm->clearTargets();
 
     std::cout << "Finished onExit of Object Selection State." << std::endl;
+    GraspManager::getInstance()->setSceneLocked(true);
+    GraspManager::getInstance()->clearGrasps();
+    GraspManager::getInstance()->getGraspsFromDB();
 
 
 }
@@ -90,7 +89,7 @@ void ObjectSelectionState::onNext()
     {
 
         activeTimer.start();
-        GraspableBody *newTarget = OnlinePlannerController::getInstance()->incrementCurrentTarget();
+        GraspableBody *newTarget = GraspManager::getInstance()->incrementCurrentTarget();
         WorldController::getInstance()->highlightCurrentBody(newTarget);
     }
     csm->setCursorPosition(-1,0,0);
@@ -105,14 +104,3 @@ void ObjectSelectionState::onGoBack()
 {
     BCIService::getInstance()->emitGoToPreviousState();
 }
-
-//void ObjectSelectionState::onNewObjectFound()
-//{
-//    GraspableBody *currentTarget = OnlinePlannerController::getInstance()->getCurrentTarget();
-
-//    if(currentTarget)
-//    {
-//        WorldController::getInstance()->highlightCurrentBody(currentTarget);
-//    }
-
-//}

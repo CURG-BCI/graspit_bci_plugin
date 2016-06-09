@@ -50,16 +50,13 @@ public:
     void emitFinishedCollectingUserInfo(){emit finishedCollectingUserInfo();}
     void emitExec(){emit exec();}
     void emitNext(){emit next();}
-    void emitRotLat(){emit rotLat();}
-    void emitRotLong(){emit rotLong();}
+
 
     //these are emitted by the bci emg device
     void emitGoToStateLow(){emit goToStateLow();}
     void emitGoToStateMedium(){emit goToStateMedium();}
     void emitGoToStateHigh(){emit goToStateHigh();}
 
-    //void emitAnalyzeGrasp(const GraspPlanningState * gps) {emit analyzeGrasp(gps); }
-    //void emitAnalyzeNextGrasp() {emit analyzeNextGrasp(); }
     void emitAnalyzeApproachDir(GraspPlanningState * gs){emit analyzeApproachDir(gs);}
 
     static BCIService* getInstance();

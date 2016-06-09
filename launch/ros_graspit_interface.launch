@@ -2,7 +2,7 @@
 
    <arg name="use_bci_device" default="False" />  
 
-   <param name="use_hardware" value="False" />
+   <param name="use_hardware" value="True" />
    
   <node name="graspit_ros" pkg="graspit" type="graspit" args=" -p libgraspit_bci_plugin" output="screen" >
     <env name="GRASPIT" value="$(find graspit)/graspit_source"/>

@@ -1,12 +1,12 @@
 #include "BCI/states/graspSelectionState.h"
 #include "BCI/bciService.h"
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include<Inventor/nodes/SoAnnotation.h>
 #include "BCI/controller_scene/sprites.h"
 #include <QPushButton>
 
-using bci_experiment::OnlinePlannerController;
+using bci_experiment::GraspManager;
 
 GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent):
     State("GraspSelectionState", parent),
@@ -14,8 +14,8 @@ GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, Co
     csm(_csm),
     stateName(QString("Grasp Selection"))
 {
-    addSelfTransition(BCIService::getInstance(),SIGNAL(plannerUpdated()), this, SLOT(onPlannerUpdated()));
-    addSelfTransition(OnlinePlannerController::getInstance(),SIGNAL(render()), this, SLOT(onPlannerUpdated()));
+    addSelfTransition(BCIService::getInstance(),SIGNAL(plannerUpdated()), this, SLOT(render()));
+    addSelfTransition(GraspManager::getInstance(),SIGNAL(render()), this, SLOT(render()));
 
     graspSelectionView = new GraspSelectionView(bciControlWindow->currentFrame);
     graspSelectionView->hide();
@@ -26,34 +26,32 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
 {
 
     WorldController::getInstance()->unhighlightAllBodies();
-    OnlinePlannerController::getInstance()->setSceneLocked(true);
-    OnlinePlannerController::getInstance()->setPlannerToReady();
-    OnlinePlannerController::getInstance()->startGraspReachabilityAnalysis();
-    OnlinePlannerController::getInstance()->showRobots(true);
+    GraspManager::getInstance()->startGraspReachabilityAnalysis();
+    GraspManager::getInstance()->showRobots(true);
 
     graspSelectionView->show();
     bciControlWindow->currentState->setText(stateName);
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_selection.png"), -0.7 , 0.7, 0.0);
-    onPlannerUpdated();
+    render();
     csm->clearTargets();
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                       QString("target_active.png"),
                                                                       -1.4,
-                                                                      -0.6,
+                                                                      -0.4,
                                                                       0.0, QString("Select\nGrasp")));
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                       QString("target_background.png"),
                                                                       -1.4,
-                                                                      -0.8,
+                                                                      -0.6,
                                                                       0.0, QString("Next\nGrasp")));
 
-    //    std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-    //                                                                       QString("target_background.png"),
-    //                                                                       -1.4,
-    //                                                                       -0.8,
-    //                                                                       0.0, QString("Refine\nGrasp")));
+        std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
+                                                                           QString("target_background.png"),
+                                                                           -1.4,
+                                                                           -0.8,
+                                                                           0.0, QString("Plan New\nGrasps")));
 
     std::shared_ptr<Target>  t4 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                       QString("target_background.png"),
@@ -63,16 +61,16 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToConfirmationState()));
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onNext()));
-    // QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(emit_goToActivateRefinementState()));
+    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(emit_goToGraspPlanningState()));
     QObject::connect(t4.get(), SIGNAL(hit()), this, SLOT(emit_goToObjectSelectionState()));
 
     csm->addTarget(t1);
     csm->addTarget(t2);
-    //csm->addTarget(t3);
+    csm->addTarget(t3);
     csm->addTarget(t4);
 
     //do this to ensure that the side views are reset.
-    OnlinePlannerController::getInstance()->decrementGraspIndex();
+    GraspManager::getInstance()->decrementGraspIndex();
     onNext();
 
 }
@@ -94,11 +92,11 @@ void GraspSelectionState::onExitImpl(QEvent *e)
 
 void GraspSelectionState::_updateCurrentGraspView()
 {
-    const GraspPlanningState * currentGrasp = OnlinePlannerController::getInstance()->getCurrentGrasp();
+    const GraspPlanningState * currentGrasp = GraspManager::getInstance()->getCurrentGrasp();
 
     if(currentGrasp)
     {
-        Hand *graspDemoHand = OnlinePlannerController::getInstance()->getSolutionHand();
+        Hand *graspDemoHand = GraspManager::getInstance()->getHand();
         graspSelectionView->showSelectedGrasp(graspDemoHand, currentGrasp);
         QString graspID;
         bciControlWindow->currentState->setText(stateName +"- Grasp: " + graspID.setNum(currentGrasp->getAttribute("graspId")) );
@@ -107,30 +105,26 @@ void GraspSelectionState::_updateCurrentGraspView()
 
 void GraspSelectionState::_updateNextGraspView()
 {
-    const GraspPlanningState *nextGrasp = OnlinePlannerController::getInstance()->getNextGrasp();
+    const GraspPlanningState *nextGrasp = GraspManager::getInstance()->getNextGrasp();
     if(nextGrasp)
     {
-        Hand *graspDemoHand = OnlinePlannerController::getInstance()->getSolutionHand();
+        Hand *graspDemoHand = GraspManager::getInstance()->getHand();
         graspSelectionView->showNextGrasp(graspDemoHand, nextGrasp);
     }
 }
 
 void GraspSelectionState::showCurrentGrasp()
 {
-    const GraspPlanningState * currentGrasp = OnlinePlannerController::getInstance()->getCurrentGrasp();
+    const GraspPlanningState * currentGrasp = GraspManager::getInstance()->getCurrentGrasp();
     if (currentGrasp)
     {
-        currentGrasp->execute(OnlinePlannerController::getInstance()->getSolutionHand());
-        OnlinePlannerController::getInstance()->alignHand();
-        OnlinePlannerController::getInstance()->showSeedHand(false);
-        OnlinePlannerController::getInstance()->showMHand(false);
-        OnlinePlannerController::getInstance()->showSolutionHand(false);
+        currentGrasp->execute(GraspManager::getInstance()->getHand());
     }
 }
 
 void GraspSelectionState::onNext()
 {
-    OnlinePlannerController::getInstance()->incrementGraspIndex();
+    GraspManager::getInstance()->incrementGraspIndex();
 
     _updateCurrentGraspView();
     _updateNextGraspView();
@@ -139,22 +133,21 @@ void GraspSelectionState::onNext()
     csm->setCursorPosition(-1,0,0);
 }
 
-void GraspSelectionState::onPlannerUpdated()
+void GraspSelectionState::render()
 {
     ROS_INFO("GraspSelectionState::onPlannerUpdated()");
     static QTime activeTimer;
     qint64 minElapsedMSecs = 300;
     if(!activeTimer.isValid() || activeTimer.elapsed() >= minElapsedMSecs)
     {
-        OnlinePlannerController::getInstance()->sortGrasps();
-        OnlinePlannerController::getInstance()->resetGraspIndex();
+        GraspManager::getInstance()->resetGraspIndex();
 
         _updateCurrentGraspView();
         _updateNextGraspView();
         showCurrentGrasp();
     }
 
-    OnlinePlannerController::getInstance()->renderPending = false;
+    GraspManager::getInstance()->renderPending = false;
 }
 
 

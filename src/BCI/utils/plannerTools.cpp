@@ -90,10 +90,8 @@ namespace bci_experiment
 
 
 
-        void importGraspsFromDBMgr( BCIOnlinePlanner * mPlanner, db_planner::DatabaseManager * mDbMgr)
+        void importGraspsFromDBMgr(Hand*mHand, std::vector<GraspPlanningState*>& graspList, db_planner::DatabaseManager * mDbMgr)
         {
-            Hand*mHand = mPlanner->getSeedHand();
-
             db_planner::Model *m=new db_planner::Model;
 
             m->SetModelName(mHand->getGrasp()->getObject()->getName().remove(".xml").remove(QRegExp("_[0-9]{1,2}")).toStdString());
@@ -121,12 +119,9 @@ namespace bci_experiment
                 s->addAttribute("graspId", gNum);
                 s->addAttribute("testResult", testResult);
                 s->addAttribute("testTime", 0);
-                mPlanner->addSolution(s);
+                graspList.push_back(s);
                 std::cout << "adding grasp to planner solutions" << std::endl;
             }
-
-            //reorders the solutions we have found.
-            mPlanner->updateSolutionList();
 
             //needed to return hand to aligned with object, since it was used to testGraspCollisions
             mHand->restoreState();
@@ -166,10 +161,12 @@ namespace bci_experiment
             QString hand_db_name;
             if(handName.contains("arrett"))
             {
+              std::cout << "GETTING GRASPS FOR NEW_BARRETT_RUBBER" << std::endl;
                 return QString("NEW_BARRETT_RUBBER");
             }
             else if(handName.split(' ')[0] == QString("MicoGripper"))
             {
+              std::cout << "GETTING GRASPS FOR MICO_GRIPPER" << std::endl;
                 return QString("MICO_GRIPPER");
             }
             else {

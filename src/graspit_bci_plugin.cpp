@@ -18,7 +18,8 @@
 namespace graspit_bci_plugin
 {
 
-GraspitBCIPlugin::GraspitBCIPlugin()
+GraspitBCIPlugin::GraspitBCIPlugin():
+    isInited(false)
 {
     ROS_INFO("BCI PLUGIN STARTING");
 }
@@ -76,9 +77,7 @@ int GraspitBCIPlugin::init(int argc, char **argv)
     std::cout<<worldfile.toStdString().c_str()<<std::endl;
     graspItGUI->getIVmgr()->getWorld()->load(worldfile.toStdString().c_str());
 
-    BCIControlWindow *bciControlWindow= new BCIControlWindow();
-    BCIService::getInstance()->init(bciControlWindow);
-    bciControlWindow->show();
+
 
 
     ROS_INFO("Finished initing BCI Plugin");
@@ -88,6 +87,13 @@ int GraspitBCIPlugin::init(int argc, char **argv)
 
 int GraspitBCIPlugin::mainLoop()
 {
+    if(!isInited)
+    {
+        isInited = true;
+        BCIControlWindow *bciControlWindow= new BCIControlWindow();
+        BCIService::getInstance()->init(bciControlWindow);
+        bciControlWindow->show();
+    }
     ros::spinOnce();
     return 0;
 }

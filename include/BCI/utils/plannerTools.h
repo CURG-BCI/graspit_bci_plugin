@@ -37,7 +37,7 @@ namespace bci_experiment{
                                  std::vector<bool> & collisionStatus);
 
         //! Import grasps from a database to an egPlanner
-        void importGraspsFromDBMgr( BCIOnlinePlanner * mPlanner,
+        void importGraspsFromDBMgr(Hand* mHand, std::vector<GraspPlanningState*>& graspList,
                                     db_planner::DatabaseManager * mDbMgr);
 
         static QString getHandDBName(Hand* h);

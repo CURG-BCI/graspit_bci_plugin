@@ -114,7 +114,7 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
 
     BCIStateMachine *bciStateMachine = new BCIStateMachine(bciControlWindow,this);
     connect(this, SIGNAL(plannerUpdated()), bciControlWindow, SLOT(redraw()));
-    connect(OnlinePlannerController::getInstance(), SIGNAL(render()), bciControlWindow, SLOT(redraw()));
+    connect(GraspManager::getInstance(), SIGNAL(render()), bciControlWindow, SLOT(redraw()));
     bciStateMachine->start();
 
     ROS_INFO("Finished initing BCI Service");

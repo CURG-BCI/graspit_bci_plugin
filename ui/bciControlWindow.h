@@ -5,7 +5,7 @@
 #include "ui_BCIControlWindowBase.h"
 #include "BCI/bciService.h"
 #include "include/debug.h"
-#include "BCI/onlinePlannerController.h"
+#include "BCI/graspManager.h"
 class BCIControlWindow: public QWidget, public Ui::BCIControlWindowBase
 {
 
@@ -18,7 +18,7 @@ public:
         :QWidget(parent)
     {
         BCIService::getInstance();
-        if(OnlinePlannerController::getInstance()->thread() != this->thread())
+        if(GraspManager::getInstance()->thread() != this->thread())
             DBGA("OnlinePlannerController not in same thread as BCIControlWindow");
 
 
