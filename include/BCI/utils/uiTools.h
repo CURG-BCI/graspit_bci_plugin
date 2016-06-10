@@ -50,8 +50,6 @@ namespace bci_experiment
         //! Change the view to focus on all of the graspable bodies in the scene
         void viewGraspableBodies();
 
-        void updateCircularGuides(Hand * hand, Body * object);
-
         void destroyGuideSeparator();
 
         void disableZCulling(void * userdata, SoAction * action);

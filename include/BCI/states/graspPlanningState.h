@@ -5,6 +5,8 @@
 #include "bciControlWindow.h"
 #include "BCI/state.h"
 
+#include "BCIOnlinePlanner.h"
+
 #include "graspit_msgs/GetObjectInfo.h"
 #include "graspit_msgs/ObjectInfo.h"
 #include "graspit_msgs/LocationInfo.h"

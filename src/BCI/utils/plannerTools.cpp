@@ -128,32 +128,6 @@ namespace bci_experiment
 
         }
 
-        BCIOnlinePlanner * createDefaultPlanner(){
-
-             World * w = getWorld();
-             if(!w->getCurrentHand())
-             {
-                 DBGA("plannerTools::createDefaultPlanner::No current Hand!");
-                 return NULL;
-             }
-
-             GraspPlanningState *mHandObjectState = new GraspPlanningState(w->getCurrentHand());
-             mHandObjectState->setPositionType(SPACE_AXIS_ANGLE);
-             mHandObjectState->setObject(w->getGB(0));
-             mHandObjectState->setRefTran(w->getGB(0)->getTran());
-             mHandObjectState->reset();
-
-             BCIOnlinePlanner * op = new BCIOnlinePlanner(w->getCurrentHand());
-             op->setContactType(CONTACT_PRESET);
-             op->setEnergyType(ENERGY_CONTACT_QUALITY);
-             op->setMaxSteps(2000);
-             op->setModelState(mHandObjectState);
-             op->showSolutionClone(true);
-             op->resetPlanner();
-
-            return op;
-        }
-
         //! get the hand name that is in the CGDB
         QString getHandDBName(Hand* h)
         {

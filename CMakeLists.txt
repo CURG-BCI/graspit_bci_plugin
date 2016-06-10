@@ -118,9 +118,6 @@ set(SOURCES
     src/main.cpp
     src/graspit_bci_plugin.cpp
     src/main.cpp
-    src/SoRing.cpp
-    src/BCIOnlinePlanner.cpp
-    src/BCIOnlinePlanner_2.cpp
     src/BCI/utils/uiTools.cpp
     src/BCI/utils/worldElementTools.cpp
     src/BCI/utils/plannerTools.cpp
@@ -136,8 +133,6 @@ set(SOURCES
     src/BCI/states/graspSelectionState.cpp
     src/BCI/states/confirmationState.cpp
     src/BCI/states/collectUserInfoState.cpp
-    src/BCI/states/handRotationState.cpp
-    src/BCI/states/activateRefinementState.cpp
     src/BCI/states/placementLocationSelectionState.cpp
     src/BCI/states/executionState.cpp
     src/BCI/states/stoppedExecutionState.cpp
@@ -169,7 +164,6 @@ set(SOURCES
 
 set(HEADERS
     include/graspit_bci_plugin/graspit_bci_plugin.h
-    include/SoRing.h
     include/BCI/utils/uiTools.h
     include/BCI/utils/worldElementTools.h
     include/BCI/utils/plannerTools.h
@@ -184,10 +178,8 @@ set(HEADERS
     include/BCI/states/placementLocationSelectionState.h
     include/BCI/states/confirmationState.h
     include/BCI/states/collectUserInfoState.h
-    include/BCI/states/handRotationState.h
     include/BCI/states/graspSelectionState.h
     include/BCI/states/graspPlanningState.h
-    include/BCI/states/activateRefinementState.h
     include/BCI/states/objectRecognitionState.h
 
     include/BCI/states/executionState.h
@@ -196,8 +188,6 @@ set(HEADERS
     include/BCI/bciWorldView.h
     include/BCI/controller_scene/controller_scene_mgr.h
     include/BCI/controller_scene/sprites.h
-    include/BCIOnlinePlanner.h
-    include/BCIOnlinePlanner_2.h
     include/pointers.dat
     include/worldController.h
 
@@ -233,8 +223,6 @@ set(MOCS
     include/BCI/states/objectRecognitionState.h
     include/BCI/states/placementLocationSelectionState.h
     include/BCI/states/confirmationState.h
-    include/BCI/states/activateRefinementState.h
-    include/BCI/states/handRotationState.h
     include/BCI/states/graspSelectionState.h
     include/BCI/states/graspPlanningState.h
     include/BCI/states/executionState.h

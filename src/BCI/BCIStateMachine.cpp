@@ -4,7 +4,6 @@
 #include "BCI/states/graspSelectionState.h"
 #include "BCI/states/placementLocationSelectionState.h"
 #include "BCI/states/confirmationState.h"
-#include "BCI/states/activateRefinementState.h"
 #include "BCI/states/executionState.h"
 #include "BCI/states/stoppedExecutionState.h"
 #include "BCI/states/objectRecognitionState.h"
@@ -24,7 +23,6 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     ObjectRecognitionState *objectRecognitionState = new ObjectRecognitionState(bciControlWindow, csm, n);
     ObjectSelectionState *objectSelectionState = new ObjectSelectionState(bciControlWindow, csm);
     GraspSelectionState *graspSelectionState = new GraspSelectionState(bciControlWindow, csm);
-    ActivateRefinementState *activateRefinementState = new ActivateRefinementState(bciControlWindow, csm);
     GraspSelectionState *finalGraspSelectionState = new GraspSelectionState(bciControlWindow, csm);
     ConfirmationState *confirmationState = new ConfirmationState(bciControlWindow, csm);
     ExecutionState *executionState = new ExecutionState(bciControlWindow, csm, n);
@@ -41,14 +39,11 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
 
     objectSelectionState->addStateTransition(bciService,SIGNAL(goToPreviousState()), objectRecognitionState);
 
-    graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToActivateRefinementState()), activateRefinementState);
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToConfirmationState()), confirmationState);
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToGraspPlanningState()), planGraspState);
 
     planGraspState->addStateTransition(planGraspState, SIGNAL(goToGraspSelectionState()), graspSelectionState);
-
-    activateRefinementState->addStateTransition(bciService, SIGNAL(goToNextState1()), graspSelectionState);
 
     confirmationState->addStateTransition(confirmationState, SIGNAL(goToExecutionState()), executionState);
     confirmationState->addStateTransition(confirmationState, SIGNAL(goToPreviousState()), graspSelectionState);
@@ -62,7 +57,6 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     stateMachine.addState(objectRecognitionState);
     stateMachine.addState(objectSelectionState);
     stateMachine.addState(graspSelectionState);
-    stateMachine.addState(activateRefinementState);
     stateMachine.addState(finalGraspSelectionState);
     stateMachine.addState(confirmationState);
     stateMachine.addState(executionState);

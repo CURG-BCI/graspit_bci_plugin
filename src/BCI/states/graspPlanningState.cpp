@@ -38,7 +38,7 @@ void PlanGraspState::onEntryImpl(QEvent *e)
   {
     graspPlanningView->show();
     bciControlWindow->currentState->setText("Grasp Planning State");
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), -0.3 , 0, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("grasp_planning.png"), -0.3 , 0, 0.0);
 
 
     mObject = GraspManager::getInstance()->getCurrentTarget();
@@ -59,7 +59,8 @@ void PlanGraspState::onEntryImpl(QEvent *e)
 
     mPlanner->setEnergyType(ENERGY_CONTACT_QUALITY);
     mPlanner->setContactType(CONTACT_PRESET);
-    mPlanner->setMaxSteps(70000);
+    //number of steps to run the planner, the planner starts at 30000
+    mPlanner->setMaxSteps(35000);
 
     mPlanner->resetPlanner();
     mPlanner->startPlanner();

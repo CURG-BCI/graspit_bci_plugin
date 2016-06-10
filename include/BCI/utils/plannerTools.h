@@ -2,7 +2,6 @@
 #define PLANNER_TOOLS_H_
 #include <vector>
 
-#include "BCIOnlinePlanner.h"
 #include "src/DBase/graspit_db_model.h"
 
 #include "src/DBase/graspit_db_grasp.h"
@@ -41,8 +40,6 @@ namespace bci_experiment{
                                     db_planner::DatabaseManager * mDbMgr);
 
         static QString getHandDBName(Hand* h);
-
-        BCIOnlinePlanner * createDefaultPlanner();
 
     }
 
