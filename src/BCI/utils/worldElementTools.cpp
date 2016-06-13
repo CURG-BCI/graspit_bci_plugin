@@ -6,20 +6,6 @@
 namespace bci_experiment{
 namespace world_element_tools{
 
-void moveBody(Body * b, const transf & relTran)
-{
-    b->setTran(b->getTran() * relTran);
-}
-
-
-void moveAllBodies(const transf & relTran)
-{
-    for(int b_ind = 0; b_ind < getWorld()->getNumGB(); ++b_ind)
-    {
-        moveBody(getWorld()->getGB(b_ind), relTran);
-    }
-}
-
 
 Body * getOrAddExperimentTable()
 {
@@ -30,70 +16,6 @@ Body * getOrAddExperimentTable()
         return tableBody;
     }
     return addToWorld("models/objects/","Obstacle", bodyName+".xml");
-}
-
-
-
-
-void setObjectCentral(Body * b)
-{
-    Body * table = getOrAddExperimentTable();
-    moveAllBodies(table->getTran().inverse());
-    transf centralize(Quaternion::IDENTITY, -b->getTran().translation());
-    moveAllBodies(centralize);
-
-    table->setTran(centralize);
-    SoNodeList l;
-    unsigned int listLen = SoTransform::getByName("PointCloudTransform", l);
-    if(listLen == 1)
-    {
-        SoTransform * tran = static_cast<SoTransform*>(l[0]);
-        centralize.toSoTransform(tran);
-    }
-}
-
-void setNonLinkCollisions(Hand * h, bool on)
-{
-    for(int j = 0; j < getWorld()->getNumBodies(); ++j)
-    {
-        Body * b = getWorld()->getBody(j);
-        if(b->inherits("Link"))
-            continue;
-        else
-        {
-            getWorld()->toggleCollisions(on, h, b);
-        }
-    }
-
-}
-
-void setNontargetCollisions(Hand * h, GraspableBody * target, bool on)
-{
-    World * w = getWorld();
-    for (int i = 0; i < w->getNumGB(); ++i)
-    {
-        if(w->getGB(i) != target)
-        {
-            w->toggleCollisions(on, w->getGB(i), h);
-        }
-    }
-    w->toggleCollisions(true, target, h);
-}
-
-
-void setTableObjectCollisions(bool setting)
-{
-    World * w = getWorld();
-    Body * experiment_table = getOrAddExperimentTable();
-    for (int i = 0; i < w->getNumGB(); ++i)
-    {
-        w->toggleCollisions(setting, experiment_table, w->getGB(i));
-    }
-}
-
-void disableTableObjectCollisions()
-{
-    setTableObjectCollisions(false);
 }
 
 
@@ -181,72 +103,11 @@ void alignHandToObject(Hand * hand, Body * targetBody, double distance)
     // Get approach transform so that we can rotate it in to the object
     transf approachTran = hand->getApproachTran()*hand->getTran();
 
-    //Calculate the vector from the offset of the approach transform to the body.
-    //We want to rotate the Z direction of the approach transform in to this
-    //vector so that our approach direction points towards the body
-    vec3 approachToBody = normalise(approachTran.translation() - targetBody->getTran().translation());
-    vec3 approachDir = vec3(approachTran.affine()[2],approachTran.affine()[5], approachTran.affine()[8]);
-
-    //Find the angle between the approach direction and the
-    //desired approach direction
-    double angle = acos(approachToBody%approachDir);
-
-    //If the angle is over a small threshold, correct the approach direction
-    //if(angle > .01)
-    //{
-    //Find the axis to rotate around to match approach direction to
-    //to the desired direction
-    //    vec3 rotationAxis = approachToBody*approachDir;
-
-    //Calculate the relative transf based on the angle and axis
-    //    transf rotationTran = rotate_transf(-angle, rotationAxis);
-
-    //Move the hand to this relative transform
-    //hand->setTran(rotationTran * hand->getTran());
-    //}
 
     //If the distance is legal, try to set the hand to the desired distance,
     //but respect collisions.
     if(distance > 0)
         hand->approachToContact((approachTran.translation() - targetBody->getTran().translation()).len() - distance, true);
-}
-
-//!  Realigns the hand so that it is facing the object and at a reasonable distance
-//!  with open fingers.
-void realignHand(Hand * h)
-{
-    double approachDist;
-    h->quickOpen(1.0);
-    if(h->getGrasp()->getObject())
-    {
-        approachDist = 400;
-        bool collisionsWereOn = !getWorld()->collisionsAreOff(h, h->getGrasp()->getObject());
-        if(collisionsWereOn)
-        {
-            getWorld()->toggleCollisions(false, h, h->getGrasp()->getObject());
-        }
-        alignHandToObject(h, h->getGrasp()->getObject(), approachDist);
-        if(collisionsWereOn)
-        {
-            getWorld()->toggleCollisions(true, h, h->getGrasp()->getObject());
-        }
-    }
-    else
-    {
-        DBGA("Aligning hand without object");
-        approachDist = 300 - h->getTran().translation().len();
-        h->approachToContact(-approachDist, true);
-    }
-}
-
-transf getCOGTransform(DynamicBody *b)
-{
-    return b->getTran()*translate_transf(b->getCoG().toSbVec3f());
-}
-
-transf getCenterOfRotation(DynamicBody *b)
-{
-    return getCOGTransform(b);
 }
 
 }

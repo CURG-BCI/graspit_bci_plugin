@@ -8,6 +8,7 @@ export SPRITES_DIR=/home/armuser/ros/graspit_bci_ws/src/graspit_bci_plugin/sprit
 export LOG_DIR=/home/armuser/ros/graspit_bci_ws/src/graspit_bci_plugin/logs/
 
 
-#gdb /home/armuser/ros/graspit_bci_ws/devel/lib/graspit/graspit
+#gdb /home/armuser/ros/graspit_bci_ws/devel/lib/graspit/graspit -p libgraspit_bci_plugin 
 
-#-p libgraspit_bci_plugin 
+
+#r -p libgraspit_bci_plugin 

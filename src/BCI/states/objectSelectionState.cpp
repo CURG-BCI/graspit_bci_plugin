@@ -72,7 +72,6 @@ void ObjectSelectionState::onExitImpl(QEvent *e)
 
     csm->clearTargets();
 
-    std::cout << "Finished onExit of Object Selection State." << std::endl;
     GraspManager::getInstance()->setSceneLocked(true);
     GraspManager::getInstance()->clearGrasps();
     GraspManager::getInstance()->getGraspsFromDB();

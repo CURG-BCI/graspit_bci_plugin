@@ -19,18 +19,6 @@ PlanGraspState::PlanGraspState(BCIControlWindow *_bciControlWindow,
 {
      graspPlanningView = new GraspPlanningView(bciControlWindow->currentFrame);
      graspPlanningView->hide();
-
-     connect(
-         this,
-         SIGNAL(clearGB()),
-         GraspManager::getInstance(),
-         SLOT(clearObjects()));
-
-     connect(
-         this,
-         SIGNAL(addToWorld(const QString, const QString, const transf )),
-         GraspManager::getInstance(),
-         SLOT(addToWorld(const QString , const QString, const transf )));
 }
 
 
@@ -98,6 +86,7 @@ void PlanGraspState::onExitImpl(QEvent *e)
     delete csm->pipeline;
     csm->next_target=0;
     graspPlanningView->hide();
+    mObject = NULL;
 }
 
 

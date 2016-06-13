@@ -76,7 +76,7 @@ namespace bci_experiment{
             ReachabilityAnalyzer *mReachabilityAnalyzer;
 
             db_planner::SqlDatabaseManager * mDbMgr;
-            GraspableBody * currentTarget;
+            unsigned int currentTargetIndex;
             Hand * mHand;
 
             unsigned int currentGraspIndex;
@@ -84,8 +84,6 @@ namespace bci_experiment{
 
             GraspManager(QObject *parent = 0);
             void initializeDbInterface();
-
-            void setCurrentTarget(GraspableBody * gb);
 
             void analyzeNextGraspReachability();
 
@@ -106,7 +104,6 @@ namespace bci_experiment{
 
             void addToWorld(const QString model_filename, const QString object_name, const transf object_pose);
             void clearObjects();
-            void targetRemoved();
             void emitRender();
     };
 

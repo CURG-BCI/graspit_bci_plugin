@@ -15,28 +15,8 @@ namespace bci_experiment{
 
     namespace planner_tools{
 
-
-        //! Verify that the pregrasp and grasp states are not in collision
-        bool testGraspCollisions(Hand * h, const GraspPlanningState * s);
-
-
-        //! Verify that the pregrasp is not in collision
-        bool testPreGraspCollisions(Hand * h, float pregrasp_dist);
-
-
-        //! Count number of collisions on the hand
-        int getNumHandCollisions(Hand * h);
-
-
-        //! Determine whether collisions are allowed between the hand and all bodies in the world independently
-        bool setCollisionState(Hand * h, std::vector<bool> & collisionStatus);
-
-        //! Set the collision status after storing the current collision status between all objects in the world and the hand
-        void resetHandCollisions(Hand * h, bool setting,
-                                 std::vector<bool> & collisionStatus);
-
         //! Import grasps from a database to an egPlanner
-        void importGraspsFromDBMgr(Hand* mHand, std::vector<GraspPlanningState*>& graspList,
+        void importGraspsFromDBMgr(Hand* mHand, GraspableBody * target, std::vector<GraspPlanningState*>& graspList,
                                     db_planner::DatabaseManager * mDbMgr);
 
         static QString getHandDBName(Hand* h);

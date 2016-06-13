@@ -60,8 +60,8 @@ GraspManager::GraspManager(QObject *parent) :
     QThread(parent),
     mDbMgr(NULL),
     mHand(NULL),
-    currentTarget(NULL),
     currentGraspIndex(0),
+    currentTargetIndex(0),
     renderPending(false),
     sceneLocked(false)
 {
@@ -116,7 +116,7 @@ void GraspManager::initializeDbInterface()
     if(getHand())
     {
         std::cout << "about to import grasps from dbmgr." << std::endl;
-        planner_tools::importGraspsFromDBMgr(getHand(), mGraspList, mDbMgr);
+        planner_tools::importGraspsFromDBMgr(getHand(), getCurrentTarget(), mGraspList, mDbMgr);
         std::cout << "Sucessfully imported grasps from dbmgr." << std::endl;
     }
     DBGA("OnlinePlannerController::initializeDbInterface: finished");
@@ -141,6 +141,9 @@ void GraspManager::updateSolutionList()
         int reachable = 1;
         int unreachable = -1;
         int untested = 0;
+
+        //Ensures that gps has an IVRoot. DO NOT DELETE
+        (*it)->getIVRoot();
 
         if((*it)->getAttribute("testResult") == reachable)
         {
@@ -212,33 +215,22 @@ bool GraspManager::hasRecognizedObjects()
 
 GraspableBody* GraspManager::getCurrentTarget()
 {
-    if(!currentTarget && getWorld()->getNumGB())
+    if (getWorld()->getNumGB()==0)
     {
-        setCurrentTarget(getWorld()->getGB(0));
+        return NULL;
     }
-    return currentTarget;
+    mHand->getGrasp()->setObject(getWorld()->getGB(currentTargetIndex));
+    return getWorld()->getGB(currentTargetIndex);
 }
 
 GraspableBody* GraspManager::incrementCurrentTarget()
 {
-    GraspableBody *newTarget = world_element_tools::getNextGraspableBody(currentTarget);
-    setCurrentTarget(newTarget);
-    return currentTarget;
-}
-
-void GraspManager::setCurrentTarget(GraspableBody *gb)
-{
-    if(currentTarget && currentTarget != gb)
-        disconnect(currentTarget, SIGNAL(destroyed()),this,SLOT(targetRemoved()));
-
-    if(gb)
+    if (getWorld()->getNumGB()==0)
     {
-        currentTarget = gb;
-
-        mHand->getGrasp()->setObjectNoUpdate(currentTarget);
-
-        connect(currentTarget, SIGNAL(destroyed()), this, SLOT(targetRemoved()), Qt::QueuedConnection);
+        return NULL;
     }
+    currentTargetIndex = (currentTargetIndex + 1)%(getWorld()->getNumGB());
+    return getCurrentTarget();
 
 }
 
@@ -463,13 +455,6 @@ void GraspManager::clearObjects()
 
 
 }
-
-void GraspManager::targetRemoved()
-{
-    currentTarget = NULL;
-    getCurrentTarget();
-}
-
 
 void GraspManager::emitRender()
 {
