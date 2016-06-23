@@ -45,9 +45,6 @@ namespace bci_experiment{
             bool startTimedUpdate();
             bool toggleTimedUpdate();
 
-            void setSceneLocked(bool locked){sceneLocked = locked;}
-            bool isSceneLocked(){return sceneLocked;}
-
             void incrementGraspIndex();
             void decrementGraspIndex();
             void resetGraspIndex();
@@ -80,7 +77,6 @@ namespace bci_experiment{
             Hand * mHand;
 
             unsigned int currentGraspIndex;
-            bool sceneLocked;
 
             GraspManager(QObject *parent = 0);
             void initializeDbInterface();

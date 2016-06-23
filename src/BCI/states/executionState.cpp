@@ -4,10 +4,13 @@
 #include "BCI/graspManager.h"
 #include "include/EGPlanner/searchState.h"
 #include <Inventor/nodes/SoAnnotation.h>
+#include "graspit_msgs/GraspExecutionGoal.h"
 
 ExecutionState::ExecutionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent)
-    : State("ExecutionState", parent), bciControlWindow(_bciControlWindow),
-      csm(_csm)
+    : State("ExecutionState", parent),
+      bciControlWindow(_bciControlWindow),
+      csm(_csm),
+      graspExecutionActionClient("grasp_execution_action", true)
 {
     executionView = new ExecutionView(bciControlWindow->currentFrame);
     executionView->hide();
@@ -38,6 +41,7 @@ void ExecutionState::onEntryImpl(QEvent *e)
 
 void ExecutionState::emit_goToStoppedExecutionState()
 {
+    graspExecutionActionClient.cancelAllGoals();
     actionlib_msgs::GoalID goal;
 
     grasp_stop_execution_pubisher.publish(goal);
@@ -80,7 +84,7 @@ void ExecutionState::executeGrasp(const GraspPlanningState * gps)
 
     double dof[gps->getHand()->getNumDOF()];
     const_cast<GraspPlanningState *>(gps)->getPosture()->getHandDOF(dof);
-    for(int i = 0; i < gps->getHand()->getNumDOF(); ++i)
+    for(int i = 0; i < gps->getHand()->getNumDOF(); i++)
     {
        grasp.final_grasp_dof.push_back(dof[i]);
        grasp.pre_grasp_dof.push_back(dof[i]);
@@ -122,5 +126,17 @@ void ExecutionState::executeGrasp(const GraspPlanningState * gps)
     grasp.pre_grasp_pose.orientation.y=ry;
     grasp.pre_grasp_pose.orientation.z=rz;
 
-    grasp_execution_pubisher.publish(grasp);
+    graspit_msgs::GraspExecutionGoal goal;
+    goal.grasp = grasp;
+    graspExecutionActionClient.sendGoal(goal,  boost::bind(&ExecutionState::graspExecutionCallback, this, _1, _2),
+                actionlib::SimpleActionClient<graspit_msgs::GraspExecutionAction>::SimpleActiveCallback(),
+                actionlib::SimpleActionClient<graspit_msgs::GraspExecutionAction>::SimpleFeedbackCallback());
+
+
+}
+void ExecutionState::graspExecutionCallback(const actionlib::SimpleClientGoalState& state,
+                               const graspit_msgs::GraspExecutionResultConstPtr& result)
+{
+    std::cout << "Action completed" << std::endl;
+    emit goToHomeState();
 }

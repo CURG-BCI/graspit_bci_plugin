@@ -30,10 +30,12 @@ public slots:
     void onNext();
     void onSelect();
     void onGoBack();
+    void onGoHome();
 
 
 signals:
     void goToNextState();
+    void goToHomeState();
 
 };
 

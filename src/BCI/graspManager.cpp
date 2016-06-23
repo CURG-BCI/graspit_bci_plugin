@@ -62,8 +62,7 @@ GraspManager::GraspManager(QObject *parent) :
     mHand(NULL),
     currentGraspIndex(0),
     currentTargetIndex(0),
-    renderPending(false),
-    sceneLocked(false)
+    renderPending(false)
 {
     mReachabilityAnalyzer = new ReachabilityAnalyzer();
 
@@ -418,11 +417,6 @@ void GraspManager::addToWorld(const QString modelname, const QString object_name
 {
     QString model_filename = modelname + QString(".xml");
     ROS_INFO("model filename: %s" , model_filename.toStdString().c_str());
-    if(isSceneLocked())
-    {
-        DBGA("OnlinePlannerController::addToWorld::Tried to add objects to locked world");
-        return;
-    }
 
     QString body_file = QString(getenv("GRASPIT")) + "/" +  "models/objects/" + model_filename;
     Body *b = graspItGUI->getIVmgr()->getWorld()->importBody("GraspableBody", body_file);
@@ -443,11 +437,6 @@ void GraspManager::addToWorld(const QString modelname, const QString object_name
 
 void GraspManager::clearObjects()
 {
-    if(isSceneLocked())
-    {
-        DBGA("OnlinePlannerController::clearObjects::Tried to remove objects from locked world");
-        return;
-    }
     while(getWorld()->getNumGB() > 0)
     {
         getWorld()->destroyElement(getWorld()->getGB(0), true);

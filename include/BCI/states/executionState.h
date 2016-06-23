@@ -4,6 +4,8 @@
 #include "BCI/state.h"
 #include "bciControlWindow.h"
 #include "state_views/executionView.h"
+#include "graspit_msgs/GraspExecutionAction.h"
+#include <actionlib/client/simple_action_client.h>
 
 class GraspPlanningState;
 
@@ -22,6 +24,7 @@ public slots:
 
 signals:
     void goToStoppedExecutionState();
+    void goToHomeState();
 
 private:
     BCIControlWindow *bciControlWindow;
@@ -30,8 +33,13 @@ private:
     ros::Publisher grasp_execution_pubisher;
     ros::Publisher grasp_stop_execution_pubisher;
     ros::Publisher grasp_stop_fingers_execution_pubisher;
+    ros::ServiceClient grasp_serviceclient;
+    actionlib::SimpleActionClient<graspit_msgs::GraspExecutionAction> graspExecutionActionClient;
 
     void executeGrasp(const GraspPlanningState * gps);
+
+    void graspExecutionCallback(const actionlib::SimpleClientGoalState& state,
+                                   const graspit_msgs::GraspExecutionResultConstPtr& result);
 };
 
 
