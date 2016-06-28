@@ -136,12 +136,24 @@ set(SOURCES
     src/BCI/states/placementLocationSelectionState.cpp
     src/BCI/states/executionState.cpp
     src/BCI/states/stoppedExecutionState.cpp
+    src/BCI/states/homeState.cpp
+    src/BCI/states/translationState.cpp
+    src/BCI/states/executeTranslationState.cpp
+    src/BCI/states/rotationState.cpp
+    src/BCI/states/executeRotationState.cpp
+    src/BCI/states/bookmarkState.cpp
+    src/BCI/states/executeGoHomeState.cpp
+    src/BCI/states/executeGoToBinState.cpp
+    src/BCI/states/stoppedGoHomeState.cpp
+    src/BCI/states/stoppedGoToBinState.cpp
+    src/BCI/states/manualState.cpp
     src/BCI/bciService.cpp
     src/BCI/utils/worldElementTools.cpp
     src/BCI/controller_scene/controller_scene_mgr.cpp
     src/BCI/controller_scene/sprites.cpp
     src/worldController.cpp
     src/BCIControlServer.cpp
+    src/BCI/handView.cpp
 
 
     ui/state_views/activeRefinementView.cpp
@@ -157,7 +169,7 @@ set(SOURCES
 
     ui/bciControlWindow.cpp
     ui/bciWorldView.cpp
-    ui/handView.cpp
+
     ui/qtWaitingSpinner.cpp
 
 )
@@ -181,9 +193,19 @@ set(HEADERS
     include/BCI/states/graspSelectionState.h
     include/BCI/states/graspPlanningState.h
     include/BCI/states/objectRecognitionState.h
-
+    include/BCI/states/homeState.h
     include/BCI/states/executionState.h
     include/BCI/states/stoppedExecutionState.h
+    include/BCI/states/executeGoHomeState.h
+    include/BCI/states/executeGoToBinState.h
+    include/BCI/states/stoppedGoHomeState.h
+    include/BCI/states/stoppedGoToBinState.h
+    include/BCI/states/translationState.h
+    include/BCI/states/executeTranslationState.h
+    include/BCI/states/rotationState.h
+    include/BCI/states/executeRotationState.h
+    include/BCI/states/bookmarkState.h
+    include/BCI/states/manualState.h
     include/BCI/bciService.h
     include/BCI/bciWorldView.h
     include/BCI/controller_scene/controller_scene_mgr.h
@@ -228,6 +250,17 @@ set(MOCS
     include/BCI/states/executionState.h
     include/BCI/states/stoppedExecutionState.h
     include/BCI/states/collectUserInfoState.h
+    include/BCI/states/homeState.h
+    include/BCI/states/executeGoHomeState.h
+    include/BCI/states/executeGoToBinState.h
+    include/BCI/states/stoppedGoHomeState.h
+    include/BCI/states/stoppedGoToBinState.h
+    include/BCI/states/translationState.h
+    include/BCI/states/executeTranslationState.h
+    include/BCI/states/rotationState.h
+    include/BCI/states/executeRotationState.h
+    include/BCI/states/bookmarkState.h
+    include/BCI/states/manualState.h
 
     include/BCI/controller_scene/sprites.h
     include/BCI/controller_scene/controller_scene_mgr.h

@@ -58,13 +58,22 @@ public:
     static ControllerSceneManager *current_control_scene_manager;
     SoAnnotation * control_scene_separator;
 
+//    std::shared_ptr<Target> addNewTarget(QString filename,
+//                                         double x,
+//                                         double y,
+//                                         double theta,
+//                                         QString target_text,
+//                                         const QObject *receiver,
+//                                         const char* slot);
     std::shared_ptr<Target> addNewTarget(QString filename,
                                          double x,
                                          double y,
                                          double theta,
                                          QString target_text,
                                          const QObject *receiver,
-                                         const char* slot);
+                                         const char* slot,
+                                         QString inactive_filename="target_background.png",
+                                         QString active_filename="target_active.png");
 
 public slots:
 

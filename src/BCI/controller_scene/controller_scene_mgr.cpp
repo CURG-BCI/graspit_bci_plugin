@@ -35,17 +35,40 @@ void ControllerSceneManager::addTarget(std::shared_ptr<Target> t)
     this->unlock();
 }
 
+//std::shared_ptr<Target> ControllerSceneManager::addNewTarget(QString filename,
+//                                          double x,
+//                                          double y,
+//                                          double theta,
+//                                          QString target_text,
+//                                          const QObject *receiver,
+//                                          const char* slot)
+//{
+//    std::shared_ptr<Target>  target = std::shared_ptr<Target> (new Target(control_scene_separator,
+//                                                                       filename,
+//                                                                      x, y , theta, target_text));
+
+//    QObject::connect(target.get(), SIGNAL(hit()), receiver, slot);
+//    this->lock();
+//    targets.push_back(target);
+//    this->unlock();
+//    return target;
+//}
+
 std::shared_ptr<Target> ControllerSceneManager::addNewTarget(QString filename,
-                                          double x,
-                                          double y,
-                                          double theta,
-                                          QString target_text,
-                                          const QObject *receiver,
-                                          const char* slot)
+                                                             double x,
+                                                             double y,
+                                                             double theta,
+                                                             QString target_text,
+                                                             const QObject *receiver,
+                                                             const char* slot,
+                                                             QString inactive_filename,
+                                                             QString active_filename)
 {
     std::shared_ptr<Target>  target = std::shared_ptr<Target> (new Target(control_scene_separator,
-                                                                       filename,
-                                                                      x, y , theta, target_text));
+                                                                          filename,
+                                                                          x, y , theta, target_text,
+                                                                          inactive_filename=inactive_filename,
+                                                                          active_filename=active_filename));
 
     QObject::connect(target.get(), SIGNAL(hit()), receiver, slot);
     this->lock();

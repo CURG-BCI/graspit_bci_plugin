@@ -88,13 +88,12 @@
 #include "include/contact.h"
 #include "include/grasp.h"
 #include "include/world.h"
+#include "ui/mainWindow.h"
 #include "include/matvec3D.h"
 #include "include/graspitGUI.h"
 #include "include/humanHand.h"
 #include "include/body.h"
 #include "include/EGPlanner/searchState.h"
-
-#include "ui/mainWindow.h"
 
 class SoQtRenderArea;
 class SoQtExaminerViewer;
@@ -105,6 +104,7 @@ class QWidget;
 class GWS;
 class HandObjectState;
 class Hand;
+class SoImage;
 
 class HandView
 {
@@ -118,6 +118,7 @@ private:
 
   //! Root of local scene graph for view
   SoSeparator * IVRoot;
+  SoSeparator * IVRootNoGrasp;
 
   //! Root of hand geometry for graph
   SoSeparator * IVHandGeometry;
@@ -131,6 +132,8 @@ private:
   //! The Examiner View used to initializr the views
   SoQtExaminerViewer * mainViewer_;
   SoCamera * ivCamera;
+  SoCamera * ivNoGraspCamera;
+  SoImage * image;
 
   int stateID_;
 
@@ -152,6 +155,7 @@ public:
   HandView(SoQtExaminerViewer *mainViewer, Hand * h, QFrame &parentWindow, QString viewName);
    
   void update(const GraspPlanningState & s, Hand & cloneHand);
+  void updateNoGrasp();
 
   void updateGeom(Hand & h);
 
@@ -162,7 +166,7 @@ public:
 
   //---------------Destructor----------------------------
   ~HandView();
-  
+
 };
   
 

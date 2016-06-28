@@ -1,4 +1,4 @@
-#include "BCI/states/executeTranslationState.h"
+#include "BCI/states/executeRotationState.h"
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "BCI/controller_scene/sprites.h"
 #include "BCI/graspManager.h"
@@ -6,11 +6,11 @@
 #include <Inventor/nodes/SoAnnotation.h>
 #include "graspit_msgs/ManualGoal.h"
 
-ExecuteTranslationState::ExecuteTranslationState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent)
-    : State("TranslationState", parent),
+ExecuteRotationState::ExecuteRotationState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent)
+    : State("ExecuteRotationState", parent),
       bciControlWindow(_bciControlWindow),
       csm(_csm),
-      translationActionClient("manual_action", true)
+      rotationActionClient("manual_action", true)
 {
     executionView = new ExecutionView(bciControlWindow->currentFrame);
     executionView->hide();
@@ -18,10 +18,10 @@ ExecuteTranslationState::ExecuteTranslationState(BCIControlWindow *_bciControlWi
 
 }
 
-void ExecuteTranslationState::onEntryImpl(QEvent *e)
+void ExecuteRotationState::onEntryImpl(QEvent *e)
 {
     executionView->show();
-    bciControlWindow->currentState->setText("Translation State");
+    bciControlWindow->currentState->setText("Execute Rotation State");
 
     csm->clearTargets();
 
@@ -30,14 +30,14 @@ void ExecuteTranslationState::onEntryImpl(QEvent *e)
 
 }
 
-void ExecuteTranslationState::onStop()
+void ExecuteRotationState::onStop()
 {
-    translationActionClient.cancelAllGoals();
-    emit goToTranslationState();
+    rotationActionClient.cancelAllGoals();
+    emit goToRotationState();
 }
 
 
-void ExecuteTranslationState::onExitImpl(QEvent *e)
+void ExecuteRotationState::onExitImpl(QEvent *e)
 {
     csm->next_target=0;
     executionView->hide();

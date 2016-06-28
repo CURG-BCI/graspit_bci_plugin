@@ -34,14 +34,10 @@ void GraspSelectionView::showEvent(QShowEvent *)
 
 void GraspSelectionView::showSelectedGrasp(Hand *hand ,const GraspPlanningState *graspPlanningState)
 {
-
-    if(graspPlanningState)
-    {
+    if(graspPlanningState){
         selectedHandView->update(*graspPlanningState, *hand);
-    }
-    else
-    {
-        DBGA("GraspSelectionView::showSelectedGrasp::No grasp");
+    }else{
+        selectedHandView->updateNoGrasp();
     }
 }
 
@@ -50,13 +46,11 @@ void GraspSelectionView::showNextGrasp(Hand *hand ,const GraspPlanningState *gra
     if(graspPlanningState)
     {
         nextHandView->update(*graspPlanningState, *hand);
+    }else{
+        nextHandView->updateNoGrasp();
     }
-    else
-    {
-        DBGA("GraspSelectionView::showNextGrasp::No grasp");
-    }
-}
 
+}
 
 GraspSelectionView::~GraspSelectionView()
 {

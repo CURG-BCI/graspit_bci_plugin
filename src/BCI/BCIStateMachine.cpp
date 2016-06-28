@@ -19,6 +19,8 @@
 #include "BCI/states/executeTranslationState.h"
 #include "BCI/states/bookmarkState.h"
 #include "BCI/states/manualState.h"
+#include "BCI/states/rotationState.h"
+#include "BCI/states/executeRotationState.h"
 
 #include "BCI/bciService.h"
 
@@ -47,20 +49,22 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     BookmarkState *bookmarkState = new BookmarkState(bciControlWindow, csm);
     ManualState *manualState = new ManualState(bciControlWindow, csm);
     ExecuteTranslationState *executeTranslationState = new ExecuteTranslationState(bciControlWindow, csm);
+    RotationState *rotationState = new RotationState(bciControlWindow, csm);
+    ExecuteRotationState *executeRotationState = new ExecuteRotationState(bciControlWindow, csm);
 
-    collectUserInfoState->addStateTransition(bciService, SIGNAL(finishedCollectingUserInfo()), homeState);
-    objectRecognitionState->addStateTransition(bciService, SIGNAL(finishedRecognition()), objectSelectionState);
+    collectUserInfoState->addStateTransition(bciService, SIGNAL(finishedCollectingUserInfo()), objectRecognitionState);
+    objectRecognitionState->addStateTransition(bciService, SIGNAL(finishedRecognition()), homeState);
 
-    homeState->addStateTransition(homeState, SIGNAL(goToObjectRecognitionState()), objectRecognitionState);
+    homeState->addStateTransition(homeState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
     homeState->addStateTransition(homeState, SIGNAL(goToManualState()), manualState);
     homeState->addStateTransition(homeState, SIGNAL(goToBookmarkState()), bookmarkState);
+    homeState->addStateTransition(homeState, SIGNAL(goToObjectRecognitionState()), objectRecognitionState);
 
     objectSelectionState->addStateTransition(bciService,SIGNAL(goToNextState1()), graspSelectionState);
     objectSelectionState->addStateTransition(objectSelectionState,SIGNAL(goToNextState()), graspSelectionState);
     objectSelectionState->addSelfTransition(bciService, SIGNAL(exec()), objectSelectionState, SLOT(onSelect()));
     objectSelectionState->addSelfTransition(bciService, SIGNAL(rotLat()), objectSelectionState, SLOT(onNext()));
 
-    objectSelectionState->addStateTransition(bciService,SIGNAL(goToPreviousState()), objectRecognitionState);
     objectSelectionState->addStateTransition(objectSelectionState, SIGNAL(goToHomeState()), homeState);
 
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
@@ -98,10 +102,15 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     translationState->addStateTransition(translationState, SIGNAL(goToExecuteTranslationState()), executeTranslationState);
 
     manualState->addStateTransition(manualState, SIGNAL(goToTranslationState()), translationState);
+    manualState->addStateTransition(manualState, SIGNAL(goToRotationState()), rotationState);
     manualState->addStateTransition(manualState, SIGNAL(goToHomeState()), homeState);
 
     executeTranslationState->addStateTransition(executeTranslationState, SIGNAL(goToTranslationState()), translationState);
 
+    rotationState->addStateTransition(rotationState, SIGNAL(goToManualState()), manualState);
+    rotationState->addStateTransition(rotationState, SIGNAL(goToExecuteRotationState()), executeRotationState);
+
+    executeRotationState->addStateTransition(executeRotationState, SIGNAL(goToRotationState()), rotationState);
 
 
     stateMachine.addState(collectUserInfoState);
@@ -122,9 +131,12 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     stateMachine.addState(bookmarkState);
     stateMachine.addState(homeState);
     stateMachine.addState(executeTranslationState);
+    stateMachine.addState(rotationState);
+    stateMachine.addState(executeRotationState);
 
-    //stateMachine.setInitialState(collectUserInfoState);
-    stateMachine.setInitialState(homeState);
+    stateMachine.setInitialState(collectUserInfoState);
+//    stateMachine.setInitialState(objectRecognitionState);
+//    stateMachine.setInitialState(homeState);
 }
 
 void BCIStateMachine::start()

@@ -14,6 +14,9 @@
 #include <QLineEdit>
 #include <QTextEdit>
 
+#include <QCheckBox>
+
+
 
 class CollectUserInfoState: public State
 {
@@ -33,7 +36,14 @@ protected:
     QFormLayout *settingsUI;
     QComboBox *deviceOptions;
     QLineEdit *subjectName;
-    QComboBox *targetObject;
+    QFormLayout *targetObject;
+    QGroupBox *finalTargetObject;
+    QCheckBox *detergent;
+    QCheckBox *shaving;
+    QCheckBox *shampoo;
+
+    QComboBox *goalAction;
+
     QTextEdit *commentInput;
     QPushButton * finishedButton;
 

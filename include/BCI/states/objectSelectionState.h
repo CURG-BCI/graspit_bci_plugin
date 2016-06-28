@@ -29,7 +29,6 @@ public slots:
 
     void onNext();
     void onSelect();
-    void onGoBack();
     void onGoHome();
 
 

@@ -11,12 +11,14 @@
 
 #include <Inventor/SbColor.h>
 #include "include/debug.h"
+#include <Inventor/nodes/SoImage.h>
 
 
 HandView::HandView(SoQtExaminerViewer *mainViewer, Hand * h, QFrame &parentWindow, QString viewName)
     :viewName_(viewName),
      mainViewer_(mainViewer),
      IVRoot(new SoSeparator()),
+     IVRootNoGrasp(new SoSeparator()),
      stateID_(-1),
      parentWindow(&parentWindow),
      handName_(""),
@@ -24,17 +26,36 @@ HandView::HandView(SoQtExaminerViewer *mainViewer, Hand * h, QFrame &parentWindo
 {
   IVRoot->setName("HandviewRoot");
   IVRoot->ref();
+
+  IVRootNoGrasp->setName("NoHandviewRoot");
+  IVRootNoGrasp->ref();
+
   handViewSoQtRenderArea = new SoQtRenderArea(&parentWindow, " ",true);
   handViewSoQtRenderArea->setTransparencyType(SoGLRenderAction::SORTED_OBJECT_BLEND);
   handViewSoQtRenderArea->setBackgroundColor(SbColor(1.0,1.0,1.0));
 
   ivCamera = initIVCamera();
+  ivNoGraspCamera = initIVCamera();
   SoTransformSeparator *lightSep = initIVLightSeparator();
   IVHandGeometry = NULL;
   IVObjectGeometry = NULL;
 
   IVRoot->addChild(ivCamera);
   IVRoot->addChild(lightSep);
+
+
+  IVRootNoGrasp->addChild(ivNoGraspCamera);
+  IVRootNoGrasp->addChild(lightSep);
+  SoTransform * imageTran = new SoTransform;
+  imageTran->translation.setValue(SbVec3f(415.0,-150.0,0));
+  IVRootNoGrasp->addChild(imageTran);
+
+
+  QString filename = QString(getenv("SPRITES_DIR")) + QString("noGrasps2.PNG");
+  SoImage * image = new SoImage;
+  image->filename =filename.toStdString().c_str();
+  IVRootNoGrasp->addChild(image);
+
   updateGeom(*h);
 
   handViewSoQtRenderArea->setSceneGraph(IVRoot);
@@ -182,6 +203,14 @@ void HandView::updateGeom(Hand & cloneHand)
     initIVHandGeometry(&cloneHand);
 }
 
+void HandView::updateNoGrasp()
+{
+
+    std::cout<<" HandView::updateNoGrasp()"<<std::endl;
+    handViewSoQtRenderArea->setSceneGraph(IVRootNoGrasp);
+    handViewSoQtRenderArea->render();
+}
+
 /*
   Updates the current scene graph to represent the a new hand/object relationship.
   This does not copy the current scene graph but instead updates the positions
@@ -190,58 +219,62 @@ void HandView::updateGeom(Hand & cloneHand)
 */
 void HandView::update(const GraspPlanningState & s, Hand & cloneHand)
 {
-  double testResult = s.getAttribute("testResult");
-  double stateID = s.getAttribute("graspId");
-  bool updated = false;
-  SbColor currentBackground;
-  SbColor newBackground;
-  std::string objectName = s.getObject()->getName().toStdString();
-  DBGA("HandView::update::object name" << objectName);
+      std::cout<<"HandView::update(const GraspPlanningState & s, Hand & cloneHand)"<<std::endl;
 
-  currentBackground = handViewSoQtRenderArea->getBackgroundColor();
-  if(testResult > 0.0)
-  {
-      newBackground = SbColor(.8,1,.8);
-  }
-  else if(testResult <= -1.0)
-  {
-    newBackground = SbColor(1,0.8,0.8);
-  }
 
-  if(testResult <= 0.0 && testResult >-1.0){
-    newBackground = SbColor(1,1.0,1.0);
-  }
+      handViewSoQtRenderArea->setSceneGraph(IVRoot);
+      double testResult = s.getAttribute("testResult");
+      double stateID = s.getAttribute("graspId");
+      bool updated = false;
+      SbColor currentBackground;
+      SbColor newBackground;
+      std::string objectName = s.getObject()->getName().toStdString();
+      DBGA("HandView::update::object name" << objectName);
 
-  if(currentBackground != newBackground)
-  {
-    handViewSoQtRenderArea->setBackgroundColor(newBackground);
-    updated = true;
-  }
+      currentBackground = handViewSoQtRenderArea->getBackgroundColor();
+      if(testResult > 0.0)
+      {
+          newBackground = SbColor(.8,1,.8);
+      }
+      else if(testResult <= -1.0)
+      {
+        newBackground = SbColor(1,0.8,0.8);
+      }
 
-  if(stateID_ != stateID)
-  {
-    updateGeom(cloneHand);
-    updated = true;
+      if(testResult <= 0.0 && testResult >-1.0){
+        newBackground = SbColor(1,1.0,1.0);
+      }
 
-    stateID_ = stateID;
+      if(currentBackground != newBackground)
+      {
+        handViewSoQtRenderArea->setBackgroundColor(newBackground);
+        updated = true;
+      }
 
-    //First copy the current hand state so that it can be restored.
-    cloneHand.saveState();
-    s.execute(&cloneHand);
-    
-    copyLinkTransforms(&cloneHand, IVHandGeometry);
-    copyIVTran(IVObjectGeometry, *s.getObject()->getIVTran());
+      if(stateID_ != stateID)
+      {
+        updateGeom(cloneHand);
+        updated = true;
 
-    cloneHand.restoreState();
-  }
-  if(updated)
-  {
-    ivCamera->position = mainViewer_->getCamera()->position;
-    ivCamera->orientation = mainViewer_->getCamera()->orientation;
-    ivCamera->viewAll(IVRoot, handViewSoQtRenderArea->getViewportRegion());
-    mainViewer_->render();
-    handViewSoQtRenderArea->render();
-  }
+        stateID_ = stateID;
+
+        //First copy the current hand state so that it can be restored.
+        cloneHand.saveState();
+        s.execute(&cloneHand);
+
+        copyLinkTransforms(&cloneHand, IVHandGeometry);
+        copyIVTran(IVObjectGeometry, *s.getObject()->getIVTran());
+
+        cloneHand.restoreState();
+      }
+      if(updated)
+      {
+        ivCamera->position = mainViewer_->getCamera()->position;
+        ivCamera->orientation = mainViewer_->getCamera()->orientation;
+        ivCamera->viewAll(IVRoot, handViewSoQtRenderArea->getViewportRegion());
+        mainViewer_->render();
+        handViewSoQtRenderArea->render();
+      }
 
 }
 

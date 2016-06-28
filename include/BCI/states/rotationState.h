@@ -1,44 +1,44 @@
-#ifndef TRANSLATIONSTATE_H
-#define TRANSLATIONSTATE_H
+#ifndef ROTATIONSTATE_H
+#define ROTATIONSTATE_H
 
 #include "BCI/state.h"
 #include "bciControlWindow.h"
 #include "state_views/executionView.h"
 #include "graspit_msgs/ManualAction.h"
 
-class TranslationState: public State
+class RotationState: public State
 {
    Q_OBJECT
 
 public:
-    TranslationState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent=0);
+    RotationState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent=0);
 
     virtual void onEntryImpl(QEvent *e);
     virtual void onExitImpl(QEvent *e);
 
 public slots:
-    void positiveX();
-    void negativeX();
+    void positiveR();
+    void negativeR();
+    void positiveP();
+    void negativeP();
     void positiveY();
     void negativeY();
-    void positiveZ();
-    void negativeZ();
     void onGoBack();
 
 signals:
     void goToManualState();
-    void goToExecuteTranslationState();
+    void goToExecuteRotationState();
 
 private:
     BCIControlWindow *bciControlWindow;
     ExecutionView *executionView;
     ControllerSceneManager *csm;
-    actionlib::SimpleActionClient<graspit_msgs::ManualAction> translationActionClient;
+    actionlib::SimpleActionClient<graspit_msgs::ManualAction> rotationActionClient;
 
 
-    void executeTranslation(int32_t axis, int32_t direction);
+    void executeRotation(int32_t axis, int32_t direction);
 
-    void executeTranslationCallback(const actionlib::SimpleClientGoalState& state,
+    void executeRotationCallback(const actionlib::SimpleClientGoalState& state,
                                    const graspit_msgs::ManualResultConstPtr& result);
 };
 

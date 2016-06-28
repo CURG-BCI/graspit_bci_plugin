@@ -16,14 +16,16 @@ public:
     virtual void onExitImpl(QEvent *e);
 
 public slots:
-    void emit_goToObjectRecognitionState();
+    void emit_goToObjectSelectionState();
     void emit_goToManualState();
     void emit_goToBookmarkState();
+    void emit_goToObjectRecognitionState();
 
 signals:
-    void goToObjectRecognitionState();
+    void goToObjectSelectionState();
     void goToManualState();
     void goToBookmarkState();
+    void goToObjectRecognitionState();
 
 private:
     BCIControlWindow *bciControlWindow;

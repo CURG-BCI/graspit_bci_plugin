@@ -18,11 +18,13 @@ public:
 
 public slots:
     void emit_goToTranslationState();
+    void emit_goToRotationState();
     void toggleGripper();
     void emit_goToHomeState();
 
 signals:
     void goToTranslationState();
+    void goToRotationState();
     void goToHomeState();
 
 private:

@@ -37,15 +37,12 @@ void ObjectSelectionState::onEntryImpl(QEvent *e)
     csm->clearTargets();
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_active.png"),
-                                                                      -1.4, -0.4, 0.0, QString("Next\nObject")));
+                                                                      -1.4, -0.6, 0.0, QString("Next\nObject")));
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                      -1.4, -0.6, 0.0, QString("Select\nObject")));
+                                                                      -1.4, -0.8, 0.0, QString("Select\nObject")));
 
-    std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -0.8 , 0.0, QString("Rerun\nVision")));
 
 //    std::shared_ptr<Target>  t4 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
 //                                                                       QString("target_background.png"),
@@ -53,12 +50,10 @@ void ObjectSelectionState::onEntryImpl(QEvent *e)
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(onNext()));
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onSelect()));
-    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(onGoBack()));
 //    QObject::connect(t4.get(), SIGNAL(hit()), this, SLOT(onGoHome()));
 
     csm->addTarget(t1);
     csm->addTarget(t2);
-    csm->addTarget(t3);
     csm->addNewTarget(QString("target_background.png"), -1.4, -1.0 , 0.0, QString("Back"), this, SLOT(onGoHome()));
 }
 
@@ -100,11 +95,6 @@ void ObjectSelectionState::onNext()
 void ObjectSelectionState::onSelect()
 {
     BCIService::getInstance()->emitGoToNextState1();
-}
-
-void ObjectSelectionState::onGoBack()
-{
-    BCIService::getInstance()->emitGoToPreviousState();
 }
 
 void ObjectSelectionState::onGoHome()

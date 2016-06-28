@@ -35,13 +35,13 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
     render();
     csm->clearTargets();
 
-    std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
+    t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                       QString("target_active.png"),
                                                                       -1.4,
                                                                       -0.4,
                                                                       0.0, QString("Select\nGrasp")));
 
-    std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
+    t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                       QString("target_background.png"),
                                                                       -1.4,
                                                                       -0.6,
@@ -73,6 +73,8 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
     GraspManager::getInstance()->decrementGraspIndex();
     onNext();
 
+
+
 }
 
 
@@ -101,6 +103,13 @@ void GraspSelectionState::_updateCurrentGraspView()
         QString graspID;
         bciControlWindow->currentState->setText(stateName +"- Grasp: " + graspID.setNum(currentGrasp->getAttribute("graspId")) );
     }
+    else
+    {
+       std::cout<<"GraspSelectionState::_updateCurrentGraspView() in else"<<std::endl;
+       Hand *graspDemoHand = GraspManager::getInstance()->getHand();
+       graspSelectionView->showSelectedGrasp(graspDemoHand, NULL);
+
+    }
 }
 
 void GraspSelectionState::_updateNextGraspView()
@@ -110,6 +119,11 @@ void GraspSelectionState::_updateNextGraspView()
     {
         Hand *graspDemoHand = GraspManager::getInstance()->getHand();
         graspSelectionView->showNextGrasp(graspDemoHand, nextGrasp);
+    }
+    else
+    {
+       Hand *graspDemoHand = GraspManager::getInstance()->getHand();
+       graspSelectionView->showNextGrasp(graspDemoHand, NULL);
     }
 }
 
@@ -145,6 +159,11 @@ void GraspSelectionState::render()
         _updateCurrentGraspView();
         _updateNextGraspView();
         showCurrentGrasp();
+    }
+    if(!GraspManager::getInstance()->getCurrentGrasp())
+    {
+        QObject::disconnect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToConfirmationState()));
+        QObject::disconnect(t2.get(), SIGNAL(hit()), this, SLOT(onNext()));
     }
 
     GraspManager::getInstance()->renderPending = false;

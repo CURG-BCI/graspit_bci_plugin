@@ -25,26 +25,11 @@ void ManualState::onEntryImpl(QEvent *e)
 
     csm->clearTargets();
 
-    std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_active.png"),
-                                                                      -1.4, -0.6, 0.0, QString("Move\nArm")));
+    csm->addNewTarget(QString("target_active.png"), -1.4, -0.4 , 0.0, QString("Move\nArm"), this, SLOT(emit_goToTranslationState()));
+    csm->addNewTarget(QString("target_background.png"), -1.4, -0.6 , 0.0, QString("Rotate\nHand"), this, SLOT(emit_goToRotationState()));
+    csm->addNewTarget(QString("target_background.png"), -1.4, -0.8 , 0.0, QString("Open or\nClose Hand"), this, SLOT(toggleGripper()));
+    csm->addNewTarget(QString("target_background.png"), -1.4, -1.0 , 0.0, QString("Back"), this, SLOT(emit_goToHomeState()));
 
-    std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -0.8, 0.0, QString("Open or\nClose Hand")));
-
-    std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -1.0, 0.0, QString("Back")));
-
-
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToTranslationState()));
-    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(toggleGripper()));
-    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(emit_goToHomeState()));
-
-    csm->addTarget(t1);
-    csm->addTarget(t2);
-    csm->addTarget(t3);
 
 }
 
@@ -52,6 +37,11 @@ void ManualState::onEntryImpl(QEvent *e)
 void ManualState::emit_goToTranslationState()
 {
     emit goToTranslationState();
+}
+
+void ManualState::emit_goToRotationState()
+{
+    emit goToRotationState();
 }
 
 void ManualState::toggleGripper()

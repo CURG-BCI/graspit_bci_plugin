@@ -1,17 +1,17 @@
-#ifndef EXECUTETRANSLATIONSTATE_H
-#define EXECUTETRANSLATIONSTATE_H
+#ifndef EXECUTEROTATIONSTATE_H
+#define EXECUTEROTATIONSTATE_H
 
 #include "BCI/state.h"
 #include "bciControlWindow.h"
 #include "state_views/executionView.h"
 #include "graspit_msgs/ManualAction.h"
 
-class ExecuteTranslationState: public State
+class ExecuteRotationState: public State
 {
    Q_OBJECT
 
 public:
-    ExecuteTranslationState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent=0);
+    ExecuteRotationState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent=0);
 
     virtual void onEntryImpl(QEvent *e);
     virtual void onExitImpl(QEvent *e);
@@ -20,13 +20,13 @@ public slots:
     void onStop();
 
 signals:
-    void goToTranslationState();
+    void goToRotationState();
 
 private:
     BCIControlWindow *bciControlWindow;
     ExecutionView *executionView;
     ControllerSceneManager *csm;
-    actionlib::SimpleActionClient<graspit_msgs::ManualAction> translationActionClient;
+    actionlib::SimpleActionClient<graspit_msgs::ManualAction> rotationActionClient;
 
 
 

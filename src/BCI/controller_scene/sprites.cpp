@@ -113,7 +113,19 @@ void Cursor::update(int state, short renderAreaWidth_, short renderAreaHeight_)
 
 }
 
-Target::Target(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_, QString target_text)
+//Target::Target(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_, QString target_text)
+//    : Sprite(control_scene_separator, filename, x_, y_, theta_),
+//      steps_since_last_hit(500)
+//{
+//    button_text=target_text;
+//    QPainter p(qimage);
+//    p.setPen(QPen(Qt::lightGray));
+//    p.setFont(QFont("Times", 28, QFont::Bold));
+//    p.drawText(qimage->rect(), Qt::AlignCenter, button_text.toStdString().c_str());
+//    convert(*qimage, image->image);
+//}
+Target::Target(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_,
+               QString target_text, QString inactive_filename, QString active_filename)
     : Sprite(control_scene_separator, filename, x_, y_, theta_),
       steps_since_last_hit(500)
 {
@@ -123,6 +135,9 @@ Target::Target(SoAnnotation * control_scene_separator, QString filename, double 
     p.setFont(QFont("Times", 28, QFont::Bold));
     p.drawText(qimage->rect(), Qt::AlignCenter, button_text.toStdString().c_str());
     convert(*qimage, image->image);
+
+    filename_1 = inactive_filename;
+    filename_2 = active_filename;
 }
 
 Target::~Target()
@@ -189,6 +204,53 @@ void Target::update(int state, short renderAreaWidth_, short renderAreaHeight_)
     bounding_rect = new QRectF(x,y,  orig_height/500.0, orig_width/500.0);
 }
 
+//void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
+//{
+
+//    renderAreaHeight = renderAreaHeight_;
+//    renderAreaWidth = renderAreaWidth_;
+
+
+//    if(this->active)
+//    {
+//        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_active.png");
+//        qimage = new QImage(sprite_file);
+//        QPainter p(qimage);
+//        p.setPen(QPen(Qt::lightGray));
+//        p.setFont(QFont("Times", 28, QFont::Bold));
+//        p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
+
+//    }
+//    else
+//    {   QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_background.png");
+//        qimage = new QImage(sprite_file);
+//        QPainter p(qimage);
+//        p.setPen(QPen(Qt::lightGray));
+//        p.setFont(QFont("Times", 28, QFont::Bold));
+//        p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
+
+//    }
+//    int orig_height = qimage->height();
+//    int orig_width = qimage->width();
+
+//    int scaled_height = int(1.0/10 *renderAreaHeight);
+//    int scaled_width = int(1.0/10*renderAreaWidth);
+//    scaled_height = std::max(scaled_height, 5);
+//    scaled_width = std::max(scaled_width, 5);
+//    QSize scaled_size = QSize(scaled_height, scaled_width);
+//    QImage scaled_img = qimage->scaled(scaled_size, Qt::KeepAspectRatio);
+
+//    int height = scaled_img.height();
+//    int width = scaled_img.width();
+
+//    convert(scaled_img.copy(QRect((scaled_img.width()-width)/2,
+//                                   (scaled_img.height()-height)/2,
+//                                   width,
+//                                   height)), image->image);
+
+//    bounding_rect = new QRectF(x,y,  orig_height/500.0, orig_width/500.0);
+//}
+
 void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
 {
 
@@ -198,7 +260,7 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
 
     if(this->active)
     {
-        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_active.png");
+        QString sprite_file = QString(getenv("SPRITES_DIR")) + filename_2;
         qimage = new QImage(sprite_file);
         QPainter p(qimage);
         p.setPen(QPen(Qt::lightGray));
@@ -207,7 +269,7 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
 
     }
     else
-    {   QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_background.png");
+    {   QString sprite_file = QString(getenv("SPRITES_DIR")) + filename_1;
         qimage = new QImage(sprite_file);
         QPainter p(qimage);
         p.setPen(QPen(Qt::lightGray));

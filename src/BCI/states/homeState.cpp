@@ -25,18 +25,18 @@ void HomeState::onEntryImpl(QEvent *e)
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_active.png"),
-                                                                      -1.4, -0.6, 0.0, QString("Grasp\nPipeline")));
+                                                                      -1.4, -0.4, 0.0, QString("Auto\nGrasp")));
 
     std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                      -1.4, -0.8, 0.0, QString("Manual\nMovement")));
+                                                                      -1.4, -0.6, 0.0, QString("Manual\nMovement")));
 
     std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_background.png"),
-                                                                      -1.4, -1.0, 0.0, QString("Bookmarks")));
+                                                                      -1.4, -0.8, 0.0, QString("Bookmarks")));
 
 
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToObjectRecognitionState()));
+    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToObjectSelectionState()));
     QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(emit_goToManualState()));
     QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(emit_goToBookmarkState()));
 
@@ -44,11 +44,13 @@ void HomeState::onEntryImpl(QEvent *e)
     csm->addTarget(t2);
     csm->addTarget(t3);
 
+    csm->addNewTarget(QString("target_background.png"), -1.4, -1.0 , 0.0, QString("Rerun\nVision"), this, SLOT(emit_goToObjectRecognitionState()));
+
 }
 
-void HomeState::emit_goToObjectRecognitionState()
+void HomeState::emit_goToObjectSelectionState()
 {
-    emit goToObjectRecognitionState();
+    emit goToObjectSelectionState();
 }
 
 void HomeState::emit_goToManualState()
@@ -60,6 +62,11 @@ void HomeState::emit_goToManualState()
 void HomeState::emit_goToBookmarkState()
 {
     emit goToBookmarkState();
+}
+
+void HomeState::emit_goToObjectRecognitionState()
+{
+    emit goToObjectRecognitionState();
 }
 
 void HomeState::onExitImpl(QEvent *e)

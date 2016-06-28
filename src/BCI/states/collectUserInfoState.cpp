@@ -24,10 +24,19 @@ void CollectUserInfoState::onEntryImpl(QEvent *e)
     subjectName = new QLineEdit();
     subjectName->setPlaceholderText(QString("Subject name"));
 
-    targetObject = new QComboBox();
-    targetObject->insertItem("Laundry detergent");
-    targetObject->insertItem("Shaving cream");
-    targetObject->insertItem("Shampoo");
+    targetObject = new QFormLayout();
+    detergent = new QCheckBox("Laundry Detergent");
+    shaving = new QCheckBox("Shaving cream");
+    shampoo = new QCheckBox("Shampoo");
+    targetObject->addRow(detergent);
+    targetObject->addRow(shaving);
+    targetObject->addRow(shampoo);
+    finalTargetObject = new QGroupBox();
+    finalTargetObject->setLayout(targetObject);
+
+    goalAction = new QComboBox();
+    goalAction->insertItem("Pick up object(s)");
+    goalAction->insertItem("Pick up object(s) and drop in bin");
 
     commentInput = new QTextEdit();
 
@@ -36,7 +45,8 @@ void CollectUserInfoState::onEntryImpl(QEvent *e)
 
     settingsUI->addRow(tr("&Subject name: "), subjectName);
     settingsUI->addRow(tr("&Device: "), deviceOptions);
-    settingsUI->addRow(tr("&Target object: "), targetObject);
+    settingsUI->addRow(tr("&Target object(s): "), finalTargetObject);
+    settingsUI->addRow(tr("&Goal: "), goalAction);
     settingsUI->addRow(tr("&Comments: "), commentInput);
     settingsUI->addRow(tr(""), finishedButton);
 
@@ -60,7 +70,25 @@ void CollectUserInfoState::onFinishedEnteringData()
     subjectName->selectAll();
     QString name = QString(subjectName->selectedText());
 
-    QString targetName = QString(targetObject->currentText());
+    QString detergentString = "";
+    QString shavingString = "";
+    QString shampooString = "";
+    if (detergent->isChecked())
+    {
+        detergentString = "Laundry detergent,";
+    }
+    if (shaving->isChecked())
+    {
+        shavingString = "Shaving cream,";
+    }
+    if (shampoo->isChecked())
+    {
+        shampooString ="Shampoo";
+    }
+
+    QString targetName = detergentString + shavingString + shampooString;
+
+    QString goal = QString(goalAction->currentText());
 
     commentInput->selectAll();
     QString comments = QString(commentInput->selectedText());
@@ -68,6 +96,7 @@ void CollectUserInfoState::onFinishedEnteringData()
     BCILogger::getInstance()->writeExperimentSettings("Name", name);
     BCILogger::getInstance()->writeExperimentSettings("Device", device);
     BCILogger::getInstance()->writeExperimentSettings("Target Object", targetName);
+    BCILogger::getInstance()->writeExperimentSettings("Goal", goal);
     BCILogger::getInstance()->writeExperimentSettings("Experiment comments", comments);
 
     BCIService::getInstance()->emitFinishedCollectingUserInfo();

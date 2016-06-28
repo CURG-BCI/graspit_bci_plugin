@@ -22,6 +22,8 @@ public:
 protected:
     GraspSelectionView *graspSelectionView;
     ControllerSceneManager *csm;
+    std::shared_ptr<Target>  t1;
+    std::shared_ptr<Target>  t2;
 
     void _updateCurrentGraspView();
     void _updateNextGraspView();

@@ -31,6 +31,9 @@ protected:
     QString filename;
     QString button_text;
 
+    QString filename_1;
+    QString filename_2;
+
     short renderAreaWidth;
     short renderAreaHeight;
 
@@ -64,7 +67,10 @@ protected:
     int steps_since_last_hit;
 
 public:
-    Target(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_, QString target_text);
+//    Target(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_, QString target_text);
+    Target(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_, QString target_text,
+           QString inactive_filename="target_background.png", QString active_filename="target_active.png");
+
     virtual ~Target();
     void update(int state, short renderAreaWidth, short renderAreaHeight);
     void setHit();

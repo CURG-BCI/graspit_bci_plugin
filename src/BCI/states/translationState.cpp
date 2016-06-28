@@ -4,13 +4,13 @@
 #include "BCI/graspManager.h"
 #include "include/EGPlanner/searchState.h"
 #include <Inventor/nodes/SoAnnotation.h>
-#include "graspit_msgs/TranslationGoal.h"
+#include "graspit_msgs/ManualGoal.h"
 
 TranslationState::TranslationState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent)
     : State("TranslationState", parent),
       bciControlWindow(_bciControlWindow),
       csm(_csm),
-      translationActionClient("translation_action", true)
+      translationActionClient("manual_action", true)
 {
     executionView = new ExecutionView(bciControlWindow->currentFrame);
     executionView->hide();
@@ -24,76 +24,48 @@ void TranslationState::onEntryImpl(QEvent *e)
     bciControlWindow->currentState->setText("Translation State");
 
     csm->clearTargets();
-    std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_active.png"),
-                                                                      -1.0, -0.8, 0.0, QString("Right")));
 
-    std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.2, -1.0, 0.0, QString("Down")));
+//    csm->addNewTarget(QString("target_active.png"), -1.4, 0.2 , 0.0, QString("Up"), this, SLOT(positiveZ()));
+//    csm->addNewTarget(QString("target_background.png"), -1.4, 0.0 , 0.0, QString("Down"), this, SLOT(negativeZ()));
+//    csm->addNewTarget(QString("target_background.png"), -1.4, -0.2 , 0.0, QString("Right"), this, SLOT(negativeX()));
+//    csm->addNewTarget(QString("target_background.png"), -1.4, -0.4 , 0.0, QString("Left"), this, SLOT(positiveX()));
+//    csm->addNewTarget(QString("target_background.png"), -1.4, -0.6 , 0.0, QString("Towards"), this, SLOT(positiveY()));
+//    csm->addNewTarget(QString("target_background.png"), -1.4, -0.8 , 0.0, QString("Away"), this, SLOT(negativeY()));
+//    csm->addNewTarget(QString("target_background.png"), -1.4, -1.0 , 0.0, QString("Back"), this, SLOT(onGoBack()));
 
-    std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -0.8, 0.0, QString("Left")));
-
-    std::shared_ptr<Target>  t4 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.2, -0.6, 0.0, QString("Up")));
-
-    std::shared_ptr<Target>  t5 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -0.8, -0.7, 0.0, QString("Towards")));
-
-    std::shared_ptr<Target>  t6 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -0.8, -0.9, 0.0, QString("Away")));
-
-    std::shared_ptr<Target>  t7 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -0.6, -0.8, 0.0, QString("Back")));
-
-
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(negativeX()));
-    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(negativeZ()));
-    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(positiveX()));
-    QObject::connect(t4.get(), SIGNAL(hit()), this, SLOT(positiveZ()));
-    QObject::connect(t5.get(), SIGNAL(hit()), this, SLOT(positiveY()));
-    QObject::connect(t6.get(), SIGNAL(hit()), this, SLOT(negativeY()));
-    QObject::connect(t7.get(), SIGNAL(hit()), this, SLOT(onGoBack()));
-
-    csm->addTarget(t1);
-    csm->addTarget(t2);
-    csm->addTarget(t3);
-    csm->addTarget(t4);
-    csm->addTarget(t5);
-    csm->addTarget(t6);
-    csm->addTarget(t7);
+    csm->addNewTarget(QString("zPosActive.PNG"), -1.4, 0.2 , 0.0, QString(""), this, SLOT(positiveZ()),"zPosBackground.PNG", "zPosActive.PNG");
+    csm->addNewTarget(QString("zNegBackground.PNG"), -1.4, 0.0 , 0.0, QString(""), this, SLOT(negativeZ()), "zNegBackground.PNG", "zNegActive.PNG");
+    csm->addNewTarget(QString("yPosBackground.PNG"), -1.4, -0.2 , 0.0, QString(""), this, SLOT(negativeX()), "yPosBackground.PNG", "yPosActive.PNG");
+    csm->addNewTarget(QString("yNegBackground.PNG"), -1.4, -0.4 , 0.0, QString(""), this, SLOT(positiveX()), "yNegBackground.PNG", "yNegActive.PNG");
+    csm->addNewTarget(QString("xPosBackground.PNG"), -1.4, -0.6 , 0.0, QString(""), this, SLOT(positiveY()), "xPosBackground.PNG", "xPosActive.PNG");
+    csm->addNewTarget(QString("xNegBackground.PNG"), -1.4, -0.8 , 0.0, QString(""), this, SLOT(negativeY()), "xNegBackground.PNG", "xNegActive.PNG");
+    csm->addNewTarget(QString("target_background.png"), -1.4, -1.0 , 0.0, QString("Back"), this, SLOT(onGoBack()));
 
 }
 
 void TranslationState::positiveX()
 {
-    executeTranslation("x", "positive");
+    executeTranslation(0, 1);
 }
 void TranslationState::negativeX()
 {
-    executeTranslation("x", "negative");
+    executeTranslation(0, -1);
 }
 void TranslationState::positiveY()
 {
-    executeTranslation("y", "positive");
+    executeTranslation(1, 1);
 }
 void TranslationState::negativeY()
 {
-    executeTranslation("y", "negative");
+    executeTranslation(1, -1);
 }
 void TranslationState::positiveZ()
 {
-    executeTranslation("z", "positive");
+    executeTranslation(2, 1);
 }
 void TranslationState::negativeZ()
 {
-    executeTranslation("z", "negative");
+    executeTranslation(2, -1);
 }
 
 void TranslationState::onGoBack()
@@ -102,25 +74,26 @@ void TranslationState::onGoBack()
 }
 
 
-void TranslationState::executeTranslation(std::string axis, std::string direction)
+void TranslationState::executeTranslation(int32_t axis, int32_t direction)
 {
-    graspit_msgs::TranslationInfo message;
+    // axis: x = 0, y = 1, z = 2; direction: positive = 1, negative = -1
+    graspit_msgs::ManualInfo message;
     message.axis = axis;
     message.direction = direction;
-    graspit_msgs::TranslationGoal goal;
-    goal.translationinfo = message;
+    graspit_msgs::ManualGoal goal;
+    goal.manualinfo = message;
     translationActionClient.sendGoal(goal, boost::bind(&TranslationState::executeTranslationCallback, this, _1, _2),
-                actionlib::SimpleActionClient<graspit_msgs::TranslationAction>::SimpleActiveCallback(),
-                actionlib::SimpleActionClient<graspit_msgs::TranslationAction>::SimpleFeedbackCallback());
+                actionlib::SimpleActionClient<graspit_msgs::ManualAction>::SimpleActiveCallback(),
+                actionlib::SimpleActionClient<graspit_msgs::ManualAction>::SimpleFeedbackCallback());
     emit goToExecuteTranslationState();
 
 
 }
 void TranslationState::executeTranslationCallback(const actionlib::SimpleClientGoalState& state,
-                                            const graspit_msgs::TranslationResultConstPtr& result)
+                                            const graspit_msgs::ManualResultConstPtr& result)
 {
     std::cout << "Action completed" << std::endl;
-    if (!result->successfulMove)
+    if (!result->success)
     {
         std::cout << "Could not move in this direction" << std::endl;
     }

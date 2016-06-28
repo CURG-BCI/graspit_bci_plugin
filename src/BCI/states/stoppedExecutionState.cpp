@@ -17,6 +17,7 @@ void StoppedExecutionState::onEntryImpl(QEvent *e)
     bciControlWindow->currentState->setText("Execution");
 
     csm->clearTargets();
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_paused_execution.png"), -0.7 , 0.7, 0.0);
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_active.png"),
                                                                        -1.4, -1.0, 0.0, QString("Continue")));
