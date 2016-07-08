@@ -99,7 +99,9 @@ void ObjectRecognitionState::sendGetCameraOriginRequest()
 
 void ObjectRecognitionState::sendObjectRecognitionRequest()
 {
+    std::cout <<"ObjectRecognitionState::sendObjectRecognitionRequest()"<< std::endl;
     RunObjectRecognitionGoal goal;
+    std::cout <<"ABOUT TO SEND GOAL"<< std::endl;
     recognizeObjectsActionClient.sendGoal(goal,  boost::bind(&ObjectRecognitionState::objectRecognitionCallback, this, _1, _2),
                 actionlib::SimpleActionClient<graspit_msgs::RunObjectRecognitionAction>::SimpleActiveCallback(),
                 actionlib::SimpleActionClient<graspit_msgs::RunObjectRecognitionAction>::SimpleFeedbackCallback());
@@ -108,6 +110,7 @@ void ObjectRecognitionState::sendObjectRecognitionRequest()
 void ObjectRecognitionState::objectRecognitionCallback(const actionlib::SimpleClientGoalState& state,
                        const graspit_msgs::RunObjectRecognitionResultConstPtr& result)
 {
+    std::cout <<"ObjectRecognitionState::objectRecognitionCallbacks"<< std::endl;
     emit clearGB();
     while(graspItGUI->getIVmgr()->getWorld()->getNumGB())
     {
