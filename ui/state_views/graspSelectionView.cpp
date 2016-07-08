@@ -11,7 +11,7 @@ GraspSelectionView::GraspSelectionView(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    SoQtExaminerViewer *mainViewer = graspItGUI->getIVmgr()->getViewer();
+    SoQtExaminerViewer *mainViewer = graspitCore->getIVmgr()->getViewer();
     Hand * h = GraspManager::getInstance()->getHand();
     QFrame *parentWindow = this->ui->renderArea;
     QString viewName = QString("current best grasp");

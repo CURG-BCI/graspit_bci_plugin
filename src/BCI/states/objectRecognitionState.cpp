@@ -5,7 +5,7 @@
 #include "graspit_msgs/GetCameraOrigin.h"
 #include <Inventor/nodes/SoAnnotation.h>
 #include <Inventor/SoDB.h>
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include "include/ivmgr.h"
 #include <Inventor/nodes/SoPerspectiveCamera.h>
 using bci_experiment::GraspManager;
@@ -88,8 +88,8 @@ void ObjectRecognitionState::sendGetCameraOriginRequest()
        float y = srv.response.camera_pose.position.y;
        float z = srv.response.camera_pose.position.z;
        transf t(mat3::IDENTITY, 1.5*vec3(x,y,z));
-       graspItGUI->getIVmgr()->setCameraTransf(t);
-       graspItGUI->getIVmgr()->getViewer()->getCamera()->pointAt(SbVec3f(0,0,0), SbVec3f(0,0,1));
+       graspitCore->getIVmgr()->setCameraTransf(t);
+       graspitCore->getIVmgr()->getViewer()->getCamera()->pointAt(SbVec3f(0,0,0), SbVec3f(0,0,1));
     }
     else
     {
@@ -112,7 +112,7 @@ void ObjectRecognitionState::objectRecognitionCallback(const actionlib::SimpleCl
 {
     std::cout <<"ObjectRecognitionState::objectRecognitionCallbacks"<< std::endl;
     emit clearGB();
-    while(graspItGUI->getIVmgr()->getWorld()->getNumGB())
+    while(graspitCore->getWorld()->getNumGB())
     {
         usleep(10000);
     }

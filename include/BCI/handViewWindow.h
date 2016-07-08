@@ -33,7 +33,7 @@
 #include "world.h"
 #include "mainWindow.h"
 #include "matvec3D.h"
-#include "graspitGUI.h"
+#include "graspitCore.h"
 #include "humanHand.h"
 #include "body.h"
 

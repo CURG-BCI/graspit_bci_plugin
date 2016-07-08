@@ -73,7 +73,7 @@ Body * getObjectByName(const QString & objectName)
 
 World * getWorld()
 {
-    return graspItGUI->getIVmgr()->getWorld();
+    return graspitCore->getWorld();
 }
 
 
@@ -82,7 +82,7 @@ Body * addToWorld(const QString & relativeModelDir, const QString & modelType, c
 {
     QString bodyFile = QString(getenv("GRASPIT")) + "/" +  relativeModelDir + modelFilename;
     std::cout << "body string: "<< bodyFile.toStdString() << std::endl;
-    return graspItGUI->getIVmgr()->getWorld()->importBody(modelType, bodyFile);
+    return graspitCore->getWorld()->importBody(modelType, bodyFile);
 }
 
 

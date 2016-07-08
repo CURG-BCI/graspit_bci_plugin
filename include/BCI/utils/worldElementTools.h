@@ -5,7 +5,7 @@
 #include "include/body.h"
 #include "include/ivmgr.h"
 #include "include/robot.h"
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include "include/grasp.h"
 
 namespace bci_experiment{

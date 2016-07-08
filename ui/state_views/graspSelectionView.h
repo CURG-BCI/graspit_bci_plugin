@@ -21,7 +21,7 @@
 #include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/engines/SoElapsedTime.h>
 
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include "include/ivmgr.h"
 #include "include/body.h"
 #include "include/world.h"

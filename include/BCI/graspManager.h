@@ -5,12 +5,12 @@
 
 #include "include/robot.h"
 #include "include/grasp.h"
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include "include/ivmgr.h"
 
-#include "src/DBase/DBPlanner/sql_database_manager.h"
-#include "src/DBase/DBPlanner/db_manager.h"
-#include "src/DBase/DBPlanner/database.h"
+#include "include/DBase/DBPlanner/sql_database_manager.h"
+#include "include/DBase/DBPlanner/db_manager.h"
+#include "include/DBase/DBPlanner/database.h"
 
 #include "BCI/utils/uiTools.h"
 #include "BCI/utils/plannerTools.h"

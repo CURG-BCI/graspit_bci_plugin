@@ -1,7 +1,7 @@
 #include "confirmationView.h"
 #include "ui_confirmationView.h"
 #include "BCI/bciService.h"
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include "include/ivmgr.h"
 #include "include/body.h"
 #include "include/world.h"
@@ -17,7 +17,7 @@ ConfirmationView::ConfirmationView(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    SoQtExaminerViewer *mainViewer = graspItGUI->getIVmgr()->getViewer();
+    SoQtExaminerViewer *mainViewer = graspitCore->getIVmgr()->getViewer();
     Hand * h = GraspManager::getInstance()->getHand();
     QFrame *parentWindow = this->ui->previewFrame;
     QString viewName = QString("current best grasp");

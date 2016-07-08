@@ -2,7 +2,7 @@
 #include "include/world.h"
 #include "include/body.h"
 #include "include/ivmgr.h"
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include "include/robot.h"
 #include <Inventor/nodes/SoMaterial.h>
 #include <Inventor/nodes/SoCamera.h>
@@ -71,17 +71,17 @@ namespace bci_experiment
 
         void viewHand(Hand * h)
         {
-          graspItGUI->getIVmgr()->getViewer()->getCamera()->viewAll(h->getIVRoot(), graspItGUI->getIVmgr()->getViewer()->getViewportRegion(), 0.5);
+          graspitCore->getIVmgr()->getViewer()->getCamera()->viewAll(h->getIVRoot(), graspitCore->getIVmgr()->getViewer()->getViewportRegion(), 0.5);
         }
 
 
         void viewTarget(Body * b)
         {
-          graspItGUI->getIVmgr()->getViewer()->getCamera()->viewAll(b->getIVRoot(), graspItGUI->getIVmgr()->getViewer()->getViewportRegion(), 1.0);
+          graspitCore->getIVmgr()->getViewer()->getCamera()->viewAll(b->getIVRoot(), graspitCore->getIVmgr()->getViewer()->getViewportRegion(), 1.0);
           Body * tableBody= getObjectByName("experiment_table");
           SbVec3f table_z = tableBody->getTran().affine().transpose().row(2).toSbVec3f();
 
-          graspItGUI->getIVmgr()->getViewer()->getCamera()->pointAt(SbVec3f(0,0,0), table_z);
+          graspitCore->getIVmgr()->getViewer()->getCamera()->pointAt(SbVec3f(0,0,0), table_z);
         }
 
 
@@ -97,8 +97,8 @@ namespace bci_experiment
 
         void destroyGuideSeparator()
         {
-            //SoSeparator * pointerRoot = graspItGUI->getIVmgr()->getPointers();
-            SoSeparator * pointerRoot = graspItGUI->getIVmgr()->getWorld()->getIVRoot();
+            //SoSeparator * pointerRoot = graspitCore->getIVmgr()->getPointers();
+            SoSeparator * pointerRoot = graspitCore->getWorld()->getIVRoot();
             SoSeparator * guideSeparator = static_cast<SoSeparator *>(pointerRoot->getByName("BCIGuideSeparator"));
             if(guideSeparator)
             {

@@ -17,13 +17,13 @@
 
 //bool isMainThread(QObject * obj)
 //{
-//    if(obj->thread() != graspItGUI->getIVmgr()->thread())
+//    if(obj->thread() != graspitCore->getIVmgr()->thread())
 //    {
 //        DBGA("Object not in main thread");
 //        return false;
 //    }
 
-//    if(QThread::currentThread() != graspItGUI->getIVmgr()->thread())
+//    if(QThread::currentThread() != graspitCore->getIVmgr()->thread())
 //    {
 //        DBGA("Current thread is not main thread");
 //        return false;
@@ -627,11 +627,11 @@
 //    }
 
 //    QString body_file = QString(getenv("GRASPIT")) + "/" +  "models/objects/" + model_filename;
-//    Body *b = graspItGUI->getIVmgr()->getWorld()->importBody("GraspableBody", body_file);
+//    Body *b = graspitCore->getWorld()->importBody("GraspableBody", body_file);
 //    if(!b)
 //    {
 //        QString body_file = QString(getenv("GRASPIT")) + "/" +  "models/object_database/" + model_filename;
-//        b = graspItGUI->getIVmgr()->getWorld()->importBody("GraspableBody", body_file);
+//        b = graspitCore->getWorld()->importBody("GraspableBody", body_file);
 //    }
 
 //    if(b)

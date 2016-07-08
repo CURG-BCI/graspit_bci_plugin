@@ -20,7 +20,7 @@ void ActiveRefinementView::createHandView()
 {
     Hand * h = GraspManager::getInstance()->getHand();
 
-    SoQtExaminerViewer *mainViewer = graspItGUI->getIVmgr()->getViewer();
+    SoQtExaminerViewer *mainViewer = graspitCore->getIVmgr()->getViewer();
     QString viewName = QString("current best grasp");
     QString nextViewName = QString("next grasp");
     currentGraspView = new HandView(mainViewer, h, *this->ui->previewFrame, viewName);

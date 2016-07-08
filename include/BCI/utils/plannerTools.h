@@ -2,9 +2,9 @@
 #define PLANNER_TOOLS_H_
 #include <vector>
 
-#include "src/DBase/graspit_db_model.h"
+#include "include/DBase/graspit_db_model.h"
 
-#include "src/DBase/graspit_db_grasp.h"
+#include "include/DBase/graspit_db_grasp.h"
 
 class EGPlanner;
 class Body;

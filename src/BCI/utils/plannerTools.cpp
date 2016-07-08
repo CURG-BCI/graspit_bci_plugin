@@ -4,8 +4,8 @@
 #include "include/EGPlanner/egPlanner.h"
 #include "include/debug.h"
 
-#include "src/DBase/DBPlanner/db_manager.h"
-#include "src/DBase/graspit_db_grasp.h"
+#include "include/DBase/DBPlanner/db_manager.h"
+#include "include/DBase/graspit_db_grasp.h"
 
 #include "BCI/utils/worldElementTools.h"
 #include "BCI/utils/plannerTools.h"

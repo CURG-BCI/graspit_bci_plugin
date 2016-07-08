@@ -15,17 +15,17 @@ BCIWorldView::BCIWorldView(QWidget *parent) :
     SoRotation *lightDir = new SoRotation;
     SoLightModel * lightModel = new SoLightModel;
 
-    SoNode *ivRoot = graspItGUI->getIVmgr()->getViewer()->getSceneGraph();
+    SoNode *ivRoot = graspitCore->getIVmgr()->getViewer()->getSceneGraph();
 
     soMaterial->diffuseColor.setValue(1,0,0);
 
-    lightDir->rotation.connectFrom(&graspItGUI->getIVmgr()->getViewer()->getCamera()->orientation);
+    lightDir->rotation.connectFrom(&graspitCore->getIVmgr()->getViewer()->getCamera()->orientation);
     lightSep->addChild(lightDir);
-    lightSep->addChild(graspItGUI->getIVmgr()->getViewer()->getHeadlight());
+    lightSep->addChild(graspitCore->getIVmgr()->getViewer()->getHeadlight());
 
     lightModel->model=SoLightModel::PHONG;
 
-    bciWorldViewRoot->addChild(graspItGUI->getIVmgr()->getViewer()->getCamera());
+    bciWorldViewRoot->addChild(graspitCore->getIVmgr()->getViewer()->getCamera());
     bciWorldViewRoot->addChild(lightSep);
     bciWorldViewRoot->addChild(lightModel);
     bciWorldViewRoot->addChild(ivRoot);

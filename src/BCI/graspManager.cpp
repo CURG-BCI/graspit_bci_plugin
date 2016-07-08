@@ -4,8 +4,8 @@
 #include "include/debug.h"
 #include "include/EGPlanner/graspTesterThread.h"
 #include "include/EGPlanner/searchState.h"
-#include "src/DBase/graspit_db_model.h"
-#include "src/DBase/graspit_db_grasp.h"
+#include "include/DBase/graspit_db_model.h"
+#include "include/DBase/graspit_db_grasp.h"
 #include <boost/thread.hpp>
 using bci_experiment::world_element_tools::getWorld;
 
@@ -17,13 +17,13 @@ namespace bci_experiment
 
 bool isMainThread(QObject * obj)
 {
-    if(obj->thread() != graspItGUI->getIVmgr()->thread())
+    if(obj->thread() != graspitCore->getIVmgr()->thread())
     {
         DBGA("Object not in main thread");
         return false;
     }
 
-    if(QThread::currentThread() != graspItGUI->getIVmgr()->thread())
+    if(QThread::currentThread() != graspitCore->getIVmgr()->thread())
     {
         DBGA("Current thread is not main thread");
         return false;
@@ -276,8 +276,8 @@ Hand * GraspManager::getHand()
 {
     if(!mHand)
     {
-        mHand = graspItGUI->getMainWorld()->getCurrentHand();
-        mHand->getGrasp()->setObject(graspItGUI->getMainWorld()->getGB(0));
+        mHand = graspitCore->getWorld()->getCurrentHand();
+        mHand->getGrasp()->setObject(graspitCore->getWorld()->getGB(0));
     }
     return mHand;
 }
@@ -419,11 +419,11 @@ void GraspManager::addToWorld(const QString modelname, const QString object_name
     ROS_INFO("model filename: %s" , model_filename.toStdString().c_str());
 
     QString body_file = QString(getenv("GRASPIT")) + "/" +  "models/objects/" + model_filename;
-    Body *b = graspItGUI->getIVmgr()->getWorld()->importBody("GraspableBody", body_file);
+    Body *b = graspitCore->getWorld()->importBody("GraspableBody", body_file);
     if(!b)
     {
         QString body_file = QString(getenv("GRASPIT")) + "/" +  "models/object_database/" + model_filename;
-        b = graspItGUI->getIVmgr()->getWorld()->importBody("GraspableBody", body_file);
+        b = graspitCore->getWorld()->importBody("GraspableBody", body_file);
     }
 
     if(b)

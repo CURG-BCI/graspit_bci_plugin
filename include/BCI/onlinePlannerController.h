@@ -5,7 +5,7 @@
 
 //#include "include/robot.h"
 //#include "include/grasp.h"
-//#include "include/graspitGUI.h"
+//#include "include/graspitCore.h"
 //#include "include/ivmgr.h"
 
 //#include "src/DBase/DBPlanner/sql_database_manager.h"

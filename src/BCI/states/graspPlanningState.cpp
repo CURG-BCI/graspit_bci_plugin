@@ -5,7 +5,7 @@
 #include "graspit_msgs/GetCameraOrigin.h"
 #include <Inventor/nodes/SoAnnotation.h>
 #include <Inventor/SoDB.h>
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include "include/ivmgr.h"
 using bci_experiment::GraspManager;
 using namespace graspit_msgs;
@@ -32,7 +32,7 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     mObject = GraspManager::getInstance()->getCurrentTarget();
     mObject->setMaterial(5);//rubber
 
-    mHand = graspItGUI->getMainWorld()->getCurrentHand();
+    mHand = graspitCore->getWorld()->getCurrentHand();
     mHand->getGrasp()->setObjectNoUpdate(mObject);
     mHand->getGrasp()->setGravity(false);
 

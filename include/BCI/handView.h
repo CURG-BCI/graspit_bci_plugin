@@ -83,15 +83,13 @@
 #include "include/SoComplexShape.h"
 #include "include/robot.h"
 #include "include/joint.h"
-#include "include/humanHand.h"
 #include "include/body.h"
 #include "include/contact.h"
 #include "include/grasp.h"
 #include "include/world.h"
-#include "ui/mainWindow.h"
+
 #include "include/matvec3D.h"
-#include "include/graspitGUI.h"
-#include "include/humanHand.h"
+#include "include/graspitCore.h"
 #include "include/body.h"
 #include "include/EGPlanner/searchState.h"
 

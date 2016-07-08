@@ -4,11 +4,11 @@
 #include <include/mytools.h>
 #include <include/world.h>
 #include <include/body.h>
-#include <include/graspitGUI.h>
+#include <include/graspitCore.h>
 #include <include/ivmgr.h>
 #include <bciService.h>
 #include <bciControlWindow.h>
-#include "ui/mainWindow.h"
+
 
 #include <QtGui>
 #include <QFrame>
@@ -75,7 +75,7 @@ int GraspitBCIPlugin::init(int argc, char **argv)
     //this should go away, just a hack
     QString worldfile = QString(getenv("GRASPIT")) + QString("/worlds/allVision2fromjon.xml");
     std::cout<<worldfile.toStdString().c_str()<<std::endl;
-    graspItGUI->getIVmgr()->getWorld()->load(worldfile.toStdString().c_str());
+    graspitCore->getWorld()->load(worldfile.toStdString().c_str());
 
 
 

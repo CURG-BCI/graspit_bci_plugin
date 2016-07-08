@@ -97,7 +97,7 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     SoAnnotation *hudSeparator = new SoAnnotation;
     hudSeparator->renderCaching = SoSeparator::OFF;
     hudSeparator->setName("hud");
-    graspItGUI->getIVmgr()->getWorld()->getIVRoot()->addChild(hudSeparator);
+    graspitCore->getWorld()->getIVRoot()->addChild(hudSeparator);
     pcam = new SoOrthographicCamera;
     pcam->position = SbVec3f(0, 0, 10);
     pcam->nearDistance = 0.1;

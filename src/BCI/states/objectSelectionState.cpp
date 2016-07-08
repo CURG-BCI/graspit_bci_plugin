@@ -5,7 +5,7 @@
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "BCI/controller_scene/sprites.h"
 
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include <QGLWidget>
 
 

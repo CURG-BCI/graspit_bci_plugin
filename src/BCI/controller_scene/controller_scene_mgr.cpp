@@ -8,7 +8,7 @@
 #include "BCI/bciService.h"
 #include "Inventor/nodes/SoEventCallback.h"
 #include <Inventor/events/SoMouseButtonEvent.h>
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include "include/ivmgr.h"
 #include <Inventor/nodes/SoPerspectiveCamera.h>
 

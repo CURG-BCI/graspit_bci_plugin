@@ -14,7 +14,7 @@
 #include <Inventor/nodes/SoDirectionalLight.h>
 #include<Inventor/nodes/SoLightModel.h>
 
-#include "include/graspitGUI.h"
+#include "include/graspitCore.h"
 #include "include/ivmgr.h"
 
 namespace Ui {
