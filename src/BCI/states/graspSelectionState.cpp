@@ -80,6 +80,7 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
 
 void GraspSelectionState::onExitImpl(QEvent *e)
 {
+    GraspManager::getInstance()->startGraspReachabilityAnalysis();
     csm->clearTargets();
     SoDB::writelock();
     csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);
