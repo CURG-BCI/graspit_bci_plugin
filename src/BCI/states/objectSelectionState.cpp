@@ -33,7 +33,7 @@ void ObjectSelectionState::onEntryImpl(QEvent *e)
     GraspableBody *currentTarget = GraspManager::getInstance()->getCurrentTarget();
     WorldController::getInstance()->highlightCurrentBody(currentTarget);
     GraspManager::getInstance()->showRobots(false);
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), -0.7 , 0.7, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), -1.2 , 0.7, 0.0);
     csm->clearTargets();
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_active.png"),
@@ -73,9 +73,7 @@ void ObjectSelectionState::onExitImpl(QEvent *e)
     csm->clearTargets();
 
     GraspManager::getInstance()->clearGrasps();
-    GraspManager::getInstance()->getGraspsFromDB();
-
-
+    //GraspManager::getInstance()->getGraspsFromDB();
 }
 
 void ObjectSelectionState::onNext()

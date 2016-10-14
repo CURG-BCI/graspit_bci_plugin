@@ -29,7 +29,7 @@ void ConfirmationState::onEntryImpl(QEvent *e)
     confirmationView->setCurrentGrasp(hand,grasp);
     confirmationView->show();
     bciControlWindow->currentState->setText("Confirmation");
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_confirmation.png"), -0.7 , 0.7, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_confirmation.png"), -1.2 , 0.7, 0.0);
 
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,

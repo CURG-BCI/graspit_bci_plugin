@@ -22,7 +22,7 @@ void BookmarkState::onEntryImpl(QEvent *e)
     bciControlWindow->currentState->setText("Home State");
 
     csm->clearTargets();
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_execution.png"), -0.7 , 0.7, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_execution.png"), -1.2 , 0.7, 0.0);
 
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_active.png"),

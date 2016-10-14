@@ -131,9 +131,15 @@ Target::Target(SoAnnotation * control_scene_separator, QString filename, double 
 {
     button_text=target_text;
     QPainter p(qimage);
-    p.setPen(QPen(Qt::lightGray));
-    p.setFont(QFont("Times", 28, QFont::Bold));
+
+    if (filename == "target_active.png") {
+        p.setPen(QPen(Qt::black));
+    } else {
+        p.setPen(QPen(Qt::darkGray));
+    }
+    p.setFont(QFont("Arial", 28, QFont::Bold));
     p.drawText(qimage->rect(), Qt::AlignCenter, button_text.toStdString().c_str());
+
     convert(*qimage, image->image);
 
     filename_1 = inactive_filename;
@@ -263,8 +269,8 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
         QString sprite_file = QString(getenv("SPRITES_DIR")) + filename_2;
         qimage = new QImage(sprite_file);
         QPainter p(qimage);
-        p.setPen(QPen(Qt::lightGray));
-        p.setFont(QFont("Times", 28, QFont::Bold));
+        p.setPen(QPen(Qt::black));
+        p.setFont(QFont("Arial", 28, QFont::Bold));
         p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
 
     }
@@ -272,8 +278,8 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
     {   QString sprite_file = QString(getenv("SPRITES_DIR")) + filename_1;
         qimage = new QImage(sprite_file);
         QPainter p(qimage);
-        p.setPen(QPen(Qt::lightGray));
-        p.setFont(QFont("Times", 28, QFont::Bold));
+        p.setPen(QPen(Qt::darkGray));
+        p.setFont(QFont("Arial", 28, QFont::Bold));
         p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
 
     }
