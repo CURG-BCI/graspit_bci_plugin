@@ -31,19 +31,8 @@ void ConfirmationState::onEntryImpl(QEvent *e)
     bciControlWindow->currentState->setText("Confirmation");
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_confirmation.png"), -1.2 , 0.7, 0.0);
 
-
-    std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_active.png"),
-                                                                       -1.4, -0.8, 0.0, QString("Confirm\nGrasp")));
-    std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                       -1.4, -1.0, 0.0, QString("Back")));
-
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToExecutionState()));
-    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(emit_goToPreviousState()));
-
-    csm->addTarget(t1);
-    csm->addTarget(t2);
+    csm->addNewTarget(QString("target_active.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Confirm\nGrasp"), this, SLOT(emit_goToExecutionState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Back"), this, SLOT(emit_goToPreviousState()));
 
 }
 
@@ -63,9 +52,6 @@ void ConfirmationState::onExitImpl(QEvent * e)
     Q_UNUSED(e);
     confirmationView->hide();
 
-
     std::cout << "Finished onExit of Object Selection State." << std::endl;
 
 }
-
-

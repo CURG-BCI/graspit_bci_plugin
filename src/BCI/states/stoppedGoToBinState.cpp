@@ -17,18 +17,9 @@ void StoppedGoToBinState::onEntryImpl(QEvent *e)
     bciControlWindow->currentState->setText("Stopped Go To Bin State");
 
     csm->clearTargets();
-    std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_active.png"),
-                                                                       -1.4, -0.8, 0.0, QString("Continue")));
-    std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                       -1.4, -1.0, 0.0, QString("Back")));
 
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(onContinueGoToBinClicked()));
-    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onGoBackClicked()));
-
-    csm->addTarget(t1);
-    csm->addTarget(t2);
+    csm->addNewTarget(QString("target_active.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Continue"), this, SLOT(onContinueGoToBinClicked()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Back"), this, SLOT(onGoBackClicked()));
 }
 
 

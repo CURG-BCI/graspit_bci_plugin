@@ -41,6 +41,11 @@ protected:
     virtual void onEntryImpl( QEvent* e );
     virtual void onExitImpl( QEvent* e );
 
+    // buttons all in a row
+    static constexpr double btn_x = 0.0;
+    static constexpr double btn_y = -0.9;
+    static constexpr double btn_width = 0.25;
+
     QAbstractTransition *checkForDuplicateTransitions(QAbstractTransition * transition);
 
 protected:

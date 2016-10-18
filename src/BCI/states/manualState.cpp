@@ -25,11 +25,10 @@ void ManualState::onEntryImpl(QEvent *e)
 
     csm->clearTargets();
 
-    csm->addNewTarget(QString("target_active.png"), -1.4, -0.4 , 0.0, QString("Move\nArm"), this, SLOT(emit_goToTranslationState()));
-    csm->addNewTarget(QString("target_background.png"), -1.4, -0.6 , 0.0, QString("Rotate\nHand"), this, SLOT(emit_goToRotationState()));
-    csm->addNewTarget(QString("target_background.png"), -1.4, -0.8 , 0.0, QString("Open or\nClose Hand"), this, SLOT(toggleGripper()));
-    csm->addNewTarget(QString("target_background.png"), -1.4, -1.0 , 0.0, QString("Back"), this, SLOT(emit_goToHomeState()));
-
+    csm->addNewTarget(QString("target_active.png"), btn_x-1.5*btn_width, btn_y, 0.0, QString("Move\nArm"), this, SLOT(emit_goToTranslationState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Rotate\nHand"), this, SLOT(emit_goToRotationState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Open or\nClose Hand"), this, SLOT(toggleGripper()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+1.5*btn_width, btn_y, 0.0, QString("Back"), this, SLOT(emit_goToHomeState()));
 
 }
 

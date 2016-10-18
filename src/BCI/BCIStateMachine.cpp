@@ -10,7 +10,6 @@
 #include "BCI/states/objectRecognitionState.h"
 #include "BCI/states/collectUserInfoState.h"
 #include "BCI/states/graspPlanningState.h"
-#include "BCI/states/homeState.h"
 #include "BCI/states/stoppedGoHomeState.h"
 #include "BCI/states/stoppedGoToBinState.h"
 #include "BCI/states/executeGoHomeState.h"

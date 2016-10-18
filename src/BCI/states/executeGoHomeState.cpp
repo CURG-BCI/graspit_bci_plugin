@@ -29,7 +29,7 @@ void ExecuteGoHomeState::onEntryImpl(QEvent *e)
     csm->clearTargets();
     std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
                                                                        QString("target_active.png"),
-                                                                       -1.4, -1.0, 0.0, QString("STOP!")));
+                                                                       btn_x, btn_y, 0.0, QString("STOP!")));
     t1->active=true;
 
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToStoppedGoHomeState()));

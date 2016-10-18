@@ -25,9 +25,7 @@ void ExecuteRotationState::onEntryImpl(QEvent *e)
 
     csm->clearTargets();
 
-    csm->addNewTarget(QString("target_active.png"), -1.4, -1.0 , 0.0, QString("STOP!"), this, SLOT(onStop()));
-
-
+    csm->addNewTarget(QString("target_active.png"), btn_x, btn_y, 0.0, QString("STOP!"), this, SLOT(onStop()));
 }
 
 void ExecuteRotationState::onStop()

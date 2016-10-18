@@ -23,29 +23,10 @@ void HomeState::onEntryImpl(QEvent *e)
 
     csm->clearTargets();
 
-    std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_active.png"),
-                                                                      -1.4, -0.4, 0.0, QString("Auto\nGrasp")));
-
-    std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -0.6, 0.0, QString("Manual\nMovement")));
-
-    std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -0.8, 0.0, QString("Bookmarks")));
-
-
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToObjectSelectionState()));
-    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(emit_goToManualState()));
-    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(emit_goToBookmarkState()));
-
-    csm->addTarget(t1);
-    csm->addTarget(t2);
-    csm->addTarget(t3);
-
-    csm->addNewTarget(QString("target_background.png"), -1.4, -1.0 , 0.0, QString("Rerun\nVision"), this, SLOT(emit_goToObjectRecognitionState()));
-
+    csm->addNewTarget(QString("target_active.png"), btn_x-1.5*btn_width, btn_y, 0.0, QString("Auto\nGrasp"), this, SLOT(emit_goToObjectSelectionState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Manual\nMovement"), this, SLOT(emit_goToManualState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Bookmarks"), this, SLOT(emit_goToBookmarkState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+1.5*btn_width, btn_y, 0.0, QString("Rerun\nVision"), this, SLOT(emit_goToObjectRecognitionState()));
 }
 
 void HomeState::emit_goToObjectSelectionState()
@@ -57,7 +38,6 @@ void HomeState::emit_goToManualState()
 {
     emit goToManualState();
 }
-
 
 void HomeState::emit_goToBookmarkState()
 {

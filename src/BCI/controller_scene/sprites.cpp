@@ -113,17 +113,6 @@ void Cursor::update(int state, short renderAreaWidth_, short renderAreaHeight_)
 
 }
 
-//Target::Target(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_, QString target_text)
-//    : Sprite(control_scene_separator, filename, x_, y_, theta_),
-//      steps_since_last_hit(500)
-//{
-//    button_text=target_text;
-//    QPainter p(qimage);
-//    p.setPen(QPen(Qt::lightGray));
-//    p.setFont(QFont("Times", 28, QFont::Bold));
-//    p.drawText(qimage->rect(), Qt::AlignCenter, button_text.toStdString().c_str());
-//    convert(*qimage, image->image);
-//}
 Target::Target(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_,
                QString target_text, QString inactive_filename, QString active_filename)
     : Sprite(control_scene_separator, filename, x_, y_, theta_),
@@ -263,7 +252,6 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
     renderAreaHeight = renderAreaHeight_;
     renderAreaWidth = renderAreaWidth_;
 
-
     if(this->active)
     {
         QString sprite_file = QString(getenv("SPRITES_DIR")) + filename_2;
@@ -283,6 +271,7 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
         p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
 
     }
+
     int orig_height = qimage->height();
     int orig_width = qimage->width();
 
