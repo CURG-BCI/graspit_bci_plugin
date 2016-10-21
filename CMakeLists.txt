@@ -154,6 +154,7 @@ set(SOURCES
     src/worldController.cpp
     src/BCIControlServer.cpp
     src/BCI/handView.cpp
+    src/listPlanner.cpp
 
 
     ui/state_views/activeRefinementView.cpp
@@ -212,6 +213,7 @@ set(HEADERS
     include/BCI/controller_scene/sprites.h
     include/pointers.dat
     include/worldController.h
+    include/listPlanner.h
 
     ui/bciControlWindow.h
 
