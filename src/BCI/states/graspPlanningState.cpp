@@ -45,7 +45,7 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     mHandObjectState->reset();
 
     mPlanner = new ListPlanner(mHand);
-    int resolution = 4;
+    int resolution = 5;
     //get object bbox dimensions
     SoGetBoundingBoxAction *bba =
         new SoGetBoundingBoxAction(graspitCore->getIVmgr()->getViewer()->getViewportRegion());
@@ -60,6 +60,7 @@ void PlanGraspState::onEntryImpl(QEvent *e)
 //    if (samplingTypeBox->currentText() == "Grid") {
 //    boxSampling(a,b,c, resolution);
 //    samplingTypeBox->currentText() == "Ellipsoid"
+    //ellipsoidSampling(a,b,c, resolution);
     cylinderSampling(a,b,c,resolution);
 
     //this shows the approach arrows for debugging
@@ -183,7 +184,7 @@ void PlanGraspState::boxSampling(double a, double b, double c, double res)
     std::list<GraspPlanningState*> sampling;
     transf ref_tran = mObject->getTran()* transf(mat3::IDENTITY, vec3(0,0,c));
     res = 30;
-    sampleFace( vec3(0, 1,0), vec3(-1,0,0), vec3(0,0,1), ref_tran, a, c, vec3(0,-b,0), res, &sampling);
+    sampleFace( vec3(0,1,0), vec3(-1,0,0), vec3(0,0,1), ref_tran, a, c, vec3(0,-b,0), res, &sampling);
     sampleFace( vec3(0,-1,0), vec3( 1,0,0), vec3(0,0,1), ref_tran, a, c, vec3(0, b,0), res, &sampling);
 
     sampleFace( vec3(0,0, 1), vec3(0,1,0), vec3(-1,0,0), ref_tran, b, a, vec3(0,0,-c), res, &sampling);
@@ -224,8 +225,8 @@ void PlanGraspState::gridEllipsoidSampling(const GraspPlanningState &seed,
 void PlanGraspState::cylinderSampling(double a, double b, double c, double res)
 {
     std::list<GraspPlanningState*> sampling;
-    transf ref_tran = mObject->getTran()* transf(mat3::IDENTITY, vec3(0,0,c));
-    res = 5;
+
+    transf ref_tran = mObject->getTran();
 
     if (a > b && a > c) {
         sampleCylinderSlices(ref_tran, 0, a, std::max(b,c), res, &sampling);
@@ -242,32 +243,46 @@ void PlanGraspState::sampleCylinderSlices(transf seed_ref_tran, int axis,
                                 double length, double radius, double res,
                                 std::list<GraspPlanningState*> *sampling)
 {
-    double lengthSample = 2.0*length/(res - 1); // length step
+    double startSample = 2.0 * length / res; // divide cylinder into res, and start sampling from first step as offset (skip boundaries as possibilities)
+    double lengthSample = (2.0*length - 2*startSample)/res; // sample step size
+
+    vec3 rotAxis; //TODO: pass in as arg?
+    if (axis == 0) {
+        std::cout << "------------rotate around x" << std::endl;
+        rotAxis = vec3(1,0,0);
+    } else if (axis == 1) {
+        std::cout << "------------rotate around y" << std::endl;
+        rotAxis = vec3(0,1,0);
+    } else {
+        std::cout << "------------rotate around z" << std::endl;
+        rotAxis = vec3(0,0,1);
+    }
 
     // sample along length of cylinder
-    for (int i = 0; i < res; i++) {
-
-        // sample around slice
+    for (int i = 0; i <= res  ; i++) {
+        // sample around slice circle
         for (int j = 0; j < res; j++) {
+
             double angle = 2 * M_PI * j/res;
+            double x = (radius) * cos(angle);
+            double y = (radius) * sin(angle);
+            double z = startSample + i * lengthSample;
 
-            double x = radius * cos(angle);
-            double y = radius * sin(angle);
-            double z = i * lengthSample;
-
-            vec3 rotAxis;
-            vec3 pos;
+            transf rot1, rot2;
             if (axis == 0) {
-                rotAxis = vec3(1,0,0); // rotate around x axis
-                pos = vec3(z, x, y);
+                // rotate around X axis
+                rot1 = transf(Quaternion(90*M_PI/180, vec3(0,0,1)), vec3(z, -radius, 0)); // rotate vector to perpendicular from axis and move out to radius
+                rot2 = transf(Quaternion(angle, rotAxis), vec3(0,0,0)); // sample around circle
             } else if (axis == 1) {
-                rotAxis = vec3(0,1,0); // rotate around y axis
-                pos = vec3(-x, z, y);
+                // rotate around Y axis
+                rot1 = transf(Quaternion(90*M_PI/180, vec3(1,0,0)), vec3(0, z, -radius));
+                rot2 = transf(Quaternion(angle, rotAxis), vec3(0,0,0));
             } else {
-                rotAxis = vec3(0,0,1); // rotate around z axis
-                pos = vec3(-y, x, z);
+                // rotate around Z axis
+                rot1 = transf(Quaternion(90*M_PI/180, vec3(0,1,0)), vec3(-radius, 0, z));
+                rot2 = transf(Quaternion(angle, rotAxis), vec3(0,0,0));
             }
-            transf tr(Quaternion(angle, rotAxis), pos);
+            transf tr = rot1 * rot2;
 
             GraspPlanningState* seed = new GraspPlanningState(mHand);
             seed->setObject(mObject);
@@ -279,6 +294,17 @@ void PlanGraspState::sampleCylinderSlices(transf seed_ref_tran, int axis,
             sampling->push_back(seed);
         }
     }
+
+    // sample once from top center
+    transf tr = transf(Quaternion(180*M_PI/180, vec3(0,1,0)), 2.0 * length * rotAxis);
+    GraspPlanningState* seed = new GraspPlanningState(mHand);
+    seed->setObject(mObject);
+    seed->setRefTran(seed_ref_tran, false);
+    seed->setPostureType(POSE_DOF, false);
+    seed->setPositionType(SPACE_COMPLETE, false);
+    seed->reset();
+    seed->getPosition()->setTran(tr);
+    sampling->push_back(seed);
 }
 
 void PlanGraspState::onPlannerFinished()
