@@ -10,7 +10,6 @@
 #include "BCI/states/objectRecognitionState.h"
 #include "BCI/states/collectUserInfoState.h"
 #include "BCI/states/graspPlanningState.h"
-#include "BCI/states/homeState.h"
 #include "BCI/states/stoppedGoHomeState.h"
 #include "BCI/states/stoppedGoToBinState.h"
 #include "BCI/states/executeGoHomeState.h"
@@ -60,8 +59,8 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     homeState->addStateTransition(homeState, SIGNAL(goToBookmarkState()), bookmarkState);
     homeState->addStateTransition(homeState, SIGNAL(goToObjectRecognitionState()), objectRecognitionState);
 
-    objectSelectionState->addStateTransition(bciService,SIGNAL(goToNextState1()), graspSelectionState);
-    objectSelectionState->addStateTransition(objectSelectionState,SIGNAL(goToNextState()), graspSelectionState);
+    objectSelectionState->addStateTransition(bciService,SIGNAL(goToNextState1()), planGraspState);
+    //objectSelectionState->addStateTransition(objectSelectionState,SIGNAL(goToNextState()), graspSelectionState);
     objectSelectionState->addSelfTransition(bciService, SIGNAL(exec()), objectSelectionState, SLOT(onSelect()));
     objectSelectionState->addSelfTransition(bciService, SIGNAL(rotLat()), objectSelectionState, SLOT(onNext()));
 

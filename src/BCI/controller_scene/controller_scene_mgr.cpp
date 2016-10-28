@@ -1,5 +1,3 @@
-
-
 #include "BCI/controller_scene/controller_scene_mgr.h"
 #include "BCI/controller_scene/sprites.h"
 #include "include/debug.h"
@@ -12,8 +10,7 @@
 #include "include/ivmgr.h"
 #include <Inventor/nodes/SoPerspectiveCamera.h>
 
-ControllerSceneManager *ControllerSceneManager::current_control_scene_manager =NULL;
-
+ControllerSceneManager *ControllerSceneManager::current_control_scene_manager = NULL;
 
 ControllerSceneManager::ControllerSceneManager(SoAnnotation *control_scene_separator_)
     : control_scene_separator(control_scene_separator_),
@@ -34,25 +31,6 @@ void ControllerSceneManager::addTarget(std::shared_ptr<Target> t)
     targets.push_back(t);
     this->unlock();
 }
-
-//std::shared_ptr<Target> ControllerSceneManager::addNewTarget(QString filename,
-//                                          double x,
-//                                          double y,
-//                                          double theta,
-//                                          QString target_text,
-//                                          const QObject *receiver,
-//                                          const char* slot)
-//{
-//    std::shared_ptr<Target>  target = std::shared_ptr<Target> (new Target(control_scene_separator,
-//                                                                       filename,
-//                                                                      x, y , theta, target_text));
-
-//    QObject::connect(target.get(), SIGNAL(hit()), receiver, slot);
-//    this->lock();
-//    targets.push_back(target);
-//    this->unlock();
-//    return target;
-//}
 
 std::shared_ptr<Target> ControllerSceneManager::addNewTarget(QString filename,
                                                              double x,
@@ -79,7 +57,6 @@ std::shared_ptr<Target> ControllerSceneManager::addNewTarget(QString filename,
 
 void ControllerSceneManager::clearTargets()
 {
-
     this->lock();
     for(int i = 0; i < targets.size(); i++)
     {
@@ -159,11 +136,7 @@ void ControllerSceneManager::update()
         this->state=CursorState::SPINNING;
         this->unlock();
     }
-
-
 }
-
-
 
 void ControllerSceneManager::handleMouseButtonEvent(void *, SoEventCallback *eventCB)
 {
@@ -194,14 +167,9 @@ void ControllerSceneManager::handleMouseButtonEvent(void *, SoEventCallback *eve
         // current_control_scene_manager->setCursorPosition(x, y, 0);
     }
 
-
 }
-
-
-
 
 void ControllerSceneManager::setState(int _state)
 {
     state = _state;
 }
-

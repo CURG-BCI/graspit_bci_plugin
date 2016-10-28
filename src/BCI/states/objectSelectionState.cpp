@@ -35,26 +35,10 @@ void ObjectSelectionState::onEntryImpl(QEvent *e)
     GraspManager::getInstance()->showRobots(false);
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), -1.2 , 0.7, 0.0);
     csm->clearTargets();
-    std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_active.png"),
-                                                                      -1.4, -0.6, 0.0, QString("Next\nObject")));
 
-    std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -0.8, 0.0, QString("Select\nObject")));
-
-
-//    std::shared_ptr<Target>  t4 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-//                                                                       QString("target_background.png"),
-//                                                                      -1.4, -1 , 0.0, QString("Back")));
-
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(onNext()));
-    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onSelect()));
-//    QObject::connect(t4.get(), SIGNAL(hit()), this, SLOT(onGoHome()));
-
-    csm->addTarget(t1);
-    csm->addTarget(t2);
-    csm->addNewTarget(QString("target_background.png"), -1.4, -1.0 , 0.0, QString("Back"), this, SLOT(onGoHome()));
+    csm->addNewTarget(QString("target_active.png"), btn_x-btn_width, btn_y, 0.0, QString("Next\nObject"), this, SLOT(onNext()));
+    csm->addNewTarget(QString("target_background.png"), btn_x, btn_y, 0.0, QString("Select\nObject"), this, SLOT(onSelect()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+btn_width, btn_y, 0.0, QString("Back"), this, SLOT(onGoHome()));
 }
 
 

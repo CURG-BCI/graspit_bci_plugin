@@ -35,48 +35,15 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
     render();
     csm->clearTargets();
 
-    t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                      QString("target_active.png"),
-                                                                      -1.4,
-                                                                      -0.4,
-                                                                      0.0, QString("Select\nGrasp")));
-
-    t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                      QString("target_background.png"),
-                                                                      -1.4,
-                                                                      -0.6,
-                                                                      0.0, QString("Next\nGrasp")));
-
-        std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                           QString("target_background.png"),
-                                                                           -1.4,
-                                                                           -0.8,
-                                                                           0.0, QString("Plan New\nGrasps")));
-
-    std::shared_ptr<Target>  t4 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                      QString("target_background.png"),
-                                                                      -1.4,
-                                                                      -1.0,
-                                                                      0.0, QString("Back")));
-
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToConfirmationState()));
-    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(onNext()));
-    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(emit_goToGraspPlanningState()));
-    QObject::connect(t4.get(), SIGNAL(hit()), this, SLOT(emit_goToObjectSelectionState()));
-
-    csm->addTarget(t1);
-    csm->addTarget(t2);
-    csm->addTarget(t3);
-    csm->addTarget(t4);
+    csm->addNewTarget(QString("target_active.png"), btn_x-1.5*btn_width, btn_y, 0.0, QString("Select\nGrasp"), this, SLOT(emit_goToConfirmationState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Next\nGrasp"), this, SLOT(onNext()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Plan New\nGrasps"), this, SLOT(emit_goToGraspPlanningState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+1.5*btn_width, btn_y, 0.0, QString("Back"), this, SLOT(emit_goToObjectSelectionState()));
 
     //do this to ensure that the side views are reset.
     GraspManager::getInstance()->decrementGraspIndex();
     onNext();
-
-
-
 }
-
 
 void GraspSelectionState::onExitImpl(QEvent *e)
 {
@@ -90,8 +57,6 @@ void GraspSelectionState::onExitImpl(QEvent *e)
     graspSelectionView->hide();
 
 }
-
-
 
 void GraspSelectionState::_updateCurrentGraspView()
 {

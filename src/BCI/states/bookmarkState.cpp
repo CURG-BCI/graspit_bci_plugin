@@ -15,7 +15,6 @@ BookmarkState::BookmarkState(BCIControlWindow *_bciControlWindow, ControllerScen
     executionView->hide();
 }
 
-
 void BookmarkState::onEntryImpl(QEvent *e)
 {
     executionView->show();
@@ -24,35 +23,15 @@ void BookmarkState::onEntryImpl(QEvent *e)
     csm->clearTargets();
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_execution.png"), -1.2 , 0.7, 0.0);
 
-    std::shared_ptr<Target>  t1 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_active.png"),
-                                                                      -1.4, -0.6, 0.0, QString("Go\nHome")));
-
-    std::shared_ptr<Target>  t2 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -0.8, 0.0, QString("Drop in\nBin")));
-
-    std::shared_ptr<Target>  t3 = std::shared_ptr<Target> (new Target(csm->control_scene_separator,
-                                                                       QString("target_background.png"),
-                                                                      -1.4, -1.0, 0.0, QString("Back")));
-
-
-    QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToExecuteGoHomeState()));
-    QObject::connect(t2.get(), SIGNAL(hit()), this, SLOT(emit_goToExecuteGoToBinState()));
-    QObject::connect(t3.get(), SIGNAL(hit()), this, SLOT(emit_goToHomeState()));
-
-    csm->addTarget(t1);
-    csm->addTarget(t2);
-    csm->addTarget(t3);
-
+    csm->addNewTarget(QString("target_active.png"), btn_x-btn_width, btn_y, 0.0, QString("Go\nHome"), this, SLOT(emit_goToExecuteGoHomeState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x, btn_y, 0.0, QString("Drop in\nBin"), this, SLOT(emit_goToExecuteGoToBinState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+btn_width, btn_y, 0.0, QString("Back"), this, SLOT(emit_goToHomeState()));
 }
-
 
 void BookmarkState::emit_goToExecuteGoHomeState()
 {
     emit goToExecuteGoHomeState();
 }
-
 
 void BookmarkState::emit_goToExecuteGoToBinState()
 {
@@ -72,9 +51,5 @@ void BookmarkState::onExitImpl(QEvent *e)
     delete csm->pipeline;
     executionView->hide();
 
-
     std::cout << "Finished onExit of Bookmark State." << std::endl;
 }
-
-
-
