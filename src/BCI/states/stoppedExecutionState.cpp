@@ -17,7 +17,7 @@ void StoppedExecutionState::onEntryImpl(QEvent *e)
     bciControlWindow->currentState->setText("Execution");
 
     csm->clearTargets();
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_paused_execution.png"), -1.2 , 0.7, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_paused_execution.png"), pipeline_x, 0.7, 0.0);
 
     csm->addNewTarget(QString("target_active.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Continue"), this, SLOT(onContinueExecutionClicked()));
     csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Start\nOver"), this, SLOT(onStartOverClicked()));
@@ -31,6 +31,5 @@ void StoppedExecutionState::onExitImpl(QEvent *e)
     delete csm->pipeline;
     csm->next_target=0;
     stoppedExecutionView->hide();
-
 
 }

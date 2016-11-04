@@ -31,7 +31,7 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
 
     graspSelectionView->show();
     bciControlWindow->currentState->setText(stateName);
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_selection.png"), -1.2 , 0.7, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_grasp_selection.png"), pipeline_x, 0.7, 0.0);
     render();
     csm->clearTargets();
 

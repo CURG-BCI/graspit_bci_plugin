@@ -44,7 +44,7 @@ void ObjectRecognitionState::onEntryImpl(QEvent *e)
   {
     objectRecognitionView->show();
     bciControlWindow->currentState->setText("Object Recognition State");
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), -0.3 , 0, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), pipeline_x, 0, 0.0);
     if(use_hardware)
     {
         ROS_INFO("CLEARING ALL GRASPABLE BODIES ON ENTRANCE TO OBJECT RECOGNITION STATE");

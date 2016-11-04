@@ -33,7 +33,7 @@ void ObjectSelectionState::onEntryImpl(QEvent *e)
     GraspableBody *currentTarget = GraspManager::getInstance()->getCurrentTarget();
     WorldController::getInstance()->highlightCurrentBody(currentTarget);
     GraspManager::getInstance()->showRobots(false);
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), -1.2 , 0.7, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("pipeline_object_selection.png"), pipeline_x, 0.7, 0.0);
     csm->clearTargets();
 
     csm->addNewTarget(QString("target_active.png"), btn_x-btn_width, btn_y, 0.0, QString("Next\nObject"), this, SLOT(onNext()));

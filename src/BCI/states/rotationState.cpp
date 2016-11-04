@@ -23,7 +23,7 @@ void RotationState::onEntryImpl(QEvent *e)
     executionView->show();
     bciControlWindow->currentState->setText("RotationState");
 
-    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("axes.png"), -1.2 , 0.1, 0.0);
+    csm->pipeline=new Pipeline(csm->control_scene_separator, QString("axes.png"), pipeline_x, 0.1, 0.0);
 
     csm->clearTargets();
 
