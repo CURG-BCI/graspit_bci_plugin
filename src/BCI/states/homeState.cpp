@@ -6,6 +6,7 @@
 #include "include/EGPlanner/searchState.h"
 #include <Inventor/nodes/SoAnnotation.h>
 
+using bci_experiment::GraspManager;
 
 HomeState::HomeState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent)
     : State("HomeState", parent), bciControlWindow(_bciControlWindow),
@@ -15,11 +16,12 @@ HomeState::HomeState(BCIControlWindow *_bciControlWindow, ControllerSceneManager
     executionView->hide();
 }
 
-
 void HomeState::onEntryImpl(QEvent *e)
 {
     executionView->show();
     bciControlWindow->currentState->setText("Home State");
+
+    GraspManager::getInstance()->showRobots(false);
 
     csm->clearTargets();
 
