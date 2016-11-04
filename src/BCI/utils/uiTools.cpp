@@ -44,7 +44,7 @@ namespace bci_experiment
 
             if(b)
             {
-                highlightBody(b, SbColor(0,1,0));
+                highlightBody(b, SbColor(0.1,1.0,0));
             }
         }
 
@@ -63,7 +63,7 @@ namespace bci_experiment
         {
           for(int i = 0; i < getWorld()->getNumGB(); ++i)
           {
-            highlightBody(getWorld()->getGB(i), SbColor(1,0,0));
+            highlightBody(getWorld()->getGB(i), SbColor(0.3,0.3,0.3));
           }
           return true;
         }
