@@ -37,13 +37,15 @@ private:
    BCIControlWindow *bciControlWindow;
    ControllerSceneManager *csm;
 
-//   EGPlanner *mPlanner;
    ListPlanner *mPlanner;
    GraspPlanningState *mHandObjectState;
    GraspableBody *mObject;
    Hand *mHand;
 
-   void cylinderSampling(double a, double b, double c, double resLength, double resRotation);
+   double fingerLength;
+
+   void cylinderSampling(double a, double b, double c, double resLen, double resRot);
+   void smallSphereSampling(double a, double b, double c, double resLen, double resRot);
    void addNewGrasp(transf tr, std::list<GraspPlanningState*> *sampling);
 };
 
