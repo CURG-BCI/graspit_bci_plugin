@@ -33,6 +33,11 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     mObject = GraspManager::getInstance()->getCurrentTarget();
     mObject->setMaterial(5);//rubber
 
+    std::cout << "object tran:" << std::endl;
+    std::cout << mObject->getTran() << std::endl;
+    //std::cout << mObject->getIVTran()->rotation << std::endl;
+    //std::cout << mObject->getIVTran()->translation << std::endl;
+
     mHand = graspitCore->getWorld()->getCurrentHand();
     mHand->getGrasp()->setObjectNoUpdate(mObject);
     mHand->getGrasp()->setGravity(false);
@@ -53,8 +58,9 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     double smallObjectSize = 30;
     if (a < smallObjectSize && b < smallObjectSize && c < smallObjectSize) {
         std::cout << "----------- sphere -------------" << std::endl;
-        fingerLength = 50;
-        smallSphereSampling(a,b,c,3,6);
+        fingerLength = 70;
+        //smallSphereSampling(a,b,c,3,6);
+        smallCubeSampling(c,5);
     } else {
         cylinderSampling(a,b,c,6,12);
     }
@@ -83,7 +89,7 @@ void PlanGraspState::addNewGrasp(transf tr, std::list<GraspPlanningState*> *samp
     sampling->push_back(seed);
 }
 
-void PlanGraspState::cylinderSampling(double a, double b, double c, double resLen, double resRot)
+void PlanGraspState::cylinderSampling(double a, double b, double c, int resLen, int resRot)
 {
     std::list<GraspPlanningState*> sampling;
 
@@ -128,8 +134,37 @@ void PlanGraspState::cylinderSampling(double a, double b, double c, double resLe
     mPlanner->setInput(sampling);
 }
 
+void PlanGraspState::smallCubeSampling(double c, int res)
+{
+    std::list<GraspPlanningState*> sampling;
 
-void PlanGraspState::smallSphereSampling(double a, double b, double c, double resLen, double resRot)
+    transf rot_world_to_obj = transf(mObject->getTran().rotation().inverse(), vec3(0,0,0)); // transform to local object frame
+
+    // get center of object in world space
+    transf obj_center = transf(Quaternion(0, vec3(0,0,0)), vec3(0,0,c));
+    obj_center = obj_center * mObject->getTran(); // center of object in world space
+    transf center_offset = transf(Quaternion(0, vec3(0,0,0)), obj_center.translation() - mObject->getTran().translation()); // offset from obj base in world space
+    center_offset = center_offset * rot_world_to_obj; // offset in object frame
+
+    transf finger_offset = transf(Quaternion(0,vec3(0,0,0)), vec3(0,0,fingerLength)) * rot_world_to_obj;
+
+    transf flip = transf(Quaternion(180*M_PI/180, vec3(0,1,0)), vec3(0,0,0)); // position from origin: pointing down
+
+    for (int i = 0; i < res; i++) {
+
+        transf rotZ = transf(Quaternion((i*180/res)*M_PI/180, vec3(0,0,1)), vec3(0,0,0));
+        transf position = flip * rotZ * rot_world_to_obj;
+
+        position = transf(position.rotation(), position.translation() + center_offset.translation() + finger_offset.translation());
+
+        addNewGrasp(position, &sampling);
+    }
+
+    DBGA("Sampled " << sampling.size() << " states.");
+    mPlanner->setInput(sampling);
+}
+
+void PlanGraspState::smallSphereSampling(double a, double b, double c, int resLen, int resRot)
 {
     std::list<GraspPlanningState*> sampling;
 

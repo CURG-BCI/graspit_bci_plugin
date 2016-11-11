@@ -44,8 +44,9 @@ private:
 
    double fingerLength;
 
-   void cylinderSampling(double a, double b, double c, double resLen, double resRot);
-   void smallSphereSampling(double a, double b, double c, double resLen, double resRot);
+   void cylinderSampling(double a, double b, double c, int resLen, int resRot);
+   void smallSphereSampling(double a, double b, double c, int resLen, int resRot);
+   void smallCubeSampling(double c, int res);
    void addNewGrasp(transf tr, std::list<GraspPlanningState*> *sampling);
 };
 
