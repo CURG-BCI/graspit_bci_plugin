@@ -105,6 +105,7 @@ void ControllerSceneManager::update()
             }
         }
 
+        // update target button on "next button" action
         if(this->state==CursorState::MOVING_SLOW)
         {
             std::cout << "temp_targets.size(): " << temp_targets.size() << std::endl;

@@ -37,8 +37,7 @@ protected:
     short renderAreaWidth;
     short renderAreaHeight;
 
-
-
+    bool imageInitialized;
 
     void convert(const QImage& p, SoSFImage& img) const;
     void convert(const SoSFImage& p, QImage& img) const;
@@ -48,7 +47,6 @@ public:
     virtual ~Sprite() {};
     virtual void update(int state, short renderAreaWidth, short renderAreaHeight)=0;
     bool intersects(QRectF *other_rect);
-
 
     bool valid;
 

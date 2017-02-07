@@ -17,6 +17,7 @@
 #define MIN_Y  -1.015
 #define MAX_Y  0.85
 
+#define FONT_SIZE 50
 
 Cursor::Cursor(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_)
     : Sprite(control_scene_separator, filename, x_, y_, theta_)
@@ -126,7 +127,7 @@ Target::Target(SoAnnotation * control_scene_separator, QString filename, double 
     } else {
         p.setPen(QPen(Qt::darkGray));
     }
-    p.setFont(QFont("Arial", 28, QFont::Bold));
+    p.setFont(QFont("Arial", FONT_SIZE, QFont::Bold));
     p.drawText(qimage->rect(), Qt::AlignCenter, button_text.toStdString().c_str());
 
     convert(*qimage, image->image);
@@ -168,7 +169,7 @@ void Target::update(int state, short renderAreaWidth_, short renderAreaHeight_)
     {
         steps_since_last_hit += 1;
 
-        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_hit.png");
+        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_background.png");
         image->filename = sprite_file.toStdString().c_str();
 
         if(this->active)
@@ -176,79 +177,39 @@ void Target::update(int state, short renderAreaWidth_, short renderAreaHeight_)
             sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_active.png");
             image->filename =  sprite_file.toStdString().c_str();
         }
+        imageInitialized = false;
     }
 
-    int orig_height = qimage->height();
-    int orig_width = qimage->width();
+    // size of circle buttons
+    if (!imageInitialized) {
+        int orig_height = qimage->height();
+        int orig_width = qimage->width();
 
-    int scaled_height = int(1.0/10 *renderAreaHeight);
-    int scaled_width = int(1.0/10*renderAreaWidth);
-    scaled_height = std::max(scaled_height, 5);
-    scaled_width = std::max(scaled_width, 5);
-    QSize scaled_size = QSize(scaled_height, scaled_width);
-    QImage scaled_img = qimage->scaled(scaled_size, Qt::KeepAspectRatio);
+        int scaled_height = int(1.3/10*renderAreaHeight);
+        int scaled_width = int(1.3/10*renderAreaWidth);
+        scaled_height = std::max(scaled_height, 5);
+        scaled_width = std::max(scaled_width, 5);
+        QSize scaled_size = QSize(scaled_height, scaled_width);
+        QImage scaled_img = qimage->scaled(scaled_size, Qt::KeepAspectRatio);
 
-    int height = scaled_img.height();
-    int width = scaled_img.width();
+        int height = scaled_img.height();
+        int width = scaled_img.width();
 
-    convert(scaled_img.copy(QRect((scaled_img.width()-width)/2,
-                                   (scaled_img.height()-height)/2,
-                                   width,
-                                   height)), image->image);
+        convert(scaled_img.copy(QRect((scaled_img.width()-width)/2,
+                                       (scaled_img.height()-height)/2,
+                                       width,
+                                       height)), image->image);
 
-    bounding_rect = new QRectF(x,y,  orig_height/500.0, orig_width/500.0);
+        bounding_rect = new QRectF(x,y,  orig_height/500.0, orig_width/500.0);
+
+        sprite_root->addChild(image);
+        imageInitialized = true;
+    }
 }
 
-//void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
-//{
-
-//    renderAreaHeight = renderAreaHeight_;
-//    renderAreaWidth = renderAreaWidth_;
-
-
-//    if(this->active)
-//    {
-//        QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_active.png");
-//        qimage = new QImage(sprite_file);
-//        QPainter p(qimage);
-//        p.setPen(QPen(Qt::lightGray));
-//        p.setFont(QFont("Times", 28, QFont::Bold));
-//        p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
-
-//    }
-//    else
-//    {   QString sprite_file = QString(getenv("SPRITES_DIR")) + QString("target_background.png");
-//        qimage = new QImage(sprite_file);
-//        QPainter p(qimage);
-//        p.setPen(QPen(Qt::lightGray));
-//        p.setFont(QFont("Times", 28, QFont::Bold));
-//        p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
-
-//    }
-//    int orig_height = qimage->height();
-//    int orig_width = qimage->width();
-
-//    int scaled_height = int(1.0/10 *renderAreaHeight);
-//    int scaled_width = int(1.0/10*renderAreaWidth);
-//    scaled_height = std::max(scaled_height, 5);
-//    scaled_width = std::max(scaled_width, 5);
-//    QSize scaled_size = QSize(scaled_height, scaled_width);
-//    QImage scaled_img = qimage->scaled(scaled_size, Qt::KeepAspectRatio);
-
-//    int height = scaled_img.height();
-//    int width = scaled_img.width();
-
-//    convert(scaled_img.copy(QRect((scaled_img.width()-width)/2,
-//                                   (scaled_img.height()-height)/2,
-//                                   width,
-//                                   height)), image->image);
-
-//    bounding_rect = new QRectF(x,y,  orig_height/500.0, orig_width/500.0);
-//}
-
+// select next button, update highlights
 void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
 {
-
     renderAreaHeight = renderAreaHeight_;
     renderAreaWidth = renderAreaWidth_;
 
@@ -258,44 +219,26 @@ void Target::update2(short renderAreaWidth_, short renderAreaHeight_)
         qimage = new QImage(sprite_file);
         QPainter p(qimage);
         p.setPen(QPen(Qt::black));
-        p.setFont(QFont("Arial", 28, QFont::Bold));
+        p.setFont(QFont("Arial", FONT_SIZE, QFont::Bold));
         p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
-
     }
     else
     {   QString sprite_file = QString(getenv("SPRITES_DIR")) + filename_1;
         qimage = new QImage(sprite_file);
         QPainter p(qimage);
         p.setPen(QPen(Qt::darkGray));
-        p.setFont(QFont("Arial", 28, QFont::Bold));
+        p.setFont(QFont("Arial", FONT_SIZE, QFont::Bold));
         p.drawText(qimage->rect(), Qt::AlignCenter, this->button_text.toStdString().c_str());
-
     }
-
-    int orig_height = qimage->height();
-    int orig_width = qimage->width();
-
-    int scaled_height = int(1.0/10 *renderAreaHeight);
-    int scaled_width = int(1.0/10*renderAreaWidth);
-    scaled_height = std::max(scaled_height, 5);
-    scaled_width = std::max(scaled_width, 5);
-    QSize scaled_size = QSize(scaled_height, scaled_width);
-    QImage scaled_img = qimage->scaled(scaled_size, Qt::KeepAspectRatio);
-
-    int height = scaled_img.height();
-    int width = scaled_img.width();
-
-    convert(scaled_img.copy(QRect((scaled_img.width()-width)/2,
-                                   (scaled_img.height()-height)/2,
-                                   width,
-                                   height)), image->image);
-
-    bounding_rect = new QRectF(x,y,  orig_height/500.0, orig_width/500.0);
+    imageInitialized = false;
 }
 
 Pipeline::Pipeline(SoAnnotation * control_scene_separator, QString filename, double x_, double y_, double theta_)
     : Sprite(control_scene_separator, filename, x_, y_, theta_)
-{}
+{
+    sprite_root->addChild(image);
+    imageInitialized = true;
+}
 Pipeline::~Pipeline()
 {
     delete qimage;
@@ -338,7 +281,7 @@ Sprite::Sprite(SoAnnotation *control_scene_separator,
 
     sprite_root->addChild((imageTran));
     sprite_root->addChild(imagematerial);
-    sprite_root->addChild(image);
+    imageInitialized = false;
 
     renderAreaWidth= 100;
     renderAreaHeight = 100;

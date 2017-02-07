@@ -44,7 +44,7 @@ protected:
     // buttons all in a row
     static constexpr double btn_x = 0.0;
     static constexpr double btn_y = -0.9;
-    static constexpr double btn_width = 0.25;
+    static constexpr double btn_width = 0.3;
     static constexpr double pipeline_x = -1.0;
 
     QAbstractTransition *checkForDuplicateTransitions(QAbstractTransition * transition);
