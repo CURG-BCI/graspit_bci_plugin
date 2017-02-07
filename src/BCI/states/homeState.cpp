@@ -26,8 +26,8 @@ void HomeState::onEntryImpl(QEvent *e)
     csm->clearTargets();
 
     csm->addNewTarget(QString("target_active.png"), btn_x-1.5*btn_width, btn_y, 0.0, QString("Auto\nGrasp"), this, SLOT(emit_goToObjectSelectionState()));
-    csm->addNewTarget(QString("target_background.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Manual\nMovement"), this, SLOT(emit_goToManualState()));
-    csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Bookmarks"), this, SLOT(emit_goToBookmarkState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Manual\nMove"), this, SLOT(emit_goToManualState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Saved\nMoves"), this, SLOT(emit_goToBookmarkState()));
     csm->addNewTarget(QString("target_background.png"), btn_x+1.5*btn_width, btn_y, 0.0, QString("Rerun\nVision"), this, SLOT(emit_goToObjectRecognitionState()));
 }
 

@@ -35,8 +35,8 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
     render();
     csm->clearTargets();
 
-    csm->addNewTarget(QString("target_active.png"), btn_x-1.5*btn_width, btn_y, 0.0, QString("Select\nGrasp"), this, SLOT(emit_goToConfirmationState()));
-    csm->addNewTarget(QString("target_background.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Next\nGrasp"), this, SLOT(onNext()));
+    csm->addNewTarget(QString("target_active.png"), btn_x-1.5*btn_width, btn_y, 0.0, QString("Next\nGrasp"), this, SLOT(onNext()));
+    csm->addNewTarget(QString("target_background.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Select\nGrasp"), this, SLOT(emit_goToConfirmationState()));
     csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Plan New\nGrasps"), this, SLOT(emit_goToGraspPlanningState()));
     csm->addNewTarget(QString("target_background.png"), btn_x+1.5*btn_width, btn_y, 0.0, QString("Back"), this, SLOT(emit_goToObjectSelectionState()));
 
