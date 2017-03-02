@@ -17,7 +17,6 @@
 #include <QDialog>
 #include <QtGui>
 
-
 #include "BCI/utils/BCILogger.h"
 
 
@@ -43,8 +42,8 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     ROS_INFO("Initing BCI Service");
     bciRenderArea = bciControlWindow->bciWorldView->renderArea;
 
-    QPushButton * slowButton = new QPushButton("Flex Medium (Next)");
-    QPushButton * fastButton = new QPushButton("Flex Hard (Select)");
+    QPushButton * slowButton = new QPushButton("Cycle Choice - (Flex Medium)");
+    QPushButton * fastButton = new QPushButton("Select Choice - (Flex Hard)");
 
     slowButton->setDefault(true);
     fastButton->setDefault(true);
@@ -61,6 +60,23 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     QObject::connect(slowButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState1()));
     QObject::connect(fastButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState2()));
 
+    QPushButton * blockButton = new QPushButton("Block Mode");
+    QPushButton * objectButton = new QPushButton("Object Mode");
+
+    blockButton->setDefault(true);
+    objectButton->setDefault(true);
+
+    QDialogButtonBox *modeControlBox = new QDialogButtonBox(Qt::Vertical);
+    modeControlBox->setCaption(QString("Experiment Type Control Box"));
+
+    modeControlBox->addButton(blockButton, QDialogButtonBox::ActionRole);
+    modeControlBox->addButton(objectButton, QDialogButtonBox::ActionRole);
+    modeControlBox->setWindowFlags(Qt::WindowStaysOnTopHint);
+    modeControlBox->resize(QSize(200,100));
+    modeControlBox->show();
+
+    QObject::connect(blockButton, SIGNAL(clicked()), this, SLOT(updateExperimentBlock()));
+    QObject::connect(objectButton, SIGNAL(clicked()), this, SLOT(updateExperimentObject()));
 
     endOfExperimentFormat = new QFormLayout();
 
@@ -151,5 +167,22 @@ void BCIService::onFinishedFinalLog()
     BCILogger::getInstance()->writeExperimentSettings("Result", result);
     BCILogger::getInstance()->writeExperimentSettings("Final comments", comments);
 }
+void BCIService::setRos(ros::NodeHandle *_nh)
+{
+    n = _nh;
+}
 
-
+void BCIService::updateExperimentBlock()
+{
+    n->setParam("/experiment_type", "block");
+    n->setParam("/objrec_node/experiment_type", "block");
+    n->setParam("/world_manager/experiment_type", "block");
+    std::cout << "<--- set block mode --->" << std::endl;
+}
+void BCIService::updateExperimentObject()
+{
+    n->setParam("/experiment_type", "object");
+    n->setParam("/objrec_node/experiment_type", "object");
+    n->setParam("/world_manager/experiment_type", "object");
+    std::cout << "<--- set object mode --->" << std::endl;
+}

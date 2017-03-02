@@ -19,6 +19,8 @@
 #include <Inventor/nodes/SoOrthographicCamera.h>
 #include<Inventor/Qt/SoQtRenderArea.h>
 
+#include "ros/ros.h"
+
 class QImage;
 class QString;
 
@@ -50,7 +52,6 @@ public:
     void emitExec(){emit exec();}
     void emitNext(){emit next();}
 
-
     //these are emitted by the bci emg device
     void emitGoToStateLow(){emit goToStateLow();}
     void emitGoToStateMedium(){emit goToStateMedium();}
@@ -63,6 +64,8 @@ public:
     void init(BCIControlWindow *bciControlWindow);
     SoQtRenderArea *bciRenderArea;
 
+    void setRos(ros::NodeHandle *_nh);
+
 public slots:
     //called when active planner is updated
     void onPlannerUpdated(){emit plannerUpdated();}
@@ -71,6 +74,9 @@ public slots:
     void updateControlSceneState0();
     void updateControlSceneState1();
     void updateControlSceneState2();
+
+    void updateExperimentBlock();
+    void updateExperimentObject();
 
     void updateControlScene();
     void onFinishedFinalLog();
@@ -119,6 +125,7 @@ private:
         QPushButton * finishedButton;
         QGroupBox * endOfExperiment;
 
+        ros::NodeHandle *n;
 
 };
 
