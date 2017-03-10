@@ -8,12 +8,17 @@
 
 using bci_experiment::GraspManager;
 
-HomeState::HomeState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent)
+HomeState::HomeState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent)
     : State("HomeState", parent), bciControlWindow(_bciControlWindow),
       csm(_csm)
 {
     executionView = new ExecutionView(bciControlWindow->currentFrame);
     executionView->hide();
+
+    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
+    std_msgs::String str;
+    str.data = "";
+    pub.publish(str);
 }
 
 void HomeState::onEntryImpl(QEvent *e)
@@ -27,7 +32,7 @@ void HomeState::onEntryImpl(QEvent *e)
 
     csm->addNewTarget(QString("target_active.png"), btn_x-1.5*btn_width, btn_y, 0.0, QString("Auto\nGrasp"), this, SLOT(emit_goToObjectSelectionState()));
     csm->addNewTarget(QString("target_background.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Manual\nMove"), this, SLOT(emit_goToManualState()));
-    csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Saved\nMoves"), this, SLOT(emit_goToBookmarkState()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Finishing\nMove"), this, SLOT(emit_goToBookmarkState()));
     csm->addNewTarget(QString("target_background.png"), btn_x+1.5*btn_width, btn_y, 0.0, QString("Rerun\nVision"), this, SLOT(emit_goToObjectRecognitionState()));
 }
 

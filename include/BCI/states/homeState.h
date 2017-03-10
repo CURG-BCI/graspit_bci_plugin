@@ -10,7 +10,7 @@ class HomeState: public State
    Q_OBJECT
 
 public:
-    HomeState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent=0);
+    HomeState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent=0);
 
     virtual void onEntryImpl(QEvent *e);
     virtual void onExitImpl(QEvent *e);

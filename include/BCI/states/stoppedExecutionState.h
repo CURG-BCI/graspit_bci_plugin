@@ -11,9 +11,10 @@ class StoppedExecutionState:public State
 {
         Q_OBJECT
 public:
-    StoppedExecutionState(BCIControlWindow *_bciControlWindow,ControllerSceneManager *_csm, QState* parent = 0 );
+    StoppedExecutionState(BCIControlWindow *_bciControlWindow,ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent = 0 );
      virtual void onEntryImpl(QEvent *e);
      virtual void onExitImpl(QEvent *e);
+    void alexaCB(const std_msgs::String::ConstPtr& msg);
 
 public slots:
     void onContinueExecutionClicked(){emit goToExecutionState();};
@@ -28,6 +29,7 @@ private:
     BCIControlWindow *bciControlWindow;
     StoppedExecutionView *stoppedExecutionView;
     ControllerSceneManager *csm;
+    ros::Subscriber alexaSub;
 };
 
 #endif // STOPPEDEXECUTIONSTATE_H

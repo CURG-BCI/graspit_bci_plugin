@@ -8,7 +8,7 @@
 
 using bci_experiment::GraspManager;
 
-GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent):
+GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent):
     State("GraspSelectionState", parent),
     bciControlWindow(_bciControlWindow),
     csm(_csm),
@@ -20,6 +20,12 @@ GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, Co
     graspSelectionView = new GraspSelectionView(bciControlWindow->currentFrame);
     graspSelectionView->hide();
 
+    alexaSub = n->subscribe("AlexaDetectedPhrases", 1000, &GraspSelectionState::alexaCB, this);
+
+    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
+    std_msgs::String str;
+    str.data = "Next Grasp,Select Grasp,Plan New Grasps,Back";
+    pub.publish(str);
 }
 
 void GraspSelectionState::onEntryImpl(QEvent *e)
@@ -35,6 +41,7 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
     render();
     csm->clearTargets();
 
+    //Uncomment to get selecting grasp back
     csm->addNewTarget(QString("target_active.png"), btn_x-1.5*btn_width, btn_y, 0.0, QString("Next\nGrasp"), this, SLOT(onNext()));
     csm->addNewTarget(QString("target_background.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Select\nGrasp"), this, SLOT(emit_goToConfirmationState()));
     csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Plan New\nGrasps"), this, SLOT(emit_goToGraspPlanningState()));
@@ -43,6 +50,18 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
     //do this to ensure that the side views are reset.
     GraspManager::getInstance()->decrementGraspIndex();
     onNext();
+}
+
+void GraspSelectionState::alexaCB(const std_msgs::String::ConstPtr& msg) {
+    if(msg->data == "Next Grasp") {
+        onNext();
+    } else if(msg->data == "Select Grasp") {
+        emit_goToConfirmationState();
+    } else if(msg->data == "Plan New Grasps") {
+        emit_goToGraspPlanningState();
+    } else if(msg->data == "Back") {
+        emit_goToObjectSelectionState();
+    }
 }
 
 void GraspSelectionState::onExitImpl(QEvent *e)

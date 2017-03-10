@@ -94,7 +94,13 @@ int GraspitBCIPlugin::mainLoop()
         BCIService::getInstance()->init(bciControlWindow);
         bciControlWindow->show();
     }
-    ros::spinOnce();
+
+    if (ros::ok()){
+      ros::spinOnce();
+    }
+    else{
+        graspitCore->exitMainLoop();
+    }
     return 0;
 }
 

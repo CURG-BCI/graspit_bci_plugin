@@ -18,6 +18,12 @@ ExecutionState::ExecutionState(BCIControlWindow *_bciControlWindow, ControllerSc
     grasp_execution_pubisher = n->advertise<graspit_msgs::Grasp>("/graspit/grasps", 5);
     grasp_stop_execution_pubisher = n->advertise<actionlib_msgs::GoalID>("/mico_arm_driver/controller/follow_joint_trajectory/cancel", 5);
     grasp_stop_fingers_execution_pubisher = n->advertise<actionlib_msgs::GoalID>("/mico_arm_driver/fingers/finger_positions/cancel", 5);
+    alexaSub = n->subscribe("AlexaDetectedPhrases", 1000, &ExecutionState::alexaCB, this);
+
+    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
+    std_msgs::String str;
+    str.data = "Stop";
+    pub.publish(str);
 }
 
 
@@ -37,6 +43,12 @@ void ExecutionState::onEntryImpl(QEvent *e)
     QObject::connect(t1.get(), SIGNAL(hit()), this, SLOT(emit_goToStoppedExecutionState()));
 
     csm->addTarget(t1);
+}
+
+void ExecutionState::alexaCB(const std_msgs::String::ConstPtr& msg) {
+    if(msg->data == "Stop") {
+        emit_goToStoppedExecutionState();
+    }
 }
 
 void ExecutionState::emit_goToStoppedExecutionState()
@@ -138,5 +150,10 @@ void ExecutionState::graspExecutionCallback(const actionlib::SimpleClientGoalSta
                                const graspit_msgs::GraspExecutionResultConstPtr& result)
 {
     std::cout << "Action completed" << std::endl;
+    emit goToHomeState();
+}
+
+void ExecutionState::emit_goToHomeState()
+{
     emit goToHomeState();
 }

@@ -12,18 +12,20 @@ class GraspSelectionState: public State
     Q_OBJECT
 
 public:
-    GraspSelectionState(BCIControlWindow *_bciControlWindow,ControllerSceneManager *_csm, QState* parent = 0 );
+    GraspSelectionState(BCIControlWindow *_bciControlWindow,ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent = 0 );
     QString stateName;
     BCIControlWindow *bciControlWindow;
 
     virtual void onEntryImpl(QEvent *e);
     virtual void onExitImpl(QEvent *e);
+    void alexaCB(const std_msgs::String::ConstPtr& msg);
 
 protected:
     GraspSelectionView *graspSelectionView;
     ControllerSceneManager *csm;
     std::shared_ptr<Target>  t1;
     std::shared_ptr<Target>  t2;
+    ros::Subscriber alexaSub;
 
     void _updateCurrentGraspView();
     void _updateNextGraspView();

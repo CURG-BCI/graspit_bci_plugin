@@ -10,7 +10,7 @@ class ConfirmationState:public State
     Q_OBJECT
 
 public:
-    ConfirmationState(BCIControlWindow *_bciControlWindow,ControllerSceneManager *_csm, QState* parent = 0 );
+    ConfirmationState(BCIControlWindow *_bciControlWindow,ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent = 0 );
 
      virtual void onEntryImpl(QEvent *e);
      virtual void onExitImpl(QEvent *e);

@@ -14,7 +14,7 @@ using bci_experiment::GraspManager;
 using bci_experiment::WorldController;
 
 
-ObjectSelectionState::ObjectSelectionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm,
+ObjectSelectionState::ObjectSelectionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n,
                                            QState* parent):
     State("ObjectSelectionState", parent),
     bciControlWindow(_bciControlWindow),
@@ -22,6 +22,13 @@ ObjectSelectionState::ObjectSelectionState(BCIControlWindow *_bciControlWindow, 
 {
     objectSelectionView = new ObjectSelectionView(this,bciControlWindow->currentFrame);
     objectSelectionView->hide();
+
+    alexaSub = n->subscribe("AlexaDetectedPhrases", 1000, &ObjectSelectionState::alexaCB, this);
+
+    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
+    std_msgs::String str;
+    str.data = "Next Object,Select Object,Rerun Vision";
+    pub.publish(str);
 }
 
 
@@ -38,9 +45,18 @@ void ObjectSelectionState::onEntryImpl(QEvent *e)
 
     csm->addNewTarget(QString("target_active.png"), btn_x-btn_width, btn_y, 0.0, QString("Next\nObject"), this, SLOT(onNext()));
     csm->addNewTarget(QString("target_background.png"), btn_x, btn_y, 0.0, QString("Select\nObject"), this, SLOT(onSelect()));
-    csm->addNewTarget(QString("target_background.png"), btn_x+btn_width, btn_y, 0.0, QString("Back"), this, SLOT(onGoHome()));
+    csm->addNewTarget(QString("target_background.png"), btn_x+btn_width, btn_y, 0.0, QString("Rerun\nVision"), this, SLOT(onGoHome()));
 }
 
+void ObjectSelectionState::alexaCB(const std_msgs::String::ConstPtr& msg) {
+    if(msg->data == "Next Object") {
+        onNext();
+    } else if(msg->data == "Select Object") {
+        onSelect();
+    } else if(msg->data == "Rerun Vision") {
+        onGoHome();
+    }
+}
 
 void ObjectSelectionState::onExitImpl(QEvent *e)
 {

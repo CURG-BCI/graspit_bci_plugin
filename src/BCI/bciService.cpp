@@ -54,7 +54,7 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     cursorControlBox->addButton(slowButton, QDialogButtonBox::ActionRole);
     cursorControlBox->addButton(fastButton, QDialogButtonBox::ActionRole);
     cursorControlBox->setWindowFlags(Qt::WindowStaysOnTopHint);
-    cursorControlBox->resize(QSize(200,100));
+    cursorControlBox->resize(QSize(210, 90));
     cursorControlBox->show();
 
     QObject::connect(slowButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState1()));
@@ -72,7 +72,7 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     modeControlBox->addButton(blockButton, QDialogButtonBox::ActionRole);
     modeControlBox->addButton(objectButton, QDialogButtonBox::ActionRole);
     modeControlBox->setWindowFlags(Qt::WindowStaysOnTopHint);
-    modeControlBox->resize(QSize(200,100));
+    modeControlBox->resize(QSize(210, 90));
     modeControlBox->show();
 
     QObject::connect(blockButton, SIGNAL(clicked()), this, SLOT(updateExperimentBlock()));

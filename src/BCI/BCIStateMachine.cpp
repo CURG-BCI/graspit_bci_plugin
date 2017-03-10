@@ -30,16 +30,17 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
 
     csm = bciService->csm;
     ros::NodeHandle *n = new ros::NodeHandle("");
-    CollectUserInfoState *collectUserInfoState = new CollectUserInfoState();
+    bciService->setRos(n);
+    CollectUserInfoState *collectUserInfoState = new CollectUserInfoState(n);
     ObjectRecognitionState *objectRecognitionState = new ObjectRecognitionState(bciControlWindow, csm, n);
-    ObjectSelectionState *objectSelectionState = new ObjectSelectionState(bciControlWindow, csm);
-    GraspSelectionState *graspSelectionState = new GraspSelectionState(bciControlWindow, csm);
-    GraspSelectionState *finalGraspSelectionState = new GraspSelectionState(bciControlWindow, csm);
-    ConfirmationState *confirmationState = new ConfirmationState(bciControlWindow, csm);
+    ObjectSelectionState *objectSelectionState = new ObjectSelectionState(bciControlWindow, csm, n);
+    GraspSelectionState *graspSelectionState = new GraspSelectionState(bciControlWindow, csm, n);
+    GraspSelectionState *finalGraspSelectionState = new GraspSelectionState(bciControlWindow, csm, n);
+    ConfirmationState *confirmationState = new ConfirmationState(bciControlWindow, csm, n);
     ExecutionState *executionState = new ExecutionState(bciControlWindow, csm, n);
-    StoppedExecutionState *stoppedExecutionState = new StoppedExecutionState(bciControlWindow, csm);
-    PlanGraspState *planGraspState = new PlanGraspState(bciControlWindow, csm);
-    HomeState *homeState = new HomeState(bciControlWindow, csm);
+    StoppedExecutionState *stoppedExecutionState = new StoppedExecutionState(bciControlWindow, csm, n);
+    PlanGraspState *planGraspState = new PlanGraspState(bciControlWindow, csm, n);
+    HomeState *homeState = new HomeState(bciControlWindow, csm, n);
     StoppedGoHomeState *stoppedGoHomeState = new StoppedGoHomeState(bciControlWindow, csm);
     StoppedGoToBinState *stoppedGoToBinState = new StoppedGoToBinState(bciControlWindow, csm);
     ExecuteGoHomeState *executeGoHomeState = new ExecuteGoHomeState(bciControlWindow, csm, n);
@@ -51,65 +52,93 @@ BCIStateMachine::BCIStateMachine(BCIControlWindow *_bciControlWindow, BCIService
     RotationState *rotationState = new RotationState(bciControlWindow, csm);
     ExecuteRotationState *executeRotationState = new ExecuteRotationState(bciControlWindow, csm);
 
+    //Choose object
+    //Move object to bin
+
     collectUserInfoState->addStateTransition(bciService, SIGNAL(finishedCollectingUserInfo()), objectRecognitionState);
-    objectRecognitionState->addStateTransition(bciService, SIGNAL(finishedRecognition()), homeState);
+    objectRecognitionState->addStateTransition(bciService, SIGNAL(finishedRecognition()), objectSelectionState);
 
     homeState->addStateTransition(homeState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
-    homeState->addStateTransition(homeState, SIGNAL(goToManualState()), manualState);
-    homeState->addStateTransition(homeState, SIGNAL(goToBookmarkState()), bookmarkState);
-    homeState->addStateTransition(homeState, SIGNAL(goToObjectRecognitionState()), objectRecognitionState);
 
-    objectSelectionState->addStateTransition(bciService,SIGNAL(goToNextState1()), planGraspState);
-    //objectSelectionState->addStateTransition(objectSelectionState,SIGNAL(goToNextState()), graspSelectionState);
-    objectSelectionState->addSelfTransition(bciService, SIGNAL(exec()), objectSelectionState, SLOT(onSelect()));
-    objectSelectionState->addSelfTransition(bciService, SIGNAL(rotLat()), objectSelectionState, SLOT(onNext()));
+    objectSelectionState->addStateTransition(bciService, SIGNAL(goToNextState1()), planGraspState);
+    objectSelectionState->addSelfTransition (bciService, SIGNAL(exec()), objectSelectionState, SLOT(onSelect()));
+    objectSelectionState->addSelfTransition (bciService, SIGNAL(rotLat()), objectSelectionState, SLOT(onNext()));
+    objectSelectionState->addStateTransition(objectSelectionState, SIGNAL(goToHomeState()), objectRecognitionState);
 
-    objectSelectionState->addStateTransition(objectSelectionState, SIGNAL(goToHomeState()), homeState);
+    planGraspState->addStateTransition(planGraspState, SIGNAL(goToGraspSelectionState()), graspSelectionState);
 
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToConfirmationState()), confirmationState);
     graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToGraspPlanningState()), planGraspState);
 
-    planGraspState->addStateTransition(planGraspState, SIGNAL(goToGraspSelectionState()), graspSelectionState);
-
     confirmationState->addStateTransition(confirmationState, SIGNAL(goToExecutionState()), executionState);
     confirmationState->addStateTransition(confirmationState, SIGNAL(goToPreviousState()), graspSelectionState);
 
     executionState->addStateTransition(executionState, SIGNAL(goToStoppedExecutionState()), stoppedExecutionState);
-    executionState->addStateTransition(executionState, SIGNAL(goToHomeState()), homeState);
-
-    bookmarkState->addStateTransition(bookmarkState, SIGNAL(goToExecuteGoHomeState()), executeGoHomeState);
-    bookmarkState->addStateTransition(bookmarkState, SIGNAL(goToExecuteGoToBinState()), executeGoToBinState);
-    bookmarkState->addStateTransition(bookmarkState, SIGNAL(goToHomeState()), homeState);
+    executionState->addStateTransition(executionState, SIGNAL(goToHomeState()), objectRecognitionState);
 
     stoppedExecutionState->addStateTransition(stoppedExecutionState, SIGNAL(goToExecutionState()), executionState);
-    stoppedExecutionState->addStateTransition(stoppedExecutionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
+    stoppedExecutionState->addStateTransition(stoppedExecutionState, SIGNAL(goToObjectSelectionState()), objectRecognitionState);
 
-    executeGoHomeState->addStateTransition(executeGoHomeState, SIGNAL(goToStoppedGoHomeState()), stoppedGoHomeState);
-    executeGoHomeState->addStateTransition(executeGoHomeState, SIGNAL(goToHomeState()), homeState);
+//    homeState->addStateTransition(homeState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
+//    homeState->addStateTransition(homeState, SIGNAL(goToManualState()), manualState);
+//    homeState->addStateTransition(homeState, SIGNAL(goToBookmarkState()), bookmarkState);
+//    homeState->addStateTransition(homeState, SIGNAL(goToObjectRecognitionState()), objectRecognitionState);
 
-    executeGoToBinState->addStateTransition(executeGoToBinState, SIGNAL(goToStoppedGoToBinState()), stoppedGoToBinState);
-    executeGoToBinState->addStateTransition(executeGoToBinState, SIGNAL(goToHomeState()), homeState);
+//    objectSelectionState->addStateTransition(bciService,SIGNAL(goToNextState1()), planGraspState);
+//    //objectSelectionState->addStateTransition(objectSelectionState,SIGNAL(goToNextState()), graspSelectionState);
+//    objectSelectionState->addSelfTransition(bciService, SIGNAL(exec()), objectSelectionState, SLOT(onSelect()));
+//    objectSelectionState->addSelfTransition(bciService, SIGNAL(rotLat()), objectSelectionState, SLOT(onNext()));
 
-    stoppedGoHomeState->addStateTransition(stoppedGoHomeState, SIGNAL(goToExecuteGoHomeState()), executeGoHomeState);
-    stoppedGoHomeState->addStateTransition(stoppedGoHomeState, SIGNAL(goToBookmarkState()), bookmarkState);
+//    objectSelectionState->addStateTransition(objectSelectionState, SIGNAL(goToHomeState()), homeState);
 
-    stoppedGoToBinState->addStateTransition(stoppedGoToBinState, SIGNAL(goToExecuteGoToBinState()), executeGoToBinState);
-    stoppedGoToBinState->addStateTransition(stoppedGoToBinState, SIGNAL(goToBookmarkState()), bookmarkState);
+//    graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
+//    graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToConfirmationState()), confirmationState);
+//    graspSelectionState->addStateTransition(graspSelectionState, SIGNAL(goToGraspPlanningState()), planGraspState);
 
-    translationState->addStateTransition(translationState, SIGNAL(goToManualState()), manualState);
-    translationState->addStateTransition(translationState, SIGNAL(goToExecuteTranslationState()), executeTranslationState);
+//    planGraspState->addStateTransition(planGraspState, SIGNAL(goToGraspSelectionState()), graspSelectionState);
 
-    manualState->addStateTransition(manualState, SIGNAL(goToTranslationState()), translationState);
-    manualState->addStateTransition(manualState, SIGNAL(goToRotationState()), rotationState);
-    manualState->addStateTransition(manualState, SIGNAL(goToHomeState()), homeState);
+//    confirmationState->addStateTransition(confirmationState, SIGNAL(goToExecutionState()), executionState);
+//    confirmationState->addStateTransition(confirmationState, SIGNAL(goToPreviousState()), graspSelectionState);
 
-    executeTranslationState->addStateTransition(executeTranslationState, SIGNAL(goToTranslationState()), translationState);
+//    executionState->addStateTransition(executionState, SIGNAL(goToStoppedExecutionState()), stoppedExecutionState);
+//    //executionState->addStateTransition(executionState, SIGNAL(goToHomeState()), homeState); //TODO change this to go to "bookmarks" instead
+//    executionState->addStateTransition(executionState, SIGNAL(goToBookmarkState()), bookmarkState);
 
-    rotationState->addStateTransition(rotationState, SIGNAL(goToManualState()), manualState);
-    rotationState->addStateTransition(rotationState, SIGNAL(goToExecuteRotationState()), executeRotationState);
+////    bookmarkState->addStateTransition(bookmarkState, SIGNAL(goToExecuteGoHomeState()), executeGoHomeState);
+////    bookmarkState->addStateTransition(bookmarkState, SIGNAL(goToExecuteGoToBinState()), executeGoToBinState);
+//    bookmarkState->addStateTransition(bookmarkState, SIGNAL(goToExecuteGoHomeState()), objectRecognitionState);
+//    bookmarkState->addStateTransition(bookmarkState, SIGNAL(goToExecuteGoToBinState()), objectRecognitionState);
+//    bookmarkState->addStateTransition(bookmarkState, SIGNAL(goToHomeState()), homeState);
 
-    executeRotationState->addStateTransition(executeRotationState, SIGNAL(goToRotationState()), rotationState);
+//    stoppedExecutionState->addStateTransition(stoppedExecutionState, SIGNAL(goToExecutionState()), executionState);
+//    stoppedExecutionState->addStateTransition(stoppedExecutionState, SIGNAL(goToObjectSelectionState()), objectSelectionState);
+
+//    executeGoHomeState->addStateTransition(executeGoHomeState, SIGNAL(goToStoppedGoHomeState()), stoppedGoHomeState);
+//    executeGoHomeState->addStateTransition(executeGoHomeState, SIGNAL(goToHomeState()), homeState);
+
+//    executeGoToBinState->addStateTransition(executeGoToBinState, SIGNAL(goToStoppedGoToBinState()), stoppedGoToBinState);
+//    executeGoToBinState->addStateTransition(executeGoToBinState, SIGNAL(goToHomeState()), homeState);
+
+//    stoppedGoHomeState->addStateTransition(stoppedGoHomeState, SIGNAL(goToExecuteGoHomeState()), executeGoHomeState);
+//    stoppedGoHomeState->addStateTransition(stoppedGoHomeState, SIGNAL(goToBookmarkState()), bookmarkState);
+
+//    stoppedGoToBinState->addStateTransition(stoppedGoToBinState, SIGNAL(goToExecuteGoToBinState()), executeGoToBinState);
+//    stoppedGoToBinState->addStateTransition(stoppedGoToBinState, SIGNAL(goToBookmarkState()), bookmarkState);
+
+//    translationState->addStateTransition(translacollectUserInfoStatetionState, SIGNAL(goToManualState()), manualState);
+//    translationState->addStateTransition(translationState, SIGNAL(goToExecuteTranslationState()), executeTranslationState);
+
+//    manualState->addStateTransition(manualState, SIGNAL(goToTranslationState()), translationState);
+//    manualState->addStateTransition(manualState, SIGNAL(goToRotationState()), rotationState);
+//    manualState->addStateTransition(manualState, SIGNAL(goToHomeState()), homeState);
+
+//    executeTranslationState->addStateTransition(executeTranslationState, SIGNAL(goToTranslationState()), translationState);
+
+//    rotationState->addStateTransition(rotationState, SIGNAL(goToManualState()), manualState);
+//    rotationState->addStateTransition(rotationState, SIGNAL(goToExecuteRotationState()), executeRotationState);
+
+//    executeRotationState->addStateTransition(executeRotationState, SIGNAL(goToRotationState()), rotationState);
 
 
     stateMachine.addState(collectUserInfoState);

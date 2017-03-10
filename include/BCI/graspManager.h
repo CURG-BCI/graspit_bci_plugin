@@ -62,6 +62,7 @@ namespace bci_experiment{
             bool renderPending;
 
             void updateSolutionList();
+            int numberOfGrasps();
 
     protected:
             virtual void run();

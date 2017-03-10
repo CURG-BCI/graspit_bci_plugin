@@ -14,6 +14,7 @@ using namespace graspit_msgs;
 
 PlanGraspState::PlanGraspState(BCIControlWindow *_bciControlWindow,
                                                ControllerSceneManager *_csm,
+                                               ros::NodeHandle *n,
                                                QState* parent):
     State("GraspPlanningState", parent),
     bciControlWindow(_bciControlWindow),
@@ -21,11 +22,20 @@ PlanGraspState::PlanGraspState(BCIControlWindow *_bciControlWindow,
 {
      graspPlanningView = new GraspPlanningView(bciControlWindow->currentFrame);
      graspPlanningView->hide();
+
+     n->getParam("/experiment_type", experiment_type);
+
+    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
+    std_msgs::String str;
+    str.data = "";
+    pub.publish(str);
 }
 
 
 void PlanGraspState::onEntryImpl(QEvent *e)
-  {
+{
+    std::cout << "___>" << experiment_type << std::endl;
+
     graspPlanningView->show();
     bciControlWindow->currentState->setText("Grasp Planning State");
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("grasp_planning.png"), pipeline_x, 0, 0.0);
@@ -55,18 +65,21 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     double b = 0.5*(bbmax[1] - bbmin[1]);
     double c = 0.5*(bbmax[2] - bbmin[2]);
 
-    double smallObjectSize = 30;
-    if (a < smallObjectSize && b < smallObjectSize && c < smallObjectSize) {
-        std::cout << "----------- sphere -------------" << std::endl;
-        fingerLength = 70;
+    //double smallObjectSize = 30;
+    if (experiment_type == "block") {
+        std::cout << "----------- block -------------" << std::endl;
+        fingerLength = 80;
         //smallSphereSampling(a,b,c,3,6);
-        smallCubeSampling(c,5);
+        //smallCubeSampling(c,2,0);
+        blockSampling(a,b,c,3,6);
     } else {
+        std::cout << "----------- cylinder -------------" << std::endl;
         cylinderSampling(a,b,c,6,12);
     }
 
     //this shows the approach arrows for debugging
-    mPlanner->showVisualMarkers( true);
+    //mPlanner->showVisualMarkers( true);
+
     mPlanner->resetPlanner();
     mPlanner->startPlanner();
 
@@ -109,7 +122,8 @@ void PlanGraspState::cylinderSampling(double a, double b, double c, int resLen, 
         // sample around slice circle
         for (int j = 0; j < resRot; j++) {
 
-            double angle = 2 * M_PI * j/resRot;
+            //Limit this angle to 180 degree
+            double angle = M_PI * j/resRot;
             double x = a * cos(angle);
             double y = b * sin(angle);
             double z = i * lengthSample;
@@ -134,7 +148,7 @@ void PlanGraspState::cylinderSampling(double a, double b, double c, int resLen, 
     mPlanner->setInput(sampling);
 }
 
-void PlanGraspState::smallCubeSampling(double c, int res)
+void PlanGraspState::smallCubeSampling(double c, int res, double offset)
 {
     std::list<GraspPlanningState*> sampling;
 
@@ -152,7 +166,7 @@ void PlanGraspState::smallCubeSampling(double c, int res)
 
     for (int i = 0; i < res; i++) {
 
-        transf rotZ = transf(Quaternion((i*180/res)*M_PI/180, vec3(0,0,1)), vec3(0,0,0));
+        transf rotZ = transf(Quaternion((i*180/res)*M_PI/180, vec3(0,0,1)), vec3(0,0,0)); // sample rotating grasp
         transf position = flip * rotZ * rot_world_to_obj;
 
         position = transf(position.rotation(), position.translation() + center_offset.translation() + finger_offset.translation());
@@ -163,6 +177,26 @@ void PlanGraspState::smallCubeSampling(double c, int res)
     DBGA("Sampled " << sampling.size() << " states.");
     mPlanner->setInput(sampling);
 }
+
+void PlanGraspState::blockSampling(double a, double b, double c, int resLen, int resRot)
+{
+    std::list<GraspPlanningState*> sampling;
+
+    double length = c + fingerLength;
+
+    vec3 rotAxis = vec3(0,0,1); // rotate around Z axis
+
+    // sample once from top center
+    transf tr = transf(Quaternion(0, vec3(0,1,0)), (c-fingerLength) * rotAxis);
+    addNewGrasp(tr, &sampling);
+
+    transf tr2 = transf(Quaternion(90*M_PI/180, vec3(0,0,1)), vec3(0,0,0));
+    tr2 = tr2 * tr;
+    addNewGrasp(tr2, &sampling);
+
+    mPlanner->setInput(sampling);
+}
+
 
 void PlanGraspState::smallSphereSampling(double a, double b, double c, int resLen, int resRot)
 {

@@ -23,7 +23,7 @@ class CollectUserInfoState: public State
     Q_OBJECT
 
 public:
-    CollectUserInfoState();
+    CollectUserInfoState(ros::NodeHandle *n);
 
 public slots:
     virtual void onEntryImpl(QEvent *e);

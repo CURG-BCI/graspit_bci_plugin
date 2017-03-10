@@ -19,7 +19,7 @@ class PlanGraspState : public State
 {
         Q_OBJECT
 public:
-    PlanGraspState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent=0);
+    PlanGraspState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent=0);
 
     virtual void onEntryImpl(QEvent *e);
     virtual void onExitImpl(QEvent *e);
@@ -42,11 +42,13 @@ private:
    GraspableBody *mObject;
    Hand *mHand;
 
+   std::string experiment_type;
    double fingerLength;
 
    void cylinderSampling(double a, double b, double c, int resLen, int resRot);
    void smallSphereSampling(double a, double b, double c, int resLen, int resRot);
-   void smallCubeSampling(double c, int res);
+   void smallCubeSampling(double c, int res, double offset);
+   void blockSampling(double a, double b, double c, int resLen, int resRot);
    void addNewGrasp(transf tr, std::list<GraspPlanningState*> *sampling);
 };
 

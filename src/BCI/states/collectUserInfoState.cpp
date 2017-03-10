@@ -4,9 +4,12 @@
 
 
 
-CollectUserInfoState::CollectUserInfoState(): State("CollectUserInfoState")
+CollectUserInfoState::CollectUserInfoState(ros::NodeHandle *n): State("CollectUserInfoState")
 {
-
+    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
+    std_msgs::String str;
+    str.data = "";
+    pub.publish(str);
 }
 
 void CollectUserInfoState::onEntryImpl(QEvent *e)

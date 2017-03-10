@@ -25,6 +25,11 @@ ObjectRecognitionState::ObjectRecognitionState(BCIControlWindow *_bciControlWind
 
      get_camera_origin = n->serviceClient<graspit_msgs::GetCameraOrigin>("get_camera_origin");
 
+    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
+    std_msgs::String str;
+    str.data = "";
+    pub.publish(str);
+
      n->getParam("use_hardware", use_hardware);
      connect(
          this,
@@ -74,7 +79,7 @@ void ObjectRecognitionState::onExitImpl(QEvent *e)
     csm->next_target=0;
      objectRecognitionView->hide();
 
-    std::cout << "Finished onExit of Object Selection State." << std::endl;
+    std::cout << "Finished onExit of Object Recognition State." << std::endl;
 
 }
 
@@ -116,11 +121,10 @@ void ObjectRecognitionState::objectRecognitionCallback(const actionlib::SimpleCl
     {
         usleep(10000);
     }
-
+    ROS_INFO("%lu", result->object_info.size());
     std::for_each(result->object_info.begin(),
                   result->object_info.end(),
                   boost::bind(&ObjectRecognitionState::addObject, this, _1));
-
     ROS_INFO("Sucessfully Finished runObjectRecognition Request");
     BCIService::getInstance()->emitFinishedRecognition();
 }
@@ -129,7 +133,6 @@ void ObjectRecognitionState::addObject(graspit_msgs::ObjectInfo object)
 {
     QString  modelName(QString::fromStdString(object.model_name));
     QString objectName(QString::fromStdString(object.object_name));
-
     transf object_pose = transf(
                 Quaternion(
                     object.object_pose.orientation.w,
@@ -143,7 +146,7 @@ void ObjectRecognitionState::addObject(graspit_msgs::ObjectInfo object)
                     ));
 
     ROS_INFO("Adding Model %s", modelName.toStdString().c_str());
-    ROS_INFO("Adding Model %s", objectName.toStdString().c_str());
+    ROS_INFO("Adding Object %s", objectName.toStdString().c_str());
 
     emit addToWorld(modelName, objectName, object_pose);
 }

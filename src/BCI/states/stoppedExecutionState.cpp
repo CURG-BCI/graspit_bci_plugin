@@ -3,11 +3,17 @@
 #include "BCI/controller_scene/sprites.h"
 #include <Inventor/nodes/SoAnnotation.h>
 
-StoppedExecutionState::StoppedExecutionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, QState* parent)
+StoppedExecutionState::StoppedExecutionState(BCIControlWindow *_bciControlWindow, ControllerSceneManager *_csm, ros::NodeHandle *n, QState* parent)
     :State("StoppedExecutionState", parent), bciControlWindow(_bciControlWindow), csm(_csm)
 {
     stoppedExecutionView = new StoppedExecutionView(bciControlWindow->currentFrame);
     stoppedExecutionView->hide();
+    alexaSub = n->subscribe("AlexaDetectedPhrases", 1000, &StoppedExecutionState::alexaCB, this);
+
+    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
+    std_msgs::String str;
+    str.data = "Continue,Start Over";
+    pub.publish(str);
 }
 
 
@@ -21,6 +27,14 @@ void StoppedExecutionState::onEntryImpl(QEvent *e)
 
     csm->addNewTarget(QString("target_active.png"), btn_x-0.5*btn_width, btn_y, 0.0, QString("Continue"), this, SLOT(onContinueExecutionClicked()));
     csm->addNewTarget(QString("target_background.png"), btn_x+0.5*btn_width, btn_y, 0.0, QString("Start\nOver"), this, SLOT(onStartOverClicked()));
+}
+
+void StoppedExecutionState::alexaCB(const std_msgs::String::ConstPtr& msg) {
+    if(msg->data == "Continue") {
+        onContinueExecutionClicked();
+    } else if(msg->data == "Start Over") {
+        onStartOverClicked();
+    }
 }
 
 

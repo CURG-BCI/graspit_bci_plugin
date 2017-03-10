@@ -271,6 +271,10 @@ void GraspManager::decrementGraspIndex()
     }
 }
 
+int GraspManager::numberOfGrasps() {
+    return mGraspList.size();
+}
+
 
 Hand * GraspManager::getHand()
 {

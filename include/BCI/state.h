@@ -6,6 +6,7 @@
 #include <vector>
 #include <QTime>
 #include <QFile>
+#include "std_msgs/String.h"
 class BCIEvent;
 class QImage;
 class QColor;
@@ -26,6 +27,8 @@ public:
     QSignalTransition * addStateTransition(QObject * sender, const char * signal,  QAbstractState * target);
     void addStateTransition ( QAbstractTransition * transition );
     QAbstractTransition *addStateTransition ( QAbstractState * target );
+
+    void alexaCB(const std_msgs::String::ConstPtr& msg);
 
 public slots:
     void setName( const QString& name ) { m_name = name; }

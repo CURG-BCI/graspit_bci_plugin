@@ -41,7 +41,7 @@ void State::onEntry( QEvent* e )
         state = parent->name() + "->" + state;
         parent = dynamic_cast<State*>( parent->parentState() );
     }
-     std::cout << m_prefix.toStdString().c_str() << "Entering state:" << state.toStdString().c_str();
+     std::cout << m_prefix.toStdString().c_str() << "Entering state:" << state.toStdString().c_str() << std::endl;
 
      onEntryImpl(e);
 }
@@ -52,7 +52,7 @@ void State::onExit( QEvent* e )
 
      //log timer and state name to logger
     float time=(float) state_timer.elapsed()/1000;
-    std::cout<<"!!!!!!!!!!!Elapsed Time is: "<<time<<std::endl;
+    std::cout<<"onExit --- Elapsed Time is: "<<time<<std::endl;
     QString state = m_name;
     BCILogger::getInstance()->appendToTimingLog(m_name + QString(", ") + QString::number(time));
 
@@ -149,5 +149,8 @@ State::addStateTransition( QAbstractTransition * transition )
     Q_ASSERT(!checkForDuplicateTransitions(transition));
     addTransition(transition);
 }
+
+
+void State::alexaCB(const std_msgs::String::ConstPtr& msg) {}
 
 
