@@ -123,7 +123,7 @@ void PlanGraspState::cylinderSampling(double a, double b, double c, int resLen, 
         for (int j = 0; j < resRot; j++) {
 
             //Limit this angle to 180 degree
-            double angle = M_PI * j/resRot;
+            double angle = 2 * M_PI * j/resRot;
             double x = a * cos(angle);
             double y = b * sin(angle);
             double z = i * lengthSample;

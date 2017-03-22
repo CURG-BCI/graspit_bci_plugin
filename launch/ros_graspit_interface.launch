@@ -1,6 +1,7 @@
 <launch>
 
    <arg name="use_bci_device" default="False" />  
+   <arg name="use_switch_device" default="False" />  
 
    <param name="use_hardware" value="True" />
    
@@ -12,8 +13,16 @@
     <env name="LOG_DIR" value="$(find graspit_bci_plugin)/logs/"/>
   </node>
 
+  <node name="graspit_alexa_controller" pkg="graspit_alexa_controller" type="graspit_alexa_controller.py" respawn="true" output="screen" cwd="node"/>
+  <node name="run_experiment" pkg="run_experiment" type="run_experiment.py" respawn="true" output="screen" cwd="node"/>
+
+
   <group if="$(arg use_bci_device)">
   	 <node name="bci_device" pkg="graspit_threshold_controller" type="run.sh"/>
+  </group>
+
+  <group if="$(arg use_switch_device)">
+     <node name="graspit_switch_controller" pkg="graspit_switch_controller" type="switch_controller.py"/>
   </group>
   
 </launch>
