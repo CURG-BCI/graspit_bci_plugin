@@ -46,6 +46,7 @@ private:
    double fingerLength;
 
     ros::Publisher alexaPub;
+    ros::NodeHandle *n;
 
    void cylinderSampling(double a, double b, double c, int resLen, int resRot);
    void smallSphereSampling(double a, double b, double c, int resLen, int resRot);

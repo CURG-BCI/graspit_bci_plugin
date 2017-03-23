@@ -18,12 +18,12 @@ PlanGraspState::PlanGraspState(BCIControlWindow *_bciControlWindow,
                                                QState* parent):
     State("GraspPlanningState", parent),
     bciControlWindow(_bciControlWindow),
-    csm(_csm)
+    csm(_csm),
+    n(n)
 {
      graspPlanningView = new GraspPlanningView(bciControlWindow->currentFrame);
      graspPlanningView->hide();
 
-     n->getParam("/experiment_type", experiment_type);
     alexaPub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
 }
 
@@ -34,6 +34,7 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     std_msgs::String str;
     str.data = "";
     alexaPub.publish(str);
+    n->getParam("/experiment_type", experiment_type);
 
     std::cout << "___>" << experiment_type << std::endl;
 

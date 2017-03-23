@@ -24,7 +24,7 @@ namespace bci_experiment
 
         void highlightBody(Body * b, SbColor color)
         {
-            if(b) {
+            if(b && b->getIVMat()) {
                 b->getIVMat()->emissiveColor.setIgnored(false);
                 b->getIVMat()->emissiveColor.setValue(color);
                 b->getIVMat()->transparency.setIgnored(true);
@@ -35,7 +35,7 @@ namespace bci_experiment
 
         void unhighlightBody(Body * b)
         {
-            if(b) {
+            if(b && b->getIVMat()) {
                 b->getIVMat()->emissiveColor.setIgnored(true);
                 b->getIVMat()->transparency.setIgnored(false);
             }
@@ -55,27 +55,31 @@ namespace bci_experiment
 
         bool unhighlightAll()
         {
-          for(int i = 0; i < getWorld()->getNumGB(); ++i)
-          {
-            unhighlightBody(getWorld()->getGB(i));
-          }
+            if(getWorld()) {
+                for(int i = 0; i < getWorld()->getNumGB(); ++i)
+                {
+                    unhighlightBody(getWorld()->getGB(i));
+                }
+            }
           return true;
         }
 
 
         bool highlightAll()
         {
-          for(int i = 0; i < getWorld()->getNumGB(); ++i)
-          {
-            highlightBody(getWorld()->getGB(i), SbColor(0.3,0.3,0.3));
-          }
+            if(getWorld()) {
+                for (int i = 0; i < getWorld()->getNumGB(); ++i) {
+                    highlightBody(getWorld()->getGB(i), SbColor(0.3, 0.3, 0.3));
+                }
+            }
           return true;
         }
 
 
         void viewHand(Hand * h)
         {
-          graspitCore->getIVmgr()->getViewer()->getCamera()->viewAll(h->getIVRoot(), graspitCore->getIVmgr()->getViewer()->getViewportRegion(), 0.5);
+            if(h)
+                graspitCore->getIVmgr()->getViewer()->getCamera()->viewAll(h->getIVRoot(), graspitCore->getIVmgr()->getViewer()->getViewportRegion(), 0.5);
         }
 
 
