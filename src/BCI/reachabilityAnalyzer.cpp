@@ -19,6 +19,9 @@ ReachabilityAnalyzer::ReachabilityAnalyzer():
 void ReachabilityAnalyzer::buildCheckReachabilityRequest(const GraspPlanningState * gps,
                                                          graspit_msgs::CheckGraspReachabilityGoal &goal)
 {
+    if(!gps->getObject())
+        return;
+
     goal.grasp.object_name = gps->getObject()->getName().toStdString().c_str();
     goal.grasp.epsilon_quality=gps->getEpsilonQuality();
     goal.grasp.volume_quality=gps->getVolume();
