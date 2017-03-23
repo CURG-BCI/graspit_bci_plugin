@@ -19,16 +19,16 @@ ExecutionState::ExecutionState(BCIControlWindow *_bciControlWindow, ControllerSc
     grasp_stop_execution_pubisher = n->advertise<actionlib_msgs::GoalID>("/mico_arm_driver/controller/follow_joint_trajectory/cancel", 5);
     grasp_stop_fingers_execution_pubisher = n->advertise<actionlib_msgs::GoalID>("/mico_arm_driver/fingers/finger_positions/cancel", 5);
     alexaSub = n->subscribe("AlexaDetectedPhrases", 1000, &ExecutionState::alexaCB, this);
-
-    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
-    std_msgs::String str;
-    str.data = "Stop";
-    pub.publish(str);
+    alexaPub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
 }
 
 
 void ExecutionState::onEntryImpl(QEvent *e)
 {
+    std_msgs::String str;
+    str.data = "Stop";
+    alexaPub.publish(str);
+
     executionView->show();
     bciControlWindow->currentState->setText("Execution");
     executeGrasp(GraspManager::getInstance()->getCurrentGrasp());
@@ -89,6 +89,9 @@ void ExecutionState::onExitImpl(QEvent *e)
 void ExecutionState::executeGrasp(const GraspPlanningState * gps)
 {
     graspit_msgs::Grasp grasp;
+    if(!gps || !gps->getObject()) //catch missing grasp exception
+        emit_goToHomeState();
+
     grasp.object_name = gps->getObject()->getName().toStdString().c_str();
     grasp.epsilon_quality=gps->getEpsilonQuality();
     grasp.volume_quality=gps->getVolume();

@@ -45,6 +45,8 @@ private:
    std::string experiment_type;
    double fingerLength;
 
+    ros::Publisher alexaPub;
+
    void cylinderSampling(double a, double b, double c, int resLen, int resRot);
    void smallSphereSampling(double a, double b, double c, int resLen, int resRot);
    void smallCubeSampling(double c, int res, double offset);

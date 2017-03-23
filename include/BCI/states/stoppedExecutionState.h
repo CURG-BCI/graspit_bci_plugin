@@ -30,6 +30,7 @@ private:
     StoppedExecutionView *stoppedExecutionView;
     ControllerSceneManager *csm;
     ros::Subscriber alexaSub;
+    ros::Publisher alexaPub;
 };
 
 #endif // STOPPEDEXECUTIONSTATE_H

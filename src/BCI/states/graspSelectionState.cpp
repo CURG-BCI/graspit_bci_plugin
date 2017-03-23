@@ -21,15 +21,15 @@ GraspSelectionState::GraspSelectionState(BCIControlWindow *_bciControlWindow, Co
     graspSelectionView->hide();
 
     alexaSub = n->subscribe("AlexaDetectedPhrases", 1000, &GraspSelectionState::alexaCB, this);
-
-    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
-    std_msgs::String str;
-    str.data = "Next Grasp,Select Grasp,Plan New Grasps,Back";
-    pub.publish(str);
+    alexaPub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
 }
 
 void GraspSelectionState::onEntryImpl(QEvent *e)
 {
+
+    std_msgs::String str;
+    str.data = "Next Grasp,Select Grasp,Plan New Grasps,Back";
+    alexaPub.publish(str);
 
     WorldController::getInstance()->unhighlightAllBodies();
     GraspManager::getInstance()->startGraspReachabilityAnalysis();

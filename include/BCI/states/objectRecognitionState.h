@@ -40,6 +40,8 @@ private:
                                   const graspit_msgs::RunObjectRecognitionResultConstPtr& result);
    void addObject(graspit_msgs::ObjectInfo object);
 
+    ros::Publisher alexaPub;
+
 
 };
 

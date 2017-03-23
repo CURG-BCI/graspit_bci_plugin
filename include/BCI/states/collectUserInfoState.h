@@ -46,7 +46,8 @@ protected:
 
     QTextEdit *commentInput;
     QPushButton * finishedButton;
-
+private:
+    ros::Publisher alexaPub;
 };
 
 

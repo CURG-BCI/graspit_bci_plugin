@@ -27,7 +27,7 @@ private:
     BCIService *bciService;
     ControllerSceneManager *csm;
     ros::Subscriber alexaSub;
-
+    ros::Publisher alexaPub;
 
 public slots:
 

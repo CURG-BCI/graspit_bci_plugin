@@ -9,16 +9,17 @@ StoppedExecutionState::StoppedExecutionState(BCIControlWindow *_bciControlWindow
     stoppedExecutionView = new StoppedExecutionView(bciControlWindow->currentFrame);
     stoppedExecutionView->hide();
     alexaSub = n->subscribe("AlexaDetectedPhrases", 1000, &StoppedExecutionState::alexaCB, this);
-
-    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
-    std_msgs::String str;
-    str.data = "Continue,Start Over";
-    pub.publish(str);
+    alexaPub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
 }
 
 
 void StoppedExecutionState::onEntryImpl(QEvent *e)
 {
+
+    std_msgs::String str;
+    str.data = "Continue,Start Over";
+    alexaPub.publish(str);
+
     stoppedExecutionView->show();
     bciControlWindow->currentState->setText("Execution");
 

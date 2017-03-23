@@ -24,16 +24,17 @@ PlanGraspState::PlanGraspState(BCIControlWindow *_bciControlWindow,
      graspPlanningView->hide();
 
      n->getParam("/experiment_type", experiment_type);
-
-    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
-    std_msgs::String str;
-    str.data = "";
-    pub.publish(str);
+    alexaPub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
 }
 
 
 void PlanGraspState::onEntryImpl(QEvent *e)
 {
+
+    std_msgs::String str;
+    str.data = "";
+    alexaPub.publish(str);
+
     std::cout << "___>" << experiment_type << std::endl;
 
     graspPlanningView->show();

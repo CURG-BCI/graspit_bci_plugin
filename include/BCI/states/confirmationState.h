@@ -22,6 +22,7 @@ private:
     ConfirmationView* confirmationView;
     BCIControlWindow *bciControlWindow;
     ControllerSceneManager *csm;
+    ros::Publisher alexaPub;
 
 public slots:
 

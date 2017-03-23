@@ -24,17 +24,21 @@ namespace bci_experiment
 
         void highlightBody(Body * b, SbColor color)
         {
-          b->getIVMat()->emissiveColor.setIgnored(false);
-          b->getIVMat()->emissiveColor.setValue(color);
-          b->getIVMat()->transparency.setIgnored(true);
+            if(b) {
+                b->getIVMat()->emissiveColor.setIgnored(false);
+                b->getIVMat()->emissiveColor.setValue(color);
+                b->getIVMat()->transparency.setIgnored(true);
+            }
         }
 
 
 
         void unhighlightBody(Body * b)
         {
-          b->getIVMat()->emissiveColor.setIgnored(true);
-          b->getIVMat()->transparency.setIgnored(false);
+            if(b) {
+                b->getIVMat()->emissiveColor.setIgnored(true);
+                b->getIVMat()->transparency.setIgnored(false);
+            }
         }
 
 
@@ -77,11 +81,13 @@ namespace bci_experiment
 
         void viewTarget(Body * b)
         {
-          graspitCore->getIVmgr()->getViewer()->getCamera()->viewAll(b->getIVRoot(), graspitCore->getIVmgr()->getViewer()->getViewportRegion(), 1.0);
-          Body * tableBody= getObjectByName("experiment_table");
-          SbVec3f table_z = tableBody->getTran().affine().transpose().row(2).toSbVec3f();
+            if(b) {
+                graspitCore->getIVmgr()->getViewer()->getCamera()->viewAll(b->getIVRoot(), graspitCore->getIVmgr()->getViewer()->getViewportRegion(), 1.0);
+                Body * tableBody= getObjectByName("experiment_table");
+                SbVec3f table_z = tableBody->getTran().affine().transpose().row(2).toSbVec3f();
 
-          graspitCore->getIVmgr()->getViewer()->getCamera()->pointAt(SbVec3f(0,0,0), table_z);
+                graspitCore->getIVmgr()->getViewer()->getCamera()->pointAt(SbVec3f(0,0,0), table_z);
+            }
         }
 
 

@@ -31,6 +31,9 @@ protected:
     void _updateNextGraspView();
     void showCurrentGrasp();
 
+private:
+    ros::Publisher alexaPub;
+
 public slots:
     void onNext();
     void render();

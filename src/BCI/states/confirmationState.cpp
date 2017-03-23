@@ -20,15 +20,18 @@ ConfirmationState::ConfirmationState(BCIControlWindow *_bciControlWindow, Contro
     this->addSelfTransition(BCIService::getInstance(),SIGNAL(rotLat()), this, SLOT(onNextGrasp()));
     confirmationView->hide();
 
-    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
-    std_msgs::String str;
-    str.data = "";
-    pub.publish(str);
+    alexaPub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
 }
 
 
 void ConfirmationState::onEntryImpl(QEvent *e)
 {
+
+
+    std_msgs::String str;
+    str.data = "";
+    alexaPub.publish(str);
+
     const GraspPlanningState *grasp = GraspManager::getInstance()->getCurrentGrasp();
     Hand * hand = GraspManager::getInstance()->getHand();
     confirmationView->setCurrentGrasp(hand,grasp);

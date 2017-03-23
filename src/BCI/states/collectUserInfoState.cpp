@@ -6,14 +6,15 @@
 
 CollectUserInfoState::CollectUserInfoState(ros::NodeHandle *n): State("CollectUserInfoState")
 {
-    ros::Publisher pub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
-    std_msgs::String str;
-    str.data = "";
-    pub.publish(str);
+    alexaPub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
 }
 
 void CollectUserInfoState::onEntryImpl(QEvent *e)
 {
+
+    std_msgs::String str;
+    str.data = "";
+    alexaPub.publish(str);
 
     settingsUI = new QFormLayout();
 

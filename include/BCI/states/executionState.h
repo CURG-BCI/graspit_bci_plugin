@@ -39,6 +39,7 @@ private:
     ros::ServiceClient grasp_serviceclient;
     actionlib::SimpleActionClient<graspit_msgs::GraspExecutionAction> graspExecutionActionClient;
     ros::Subscriber alexaSub;
+    ros::Publisher alexaPub;
 
     void executeGrasp(const GraspPlanningState * gps);
 
