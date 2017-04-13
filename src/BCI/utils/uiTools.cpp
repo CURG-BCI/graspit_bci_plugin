@@ -24,10 +24,12 @@ namespace bci_experiment
 
         void highlightBody(Body * b, SbColor color)
         {
-            if(b && b->getIVMat()) {
+            if(b && b->getIVMat() && b->getIVMat()->emissiveColor.startEditing() && b->getIVMat()->transparency.startEditing()) {
                 b->getIVMat()->emissiveColor.setIgnored(false);
                 b->getIVMat()->emissiveColor.setValue(color);
                 b->getIVMat()->transparency.setIgnored(true);
+            } else {
+                std::cout << "Could not highlight body..." << std::endl;
             }
         }
 

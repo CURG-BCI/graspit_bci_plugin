@@ -123,7 +123,7 @@ void ObjectRecognitionState::objectRecognitionCallback(const actionlib::SimpleCl
     {
         usleep(10000);
     }
-    ROS_INFO("%lu", result->object_info.size());
+    ROS_INFO("%lu object(s) found", result->object_info.size());
     std::for_each(result->object_info.begin(),
                   result->object_info.end(),
                   boost::bind(&ObjectRecognitionState::addObject, this, _1));
