@@ -7,7 +7,7 @@ set(CMAKE_BUILD_TYPE Debug)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED graspit actionlib roscpp roslib )
+find_package(catkin REQUIRED graspit actionlib roscpp roslib graspit_msgs)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -313,7 +313,7 @@ source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(graspit_bci_plugin graspit graspit_ros_planning_msgs ${QT_DEFINITIONS})
+add_dependencies(graspit_bci_plugin graspit graspit_ros_planning_msgs graspit_msgs ${QT_DEFINITIONS})
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(graspit_bci_plugin

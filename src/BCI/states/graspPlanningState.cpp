@@ -54,7 +54,7 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     mHand->getGrasp()->setObjectNoUpdate(mObject);
     mHand->getGrasp()->setGravity(false);
 
-    mPlanner = new ListPlanner(mHand);
+    mPlanner = new BCIListPlanner(mHand);
 
     //get object bbox dimensions
     SoGetBoundingBoxAction *bba =
@@ -68,19 +68,19 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     double c = 0.5*(bbmax[2] - bbmin[2]);
 
     //double smallObjectSize = 30;
-    if (experiment_type == "block") {
-        std::cout << "----------- block -------------" << std::endl;
-        fingerLength = 80;
-        //smallSphereSampling(a,b,c,3,6);
-        //smallCubeSampling(c,2,0);
-        blockSampling(a,b,c,3,6);
-    } else {
-        std::cout << "----------- cylinder -------------" << std::endl;
-        cylinderSampling(a,b,c,6,12);
-    }
+    // if (experiment_type == "block") {
+    std::cout << "----------- block -------------" << std::endl;
+    fingerLength = 80;
+    //smallSphereSampling(a,b,c,3,6);
+    //smallCubeSampling(c,2,0);
+    blockSampling(a,b,c,3,6);
+    // } else {
+    //     std::cout << "----------- cylinder -------------" << std::endl;
+    //     cylinderSampling(a,b,c,6,12);
+    // }
 
     //this shows the approach arrows for debugging
-    //mPlanner->showVisualMarkers( true);
+    mPlanner->showVisualMarkers( true);
 
     mPlanner->resetPlanner();
     mPlanner->startPlanner();
@@ -94,6 +94,7 @@ void PlanGraspState::onEntryImpl(QEvent *e)
 
 void PlanGraspState::addNewGrasp(transf tr, std::list<GraspPlanningState*> *sampling)
 {
+    std::cout << "Adding new grasp" << tr << std::endl;
     GraspPlanningState* seed = new GraspPlanningState(mHand);
     seed->setObject(mObject);
     seed->setRefTran(mObject->getTran(), false);
@@ -184,17 +185,19 @@ void PlanGraspState::blockSampling(double a, double b, double c, int resLen, int
 {
     std::list<GraspPlanningState*> sampling;
 
-    double length = c + fingerLength;
+    double length = 3*c + fingerLength;
 
-    vec3 rotAxis = vec3(0,0,1); // rotate around Z axis
+    vec3 rotAxis = vec3(0,0,-1); // rotate around Z axis
 
     // sample once from top center
-    transf tr = transf(Quaternion(0, vec3(0,1,0)), (c-fingerLength) * rotAxis);
+    transf tr = transf(Quaternion(M_PI, vec3(0,1,0)), (-fingerLength - c) * rotAxis);
     addNewGrasp(tr, &sampling);
 
     transf tr2 = transf(Quaternion(90*M_PI/180, vec3(0,0,1)), vec3(0,0,0));
     tr2 = tr2 * tr;
     addNewGrasp(tr2, &sampling);
+
+    std::cout << "size of sampling is " << sampling.size() << std::endl;
 
     mPlanner->setInput(sampling);
 }
@@ -253,6 +256,7 @@ void PlanGraspState::smallSphereSampling(double a, double b, double c, int resLe
 void PlanGraspState::onPlannerFinished()
 {
     GraspManager::getInstance()->clearGrasps();
+    std::cout << "mPlanner list size " << mPlanner->getListSize() << std::endl;
     for(int i=0; i<mPlanner->getListSize(); i++)
     {
         GraspPlanningState* gps = new GraspPlanningState (mPlanner->getGrasp(i));

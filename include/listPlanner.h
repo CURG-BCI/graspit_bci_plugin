@@ -23,8 +23,8 @@
 //
 //######################################################################
 
-#ifndef _listplanner_h_
-#define _listplanner_h_
+#ifndef _bci_listplanner_h_
+#define _bci_listplanner_h_
 
 #include "EGPlanner/egPlanner.h"
 
@@ -42,7 +42,7 @@ class GraspPlanningState;
 	The original Primitive Planner can be re-cast as one of these. I am hoping to
 	do that at some point. 
 */
-class ListPlanner : public EGPlanner
+class BCIListPlanner : public EGPlanner
 {
 protected:
 	/*! The list of grasps to be tried by this planner. All HandObjectStates are deleted
@@ -61,8 +61,8 @@ protected:
 	//! Pulls the state at the given index from the input list
 	GraspPlanningState *getState(int index);
 public:
-	ListPlanner(Hand *h);
-	~ListPlanner();
+    BCIListPlanner(Hand *h);
+    ~BCIListPlanner();
 	virtual PlannerType getType(){return PLANNER_LIST;}
 
 	//! True as long as there is something to test in the input list

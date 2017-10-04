@@ -23,7 +23,7 @@
 //
 //######################################################################
 
-#include "EGPlanner/listPlanner.h"
+#include "listPlanner.h"
 
 #include "robot.h"
 #include "EGPlanner/searchState.h"
@@ -36,8 +36,9 @@
 //iros09
 #define BEST_LIST_SIZE 20000
 
-ListPlanner::ListPlanner(Hand *h)
+BCIListPlanner::BCIListPlanner(Hand *h)
 {
+    std::cout << "Creating BCIListPlanner" << std::endl;
 	mHand = h;
 	init();
     mEnergyCalculator = SearchEnergy::getSearchEnergy(ENERGY_CONTACT);
@@ -47,8 +48,9 @@ ListPlanner::ListPlanner(Hand *h)
 /*! The destructor also eliminates the list of input grasps, therefore
 	care must be excercised when passing grasps to this class. 
 */
-ListPlanner::~ListPlanner()
+BCIListPlanner::~BCIListPlanner()
 {
+    std::cout << "Destructing BCIListPlanner" << std::endl;
 	while (!mInputList.empty()){
 		delete mInputList.back();
 		mInputList.pop_back();
@@ -56,7 +58,7 @@ ListPlanner::~ListPlanner()
 }
 
 void 
-ListPlanner::resetParameters(){
+BCIListPlanner::resetParameters(){
 	EGPlanner::resetParameters();
 	mPlanningIterator = mInputList.begin();
 	if(mCurrentState) delete mCurrentState;
@@ -64,9 +66,12 @@ ListPlanner::resetParameters(){
 }
 
 void 
-ListPlanner::setInput(std::list<GraspPlanningState*> input)
+BCIListPlanner::setInput(std::list<GraspPlanningState*> input)
 {
+    std::cout << "This better work" << std::endl;
+
 	if (isActive()) {
+        std::cout << "Can not change input while planner is running" << std::endl;
 		DBGA("Can not change input while planner is running");
 		return;
 	}
@@ -76,11 +81,12 @@ ListPlanner::setInput(std::list<GraspPlanningState*> input)
 	}
 	mInputList = input;
 	mMaxSteps = input.size();
+    std::cout << "mInputList: " << mInputList.size() << std::endl;
 	invalidateReset();
 }
 
 GraspPlanningState*
-ListPlanner::getState(int index)
+BCIListPlanner::getState(int index)
 {
 	std::list<GraspPlanningState*>::iterator it = mInputList.begin();
 	int count = 0;
@@ -95,7 +101,7 @@ ListPlanner::getState(int index)
 }
 
 void 
-ListPlanner::testState(int index)
+BCIListPlanner::testState(int index)
 {
 	GraspPlanningState *state = getState(index);
 	if (!state) return;
@@ -105,7 +111,7 @@ ListPlanner::testState(int index)
 }
 
 void
-ListPlanner::showState(int index)
+BCIListPlanner::showState(int index)
 {
 	GraspPlanningState *state = getState(index);
 	if (!state) return;
@@ -113,7 +119,7 @@ ListPlanner::showState(int index)
 }
 
 void
-ListPlanner::prepareState(int index)
+BCIListPlanner::prepareState(int index)
 {
 	showState(index);
     mHand->findInitialContact(200);
@@ -123,13 +129,15 @@ ListPlanner::prepareState(int index)
 	tries it and then places is in the output depending on the quality.
 */
 void 
-ListPlanner::mainLoop()
+BCIListPlanner::mainLoop()
 {
+    std::cout << "In main loop1" << std::endl;
 	//check if we are done
 	if (mPlanningIterator==mInputList.end()) {
 		mCurrentStep = mMaxSteps+1;
 		return;
 	}
+    std::cout << "In main loop2" << std::endl;
 
 	//analyze the current state
 	//we don't allow it to leave the hand in the analysis posture
@@ -151,23 +159,23 @@ ListPlanner::mainLoop()
 	//put a copy of the result in list if it's legal and there's room or it's 
 	//better than the worst solution so far
 	//this whole thing could go into a higher level fctn in EGPlanner
-	if (legal) {
-		double worstEnergy;
+    if (legal) {
+        double worstEnergy;
         if ((int)mBestList.size() < BEST_LIST_SIZE) worstEnergy = 1.0e5;
-		else worstEnergy = mBestList.back()->getEnergy();
-		if (energy < worstEnergy) {
-			GraspPlanningState *insertState = new GraspPlanningState(*mPlanningIterator);
-			insertState->setEnergy(energy);
-			insertState->setItNumber(mCurrentStep);
-			DBGP("Solution at step " << mCurrentStep);
-			mBestList.push_back(insertState);
-			mBestList.sort(GraspPlanningState::compareStates);
+        else worstEnergy = mBestList.back()->getEnergy();
+        if (energy < worstEnergy) {
+            GraspPlanningState *insertState = new GraspPlanningState(*mPlanningIterator);
+            insertState->setEnergy(energy);
+            insertState->setItNumber(mCurrentStep);
+            DBGP("Solution at step " << mCurrentStep);
+            mBestList.push_back(insertState);
+            mBestList.sort(GraspPlanningState::compareStates);
             while ((int)mBestList.size() > BEST_LIST_SIZE) {
-				delete(mBestList.back());
-				mBestList.pop_back();
-			}
-		}
-	}
+                delete(mBestList.back());
+                mBestList.pop_back();
+            }
+        }
+    }
 
 	//advance the planning iterator
     mPlanningIterator++;
@@ -177,11 +185,12 @@ ListPlanner::mainLoop()
 }
 
 void 
-ListPlanner::showVisualMarkers(bool show)
+BCIListPlanner::showVisualMarkers(bool show)
 {
 	std::list<GraspPlanningState*>::iterator it;
 	for (it = mInputList.begin(); it!=mInputList.end(); it++) {
 		if (show) {
+            std::cout << "Should be displaying marker" << std::endl;
 			(*it)->showVisualMarker();
 		} else {
 			(*it) ->hideVisualMarker();

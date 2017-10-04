@@ -32,7 +32,7 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
     alexaPub.publish(str);
 
     WorldController::getInstance()->unhighlightAllBodies();
-    GraspManager::getInstance()->startGraspReachabilityAnalysis();
+     GraspManager::getInstance()->startGraspReachabilityAnalysis();
     GraspManager::getInstance()->showRobots(true);
 
     graspSelectionView->show();
@@ -66,7 +66,7 @@ void GraspSelectionState::alexaCB(const std_msgs::String::ConstPtr& msg) {
 
 void GraspSelectionState::onExitImpl(QEvent *e)
 {
-    GraspManager::getInstance()->startGraspReachabilityAnalysis();
+    // GraspManager::getInstance()->startGraspReachabilityAnalysis();
     csm->clearTargets();
     SoDB::writelock();
     csm->control_scene_separator->removeChild(csm->pipeline->sprite_root);

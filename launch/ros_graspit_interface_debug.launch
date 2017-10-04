@@ -5,13 +5,15 @@
 
    <param name="use_hardware" value="True" />
    
-  <node name="graspit_ros" pkg="graspit" type="graspit_simulator"  output="screen" args=" -p libgraspit_bci_plugin" >
+  <node name="graspit_ros" pkg="graspit" type="graspit_simulator" args=" -p libgraspit_bci_plugin" output="screen" launch-prefix="gdb -ex run --args" >
     <env name="GRASPIT" value="$(find graspit)/graspit_source"/>
     <env name="CGDB_MODEL_ROOT" value="$(find graspit)/graspit_source/cgdb"/>
     <env name="GRASPIT_PLUGIN_DIR" value="$(find graspit_bci_plugin)/../../devel/lib"/>
     <env name="SPRITES_DIR" value="$(find graspit_bci_plugin)/sprites/"/>
     <env name="LOG_DIR" value="$(find graspit_bci_plugin)/logs/"/>
   </node>
+
+  <node name="run_experiment" pkg="run_experiment" type="run_experiment.py" respawn="true" output="screen" cwd="node" />
 
   <group if="$(arg use_bci_device)">
   	 <node name="bci_device" pkg="graspit_threshold_controller" type="run.sh"/>

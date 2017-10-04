@@ -2,10 +2,6 @@
 #define REACHABILITYANALYZER_H
 
 #include <QObject>
-#include "graspit_msgs/GetObjectInfo.h"
-#include "graspit_msgs/ObjectInfo.h"
-#include "graspit_msgs/LocationInfo.h"
-#include "graspit_msgs/RunObjectRecognitionAction.h"
 #include "graspit_msgs/CheckGraspReachabilityAction.h"
 #include <actionlib/client/simple_action_client.h>
 #include "ros/ros.h"

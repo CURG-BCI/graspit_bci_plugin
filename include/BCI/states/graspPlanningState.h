@@ -13,7 +13,7 @@
 #include "graspit_msgs/RunObjectRecognitionAction.h"
 #include <actionlib/client/simple_action_client.h>
 #include "ros/ros.h"
-class ListPlanner;
+class BCIListPlanner;
 
 class PlanGraspState : public State
 {
@@ -37,7 +37,7 @@ private:
    BCIControlWindow *bciControlWindow;
    ControllerSceneManager *csm;
 
-   ListPlanner *mPlanner;
+   BCIListPlanner *mPlanner;
    GraspPlanningState *mHandObjectState;
    GraspableBody *mObject;
    Hand *mHand;
