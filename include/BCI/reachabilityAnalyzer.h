@@ -2,9 +2,12 @@
 #define REACHABILITYANALYZER_H
 
 #include <QObject>
+
+#ifndef Q_MOC_RUN
 #include "graspit_msgs/CheckGraspReachabilityAction.h"
 #include <actionlib/client/simple_action_client.h>
 #include "ros/ros.h"
+#endif
 
 #include "include/EGPlanner/searchState.h"
 

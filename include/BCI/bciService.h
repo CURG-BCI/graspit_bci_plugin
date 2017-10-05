@@ -19,7 +19,9 @@
 #include <Inventor/nodes/SoOrthographicCamera.h>
 #include<Inventor/Qt/SoQtRenderArea.h>
 
+#ifndef Q_MOC_RUN
 #include "ros/ros.h"
+#endif
 
 class QImage;
 class QString;

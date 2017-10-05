@@ -9,8 +9,11 @@
 #include "graspit_msgs/ObjectInfo.h"
 #include "graspit_msgs/LocationInfo.h"
 #include "graspit_msgs/RunObjectRecognitionAction.h"
+
+#ifndef Q_MOC_RUN
 #include <actionlib/client/simple_action_client.h>
 #include "ros/ros.h"
+#endif
 
 class ObjectRecognitionState : public State
 {

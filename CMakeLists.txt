@@ -313,7 +313,7 @@ source_group("Generated Sources - Do Not Edit" FILES ${GENERATED_SOURCES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(graspit_bci_plugin graspit graspit_ros_planning_msgs graspit_msgs ${QT_DEFINITIONS})
+add_dependencies(graspit_bci_plugin graspit graspit_ros_planning_msgs graspit_msgs_generate_messages_cpp ${QT_DEFINITIONS})
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(graspit_bci_plugin

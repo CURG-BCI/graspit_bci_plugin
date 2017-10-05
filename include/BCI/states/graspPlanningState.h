@@ -1,6 +1,7 @@
 #ifndef GRASPSELECTION_STATE_H
 #define GRASPSELECTION_STATE_H
 
+#ifndef Q_MOC_RUN
 #include "state_views/graspPlanningView.h"
 #include "bciControlWindow.h"
 #include "BCI/state.h"
@@ -13,6 +14,8 @@
 #include "graspit_msgs/RunObjectRecognitionAction.h"
 #include <actionlib/client/simple_action_client.h>
 #include "ros/ros.h"
+#endif
+
 class BCIListPlanner;
 
 class PlanGraspState : public State

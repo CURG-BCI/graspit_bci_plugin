@@ -6,8 +6,11 @@
 #include "BCI/state.h"
 #include "BCI/graspManager.h"
 #include "bciControlWindow.h"
+
+#ifndef Q_MOC_RUN
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#endif
 
 class ObjectSelectionView;
 

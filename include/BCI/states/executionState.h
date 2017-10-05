@@ -5,7 +5,10 @@
 #include "bciControlWindow.h"
 #include "state_views/executionView.h"
 #include "graspit_msgs/GraspExecutionAction.h"
+
+#ifndef Q_MOC_RUN
 #include <actionlib/client/simple_action_client.h>
+#endif
 
 class GraspPlanningState;
 
