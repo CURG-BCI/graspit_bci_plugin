@@ -185,12 +185,12 @@ void PlanGraspState::blockSampling(double a, double b, double c, int resLen, int
 {
     std::list<GraspPlanningState*> sampling;
 
-    double length = 3*c + fingerLength;
+    double length = c + fingerLength;
 
-    vec3 rotAxis = vec3(0,0,-1); // rotate around Z axis
+    vec3 rotAxis = vec3(0,0,1); // rotate around Z axis
 
     // sample once from top center
-    transf tr = transf(Quaternion(M_PI, vec3(0,1,0)), (-fingerLength - c) * rotAxis);
+    transf tr = transf(Quaternion(0, vec3(0,1,0)), (c-fingerLength) * rotAxis);
     addNewGrasp(tr, &sampling);
 
     transf tr2 = transf(Quaternion(90*M_PI/180, vec3(0,0,1)), vec3(0,0,0));

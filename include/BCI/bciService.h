@@ -77,9 +77,6 @@ public slots:
     void updateControlSceneState1();
     void updateControlSceneState2();
 
-    void updateExperimentBlock();
-    void updateExperimentObject();
-
     void updateControlScene();
     void onFinishedFinalLog();
 
