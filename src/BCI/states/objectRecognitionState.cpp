@@ -25,9 +25,8 @@ ObjectRecognitionState::ObjectRecognitionState(BCIControlWindow *_bciControlWind
 
      get_camera_origin = n->serviceClient<graspit_msgs::GetCameraOrigin>("get_camera_origin");
 
-    alexaPub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
+     alexaPub = n->advertise<std_msgs::String>("AlexaValidPhrases", 5);
 
-     n->getParam("use_hardware", use_hardware);
      connect(
          this,
          SIGNAL(clearGB()),
@@ -52,21 +51,12 @@ void ObjectRecognitionState::onEntryImpl(QEvent *e)
     objectRecognitionView->show();
     bciControlWindow->currentState->setText("Object Recognition State");
     csm->pipeline=new Pipeline(csm->control_scene_separator, QString("object_recognition.png"), pipeline_x, 0, 0.0);
-    if(use_hardware)
-    {
-        ROS_INFO("CLEARING ALL GRASPABLE BODIES ON ENTRANCE TO OBJECT RECOGNITION STATE");
-        emit clearGB();
-        ROS_INFO("NOT MAKING CAMERA ORIGIN REQUEST, DONT WANT TO VIEW FROM ORIGIN");
-        //sendGetCameraOriginRequest();
-        sendObjectRecognitionRequest();
-    }
-    else
-    {
-          if(GraspManager::getInstance()->hasRecognizedObjects())
-            {
-                BCIService::getInstance()->emitFinishedRecognition();
-            }
-    }
+
+    ROS_INFO("CLEARING ALL GRASPABLE BODIES ON ENTRANCE TO OBJECT RECOGNITION STATE");
+    emit clearGB();
+    ROS_INFO("NOT MAKING CAMERA ORIGIN REQUEST, DONT WANT TO VIEW FROM ORIGIN");
+
+    sendObjectRecognitionRequest();
 
 }
 

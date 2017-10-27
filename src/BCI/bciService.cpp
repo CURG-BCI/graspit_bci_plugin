@@ -60,9 +60,6 @@ void BCIService::init(BCIControlWindow *bciControlWindow)
     QObject::connect(slowButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState1()));
     QObject::connect(fastButton, SIGNAL(clicked()), this, SLOT(updateControlSceneState2()));
 
-    QObject::connect(blockButton, SIGNAL(clicked()), this, SLOT(updateExperimentBlock()));
-    QObject::connect(objectButton, SIGNAL(clicked()), this, SLOT(updateExperimentObject()));
-
     endOfExperimentFormat = new QFormLayout();
 
     successFailure = new QComboBox();

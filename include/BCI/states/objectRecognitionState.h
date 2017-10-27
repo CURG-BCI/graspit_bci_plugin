@@ -34,7 +34,6 @@ private:
    ControllerSceneManager *csm;
    actionlib::SimpleActionClient<graspit_msgs::RunObjectRecognitionAction> recognizeObjectsActionClient;
    ros::ServiceClient get_camera_origin;
-   bool use_hardware;
    bool rec_running;
 
    void sendObjectRecognitionRequest();
