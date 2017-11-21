@@ -71,7 +71,7 @@ namespace graspit_bci_plugin
         delete ros_argv;
 
         //this should go away, just a hack
-        QString worldfile = QString(getenv("GRASPIT")) + QString("/worlds/simulated_object_environment.xml");
+        QString worldfile = QString(getenv("GRASPIT")) + QString("/worlds/simulated_object_environment_correct.xml");
         std::cout<<worldfile.toStdString().c_str()<<std::endl;
         graspitCore->getWorld()->load(worldfile.toStdString().c_str());
 
