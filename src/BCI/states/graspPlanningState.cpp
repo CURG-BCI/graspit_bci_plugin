@@ -48,8 +48,6 @@ void PlanGraspState::onEntryImpl(QEvent *e)
 
     std::cout << "object tran:" << std::endl;
     std::cout << mObject->getTran() << std::endl;
-    //std::cout << mObject->getIVTran()->rotation << std::endl;
-    //std::cout << mObject->getIVTran()->translation << std::endl;
 
     mHand = graspitCore->getWorld()->getCurrentHand();
     mHand->getGrasp()->setObjectNoUpdate(mObject);
@@ -86,9 +84,6 @@ void PlanGraspState::onEntryImpl(QEvent *e)
 
 void PlanGraspState::addNewGrasp(transf tr, std::list<GraspPlanningState*> *sampling)
 {
-    // [ GraspPlanState ] addNewGrasp tr: Position: (0, 0, 80) Orientation: (0, 0, 1, 0)
-    std::cout << "[ GraspPlanState ] addNewGrasp tr: Position: (" << tr.translation().x() << ", " << tr.translation().y() << ", " << tr.translation().z() << ") Orientation: (" << tr.rotation().w << ", " << tr.rotation().x << ", " << tr.rotation().y << ", " << tr.rotation().z << ")" << std::endl;
-
     std::cout << "Adding new grasp" << tr << std::endl;
     GraspPlanningState* seed = new GraspPlanningState(mHand);
     seed->setObject(mObject);
@@ -98,16 +93,6 @@ void PlanGraspState::addNewGrasp(transf tr, std::list<GraspPlanningState*> *samp
     seed->reset();
     seed->getPosition()->setTran(tr);
     sampling->push_back(seed);
-
-    // [ GraspPlanState ] addNewGrasp seed: Position: (0, 0, 192) Orientation: (0, 0, 0, 1)
-    transf tr2 = seed->readPosition()->getCoreTran();
-    std::cout << "[ GraspPlanState ] addNewGrasp seed: Position: (" << tr2.translation().x() << ", " << tr2.translation().y() << ", " << tr2.translation().z() << ") Orientation: (" << tr2.rotation().w << ", " << tr2.rotation().x << ", " << tr2.rotation().y << ", " << tr2.rotation().z << ")" << std::endl;
-
-    // [ ReachabilityAnalyzer ] addNewGrasp newguy: Orientation: (0, 0, 1, 0)
-    const mat3& affine = tr2.affine();
-    std::cout << "[ReachabilityAnalyzer] affineMatrix: \n" << affine << std::endl;
-    Quaternion newguy(affine);
-    std::cout << "[ ReachabilityAnalyzer ] addNewGrasp newguy: Orientation: (" << newguy.w << ", " << newguy.x << ", " << newguy.y << ", " << newguy.z << ")" << std::endl;
 }
 
 void PlanGraspState::blockSampling(double a, double b, double c)
@@ -120,11 +105,9 @@ void PlanGraspState::blockSampling(double a, double b, double c)
     transf tr = transf(Quaternion(0, 0, 1, 0), vec3(0,0,80));
     addNewGrasp(tr, &sampling);
 
-    std::cout << "[ GraspPlanState ] blockSampling tr: Position: (" << tr.translation().x() << ", " << tr.translation().y() << ", " << tr.translation().z() << ") Orientation: (" << tr.rotation().w << ", " << tr.rotation().x << ", " << tr.rotation().y << ", " << tr.rotation().z << ")" << std::endl;
-
-//    transf tr2 = transf(Quaternion(M_PI/2.0, vec3(0,0,1)), vec3(0,0,0));
-//    tr2 = tr2 * tr;
-//    addNewGrasp(tr2, &sampling);
+    transf tr2 = transf(Quaternion(M_PI/2.0, vec3(0,0,1)), vec3(0,0,0));
+    tr2 = tr2 * tr;
+    addNewGrasp(tr2, &sampling);
 
     std::cout << "size of sampling is " << sampling.size() << std::endl;
 
@@ -142,12 +125,6 @@ void PlanGraspState::onPlannerFinished()
         gps->addAttribute("testTime", 0);
         gps->addAttribute("graspId", i);
         GraspManager::getInstance()->addGrasp(gps);
-
-        transf tr = gps->readPosition()->getCoreTran();
-
-        std::cout << "[ GraspPlanningState ] OnPlannerFinished: Position: (" << tr.translation().x() << ", " << tr.translation().y() << ", " << tr.translation().z() <<
-                                                            ") Orientation: (" << tr.rotation().w << ", " << tr.rotation().x << ", " << tr.rotation().y << ", " << tr.rotation().z << ")" << std::endl;
-
     }
     emit_goToGraspSelectionState();
 }
