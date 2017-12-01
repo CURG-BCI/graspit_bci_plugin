@@ -32,7 +32,7 @@ void GraspSelectionState::onEntryImpl(QEvent *e)
     alexaPub.publish(str);
 
     WorldController::getInstance()->unhighlightAllBodies();
-     GraspManager::getInstance()->startGraspReachabilityAnalysis();
+    GraspManager::getInstance()->startGraspReachabilityAnalysis();
     GraspManager::getInstance()->showRobots(true);
 
     graspSelectionView->show();

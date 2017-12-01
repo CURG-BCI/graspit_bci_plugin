@@ -9,6 +9,7 @@
 #include "include/graspitCore.h"
 #include "include/ivmgr.h"
 #include "listPlanner.h"
+#include "include/matvecIO.h"
 using bci_experiment::GraspManager;
 using namespace graspit_msgs;
 
@@ -59,6 +60,7 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     //get object bbox dimensions
     SoGetBoundingBoxAction *bba =
         new SoGetBoundingBoxAction(graspitCore->getIVmgr()->getViewer()->getViewportRegion());
+
     bba->apply(mObject->getIVGeomRoot());
     SbVec3f bbmin,bbmax;
     bba->getBoundingBox().getBounds(bbmin,bbmax);
@@ -67,20 +69,10 @@ void PlanGraspState::onEntryImpl(QEvent *e)
     double b = 0.5*(bbmax[1] - bbmin[1]);
     double c = 0.5*(bbmax[2] - bbmin[2]);
 
-    //double smallObjectSize = 30;
-    // if (experiment_type == "block") {
-    std::cout << "----------- block -------------" << std::endl;
-    fingerLength = 80;
-    //smallSphereSampling(a,b,c,3,6);
-    //smallCubeSampling(c,2,0);
-    blockSampling(a,b,c,3,6);
-    // } else {
-    //     std::cout << "----------- cylinder -------------" << std::endl;
-    //     cylinderSampling(a,b,c,6,12);
-    // }
+    blockSampling(a,b,c);
 
     //this shows the approach arrows for debugging
-    mPlanner->showVisualMarkers( true);
+    mPlanner->showVisualMarkers(true);
 
     mPlanner->resetPlanner();
     mPlanner->startPlanner();
@@ -94,6 +86,9 @@ void PlanGraspState::onEntryImpl(QEvent *e)
 
 void PlanGraspState::addNewGrasp(transf tr, std::list<GraspPlanningState*> *sampling)
 {
+    // [ GraspPlanState ] addNewGrasp tr: Position: (0, 0, 80) Orientation: (0, 0, 1, 0)
+    std::cout << "[ GraspPlanState ] addNewGrasp tr: Position: (" << tr.translation().x() << ", " << tr.translation().y() << ", " << tr.translation().z() << ") Orientation: (" << tr.rotation().w << ", " << tr.rotation().x << ", " << tr.rotation().y << ", " << tr.rotation().z << ")" << std::endl;
+
     std::cout << "Adding new grasp" << tr << std::endl;
     GraspPlanningState* seed = new GraspPlanningState(mHand);
     seed->setObject(mObject);
@@ -103,153 +98,36 @@ void PlanGraspState::addNewGrasp(transf tr, std::list<GraspPlanningState*> *samp
     seed->reset();
     seed->getPosition()->setTran(tr);
     sampling->push_back(seed);
+
+    // [ GraspPlanState ] addNewGrasp seed: Position: (0, 0, 192) Orientation: (0, 0, 0, 1)
+    transf tr2 = seed->readPosition()->getCoreTran();
+    std::cout << "[ GraspPlanState ] addNewGrasp seed: Position: (" << tr2.translation().x() << ", " << tr2.translation().y() << ", " << tr2.translation().z() << ") Orientation: (" << tr2.rotation().w << ", " << tr2.rotation().x << ", " << tr2.rotation().y << ", " << tr2.rotation().z << ")" << std::endl;
+
+    // [ ReachabilityAnalyzer ] addNewGrasp newguy: Orientation: (0, 0, 1, 0)
+    const mat3& affine = tr2.affine();
+    std::cout << "[ReachabilityAnalyzer] affineMatrix: \n" << affine << std::endl;
+    Quaternion newguy(affine);
+    std::cout << "[ ReachabilityAnalyzer ] addNewGrasp newguy: Orientation: (" << newguy.w << ", " << newguy.x << ", " << newguy.y << ", " << newguy.z << ")" << std::endl;
 }
 
-void PlanGraspState::cylinderSampling(double a, double b, double c, int resLen, int resRot)
+void PlanGraspState::blockSampling(double a, double b, double c)
 {
     std::list<GraspPlanningState*> sampling;
-
-    a *= 1.1; // add a small buffer just in case
-    b *= 1.1;
-
-    // object model is always right side up along z axis
-    double length = c;
-
-    resLen += 1; // divide length by resLength + 1 so there are resLength samples and not including edge of bbox
-    double lengthSample = 2.0 * length / resLen;
-
-    vec3 rotAxis = vec3(0,0,1); // rotate around Z axis
-
-    // sample along length of cylinder
-    for (int i = 1; i < resLen; i++) {
-        // sample around slice circle
-        for (int j = 0; j < resRot; j++) {
-
-            //Limit this angle to 180 degree
-            double angle = 2 * M_PI * j/resRot;
-            double x = a * cos(angle);
-            double y = b * sin(angle);
-            double z = i * lengthSample;
-
-            transf rot1 = transf(Quaternion(90*M_PI/180, vec3(0,1,0)), vec3(0,0,0)); // rotate vector to be perpendicular to z axis
-            transf rot2 = transf(Quaternion(angle, rotAxis), vec3(-x,-y,z)); // rotate around axis to sample
-            transf tr = rot1 * rot2;
-
-            addNewGrasp(tr, &sampling);
-        }
-    }
-
-    // sample once from top center
-    transf tr = transf(Quaternion(180*M_PI/180, vec3(0,1,0)), 2.2*length * rotAxis);
-    addNewGrasp(tr, &sampling);
-
-    // sample once from bottom center
-    tr = transf(Quaternion(0, vec3(0,1,0)), (-0.1*c) * rotAxis);
-    addNewGrasp(tr, &sampling);
-
-    DBGA("Sampled " << sampling.size() << " states.");
-    mPlanner->setInput(sampling);
-}
-
-void PlanGraspState::smallCubeSampling(double c, int res, double offset)
-{
-    std::list<GraspPlanningState*> sampling;
-
-    transf rot_world_to_obj = transf(mObject->getTran().rotation().inverse(), vec3(0,0,0)); // transform to local object frame
-
-    // get center of object in world space
-    transf obj_center = transf(Quaternion(0, vec3(0,0,0)), vec3(0,0,c));
-    obj_center = obj_center * mObject->getTran(); // center of object in world space
-    transf center_offset = transf(Quaternion(0, vec3(0,0,0)), obj_center.translation() - mObject->getTran().translation()); // offset from obj base in world space
-    center_offset = center_offset * rot_world_to_obj; // offset in object frame
-
-    transf finger_offset = transf(Quaternion(0,vec3(0,0,0)), vec3(0,0,fingerLength)) * rot_world_to_obj;
-
-    transf flip = transf(Quaternion(180*M_PI/180, vec3(0,1,0)), vec3(0,0,0)); // position from origin: pointing down
-
-    for (int i = 0; i < res; i++) {
-
-        transf rotZ = transf(Quaternion((i*180/res)*M_PI/180, vec3(0,0,1)), vec3(0,0,0)); // sample rotating grasp
-        transf position = flip * rotZ * rot_world_to_obj;
-
-        position = transf(position.rotation(), position.translation() + center_offset.translation() + finger_offset.translation());
-
-        addNewGrasp(position, &sampling);
-    }
-
-    DBGA("Sampled " << sampling.size() << " states.");
-    mPlanner->setInput(sampling);
-}
-
-void PlanGraspState::blockSampling(double a, double b, double c, int resLen, int resRot)
-{
-    std::list<GraspPlanningState*> sampling;
-
-    double length = c + fingerLength;
 
     vec3 rotAxis = vec3(0,0,1); // rotate around Z axis
 
     // sample once from top center
-    transf tr = transf(Quaternion(0, vec3(0,1,0)), (c-fingerLength) * rotAxis);
+    transf tr = transf(Quaternion(0, 0, 1, 0), vec3(0,0,80));
     addNewGrasp(tr, &sampling);
 
-    transf tr2 = transf(Quaternion(90*M_PI/180, vec3(0,0,1)), vec3(0,0,0));
-    tr2 = tr2 * tr;
-    addNewGrasp(tr2, &sampling);
+    std::cout << "[ GraspPlanState ] blockSampling tr: Position: (" << tr.translation().x() << ", " << tr.translation().y() << ", " << tr.translation().z() << ") Orientation: (" << tr.rotation().w << ", " << tr.rotation().x << ", " << tr.rotation().y << ", " << tr.rotation().z << ")" << std::endl;
+
+//    transf tr2 = transf(Quaternion(M_PI/2.0, vec3(0,0,1)), vec3(0,0,0));
+//    tr2 = tr2 * tr;
+//    addNewGrasp(tr2, &sampling);
 
     std::cout << "size of sampling is " << sampling.size() << std::endl;
 
-    mPlanner->setInput(sampling);
-}
-
-
-void PlanGraspState::smallSphereSampling(double a, double b, double c, int resLen, int resRot)
-{
-    std::list<GraspPlanningState*> sampling;
-
-    a += fingerLength;
-    b += fingerLength;
-    double length = c + fingerLength;
-
-    double lengthSample = 2.0 * length / (resLen - 1);
-    double startPos = -length; // center at origin for easier transformations
-
-    vec3 rotAxis = vec3(0,0,1); // rotate around Z axis
-
-    // sample along length of cylinder
-    for (int i = 0; i < resLen; i++) {
-        // sample around slice circle
-        for (int j = 0; j < resRot; j++) {
-
-            double angle = 2 * M_PI * j/resRot;
-            double x = a * cos(angle);
-            double y = b * sin(angle);
-            double z = startPos + i * lengthSample;
-            double radius = sqrt(x*x + y*y);
-            double vertAngle = 0.5 * M_PI + atan(z/radius);
-
-            transf rot1 = transf(Quaternion(vertAngle, vec3(0,1,0)), vec3(0, 0, 0)); // rotate vector to point to center
-
-            double maxFingerDistRatio = fingerLength / sqrt(radius*radius + z*z); // make sure within finger length distance
-            x *= maxFingerDistRatio;
-            y *= maxFingerDistRatio;
-            z *= maxFingerDistRatio;
-            transf rot2 = transf(Quaternion(angle, rotAxis), vec3(-x,-y,z+c)); // rotate around axis to sample, re-offset to base of object
-            transf tr = rot1 * rot2;
-
-            addNewGrasp(tr, &sampling);
-        }
-    }
-
-    // sample once from top center
-    transf tr = transf(Quaternion(180*M_PI/180, vec3(0,1,0)), (c+fingerLength) * rotAxis);
-    addNewGrasp(tr, &sampling);
-
-    // sample once from bottom center
-    tr = transf(Quaternion(0, vec3(0,1,0)), (c-fingerLength) * rotAxis);
-    addNewGrasp(tr, &sampling);
-
-    DBGA("Sampled " << sampling.size() << " states.");
     mPlanner->setInput(sampling);
 }
 
@@ -264,6 +142,12 @@ void PlanGraspState::onPlannerFinished()
         gps->addAttribute("testTime", 0);
         gps->addAttribute("graspId", i);
         GraspManager::getInstance()->addGrasp(gps);
+
+        transf tr = gps->readPosition()->getCoreTran();
+
+        std::cout << "[ GraspPlanningState ] OnPlannerFinished: Position: (" << tr.translation().x() << ", " << tr.translation().y() << ", " << tr.translation().z() <<
+                                                            ") Orientation: (" << tr.rotation().w << ", " << tr.rotation().x << ", " << tr.rotation().y << ", " << tr.rotation().z << ")" << std::endl;
+
     }
     emit_goToGraspSelectionState();
 }

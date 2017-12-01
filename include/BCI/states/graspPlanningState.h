@@ -51,10 +51,7 @@ private:
     ros::Publisher alexaPub;
     ros::NodeHandle *n;
 
-   void cylinderSampling(double a, double b, double c, int resLen, int resRot);
-   void smallSphereSampling(double a, double b, double c, int resLen, int resRot);
-   void smallCubeSampling(double c, int res, double offset);
-   void blockSampling(double a, double b, double c, int resLen, int resRot);
+   void blockSampling(double a, double b, double c);
    void addNewGrasp(transf tr, std::list<GraspPlanningState*> *sampling);
 };
 

@@ -2,6 +2,7 @@
 
 #include "include/grasp.h"
 #include "include/robot.h"
+#include <iostream>
 
 using namespace graspit_msgs;
 
@@ -35,17 +36,22 @@ void ReachabilityAnalyzer::buildCheckReachabilityRequest(const GraspPlanningStat
        goal.grasp.pre_grasp_dof.push_back(dof[i]);
     }
 
-    transf finalHandTransform = gps->readPosition()->getCoreTran();
+    // Do not do this
+//    transf finalHandTransformBkp = gps->readPosition()->getCoreTran();
+    // Do this instead. It properly handles getting the correct approach direction
+    // This is where the gray arrow is in the object frame of reference
+    transf finalHandTransform = gps->getHand()->getApproachTran() * gps->readPosition()->getCoreTran();
 
     float tx = finalHandTransform.translation().x() / 1000;
     float ty = finalHandTransform.translation().y() / 1000;
     float tz = finalHandTransform.translation().z() / 1000;
+
     float rw = finalHandTransform.rotation().w;
     float rx = finalHandTransform.rotation().x;
     float ry = finalHandTransform.rotation().y;
     float rz = finalHandTransform.rotation().z;
 
-    goal.grasp.final_grasp_pose.position.x=tx ;
+    goal.grasp.final_grasp_pose.position.x=tx;
     goal.grasp.final_grasp_pose.position.y=ty;
     goal.grasp.final_grasp_pose.position.z=tz;
     goal.grasp.final_grasp_pose.orientation.w=rw;

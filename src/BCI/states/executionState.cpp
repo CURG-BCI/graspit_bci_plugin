@@ -105,7 +105,11 @@ void ExecutionState::executeGrasp(const GraspPlanningState * gps)
        grasp.pre_grasp_dof.push_back(dof[i]);
     }
 
-    transf finalHandTransform = gps->readPosition()->getCoreTran();
+    // Do not do this
+//    transf finalHandTransformBkp = gps->readPosition()->getCoreTran();
+    // Do this instead. It properly handles getting the correct approach direction
+    // This is where the gray arrow is in the object frame of reference
+    transf finalHandTransform = gps->getHand()->getApproachTran() * gps->readPosition()->getCoreTran();
 
     float tx = finalHandTransform.translation().x() / 1000;
     float ty = finalHandTransform.translation().y() / 1000;
@@ -115,7 +119,7 @@ void ExecutionState::executeGrasp(const GraspPlanningState * gps)
     float ry = finalHandTransform.rotation().y;
     float rz = finalHandTransform.rotation().z;
 
-    grasp.final_grasp_pose.position.x=tx ;
+    grasp.final_grasp_pose.position.x=tx;
     grasp.final_grasp_pose.position.y=ty;
     grasp.final_grasp_pose.position.z=tz;
     grasp.final_grasp_pose.orientation.w=rw;
