@@ -10,7 +10,7 @@ ExecutionState::ExecutionState(BCIControlWindow *_bciControlWindow, ControllerSc
     : State("ExecutionState", parent),
       bciControlWindow(_bciControlWindow),
       csm(_csm),
-      graspExecutionActionClient("grasp_execution_action", true)
+      graspExecutionActionClient("/crui_manager/execute_grasp", true)
 {
     executionView = new ExecutionView(bciControlWindow->currentFrame);
     executionView->hide();

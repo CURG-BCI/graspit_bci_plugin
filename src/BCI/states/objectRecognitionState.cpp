@@ -18,7 +18,7 @@ ObjectRecognitionState::ObjectRecognitionState(BCIControlWindow *_bciControlWind
     State("ObjectRecognitionState", parent),
     bciControlWindow(_bciControlWindow),
     csm(_csm),
-    recognizeObjectsActionClient("recognize_objects_action", true)
+    recognizeObjectsActionClient("/crui_manager/run_recognition", true)
 {
      objectRecognitionView = new ObjectRecognitionView(bciControlWindow->currentFrame);
      objectRecognitionView->hide();

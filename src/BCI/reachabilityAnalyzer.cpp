@@ -7,7 +7,7 @@
 using namespace graspit_msgs;
 
 ReachabilityAnalyzer::ReachabilityAnalyzer():
-      analzeGraspReachabilityActionClient("analyze_grasp_action", true),
+      analzeGraspReachabilityActionClient("/crui_manager/analyze_grasp", true),
       is_running(false),
       QObject()
 {
@@ -24,6 +24,7 @@ void ReachabilityAnalyzer::buildCheckReachabilityRequest(const GraspPlanningStat
         return;
 
     goal.grasp.object_name = gps->getObject()->getName().toStdString().c_str();
+    ROS_INFO_STREAM("Object name for analysis is: " << goal.grasp.object_name);
     goal.grasp.epsilon_quality=gps->getEpsilonQuality();
     goal.grasp.volume_quality=gps->getVolume();
     goal.grasp.grasp_id=gps->getAttribute("graspId");

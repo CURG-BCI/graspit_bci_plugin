@@ -436,6 +436,7 @@ void GraspManager::addToWorld(const QString modelname, const QString object_name
         b->setName(object_name);
         b->setObjectName(object_name);
     }
+    ROS_INFO_STREAM("Added block " << object_name.toStdString().c_str() << " to world with pose and modelname " << modelname.toStdString().c_str());
 
 }
 
